@@ -1,0 +1,31 @@
+{
+  "type": "FeatureCollection",
+  "name": "zone_etude_fflush_MbennScan",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "equipe": "fflush",
+        "projet": "MbennScan",
+        "description": "Zone d'etude : departements de Keur Massar (site pilote), Pikine et Guediawaye, region de Dakar, avec une marge",
+        "lat_min": 14.715,
+        "lat_max": 14.835,
+        "lon_min": -17.440,
+        "lon_max": -17.230
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-17.440, 14.715],
+            [-17.230, 14.715],
+            [-17.230, 14.835],
+            [-17.440, 14.835],
+            [-17.440, 14.715]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+# Remplacer les identifiants GitHub, puis décommenter.
+# Le propriétaire d'un dossier est demandé automatiquement en relecture.
+
+# /pipeline/      @github-khalifa
+# /web/           @github-aziz
+# /firmware/      @github-aboubacry
+# /supabase/      @github-aziz @github-aboubacry
+# /contracts/     @github-khalifa @github-aziz

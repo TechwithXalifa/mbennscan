@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mbennscan/contracts/zone_detail.schema.json",
+  "title": "Fiche zone",
+  "description": "Ce que lit l'écran E2 : la synthèse de la zone (mêmes champs que zones.schema.json) et l'historique par hivernage.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["zone", "indicateurs_saison"],
+  "properties": {
+    "zone": { "$ref": "zones.schema.json#/$defs/zoneSynthese" },
+    "indicateurs_saison": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/indicateurSaison" }
+    }
+  },
+  "$defs": {
+    "indicateurSaison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["zone_id", "annee", "images_valides", "images_inondees", "frequence", "duree_moy_jours", "classe_eau", "habitants_jours"],
+      "properties": {
+        "zone_id": { "type": "string", "minLength": 1 },
+        "annee": { "type": "integer", "minimum": 2020, "maximum": 2030 },
+        "images_valides": { "type": "integer", "minimum": 0 },
+        "images_inondees": { "type": "integer", "minimum": 0 },
+        "frequence": { "type": ["number", "null"], "minimum": 0, "maximum": 1, "description": "images_inondees / images_valides ; null si aucune image valide (afficher « données insuffisantes »)" },
+        "duree_moy_jours": { "type": ["number", "null"], "minimum": 0 },
+        "classe_eau": { "enum": ["ruissellement", "intermediaire", "stagnation", null] },
+        "habitants_jours": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mbennscan/contracts/zones.schema.json",
+  "title": "Zones de la carte (GeoJSON)",
+  "description": "Réponse de rpc/zones_geojson : une FeatureCollection où chaque zone porte sa synthèse 2020-2026. C'est ce que lit l'écran E1 (carte) et le top 10.",
+  "type": "object",
+  "required": ["type", "features"],
+  "additionalProperties": false,
+  "properties": {
+    "type": { "const": "FeatureCollection" },
+    "features": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/zoneFeature" }
+    }
+  },
+  "$defs": {
+    "position": {
+      "type": "array",
+      "prefixItems": [
+        { "type": "number", "minimum": -180, "maximum": 180 },
+        { "type": "number", "minimum": -90, "maximum": 90 }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "polygon": {
+      "type": "object",
+      "required": ["type", "coordinates"],
+      "properties": {
+        "type": { "const": "Polygon" },
+        "coordinates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 4,
+            "items": { "$ref": "#/$defs/position" }
+          }
+        }
+      }
+    },
+    "zoneFeature": {
+      "type": "object",
+      "required": ["type", "geometry", "properties"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "Feature" },
+        "geometry": { "$ref": "#/$defs/polygon" },
+        "properties": { "$ref": "#/$defs/zoneSynthese" }
+      }
+    },
+    "zoneSynthese": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "nom", "commune", "population", "part_bati",
+        "habitants_jours_an", "priorite", "rang", "classe_eau", "confiance",
+        "batiments_touches", "ecoles_touchees", "ecoles_noms", "routes_km", "maj"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "Index H3 (résolution 9) ou code de quartier" },
+        "nom": { "type": "string", "minLength": 1, "description": "Ex. « Jaxaay, maille 12 »" },
+        "commune": { "type": "string", "minLength": 1 },
+        "population": { "type": ["integer", "null"], "minimum": 0, "description": "Habitants estimés dans la zone" },
+        "part_bati": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "habitants_jours_an": { "type": "number", "minimum": 0, "description": "Indicateur principal : moyenne annuelle 2020-2026 de la somme habitants × jours d'eau" },
+        "priorite": { "enum": ["forte", "moyenne", "faible", "nulle"], "description": "Tiers de l'indicateur ; « nulle » = pas d'eau observée" },
+        "rang": { "type": ["integer", "null"], "minimum": 1, "description": "1 = zone la plus touchée ; null si priorité nulle" },
+        "classe_eau": { "enum": ["ruissellement", "intermediaire", "stagnation", null], "description": "< 6 j, 6 à 12 j, ≥ 12 j ; null si pas d'eau" },
+        "confiance": { "enum": ["elevee", "moyenne", "faible"] },
+        "batiments_touches": { "type": "integer", "minimum": 0 },
+        "ecoles_touchees": { "type": "integer", "minimum": 0 },
+        "ecoles_noms": { "type": "array", "items": { "type": "string" } },
+        "routes_km": { "type": "number", "minimum": 0 },
+        "maj": { "type": "string", "format": "date-time", "description": "Date du calcul" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "priorite": { "const": "nulle" } } },
+          "then": { "properties": { "rang": { "type": "null" }, "classe_eau": { "type": "null" }, "habitants_jours_an": { "const": 0 } } },
+          "else": { "properties": { "rang": { "type": "integer" }, "classe_eau": { "type": "string" } } }
+        }
+      ]
+    }
+  }
+}

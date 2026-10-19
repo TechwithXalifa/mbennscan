@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mbennscan/contracts/balises.schema.json",
+  "title": "Balises",
+  "description": "Balises connues (table balises, sans la clé d'API).",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "nom", "lon", "lat", "hauteur_capteur_cm", "seuil_alerte_cm"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^bal-[0-9]{2}$" },
+      "nom": { "type": "string", "minLength": 1 },
+      "lon": { "type": "number", "minimum": -180, "maximum": 180 },
+      "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+      "hauteur_capteur_cm": { "type": "number", "exclusiveMinimum": 0, "description": "Distance capteur - fond du bac à vide" },
+      "seuil_alerte_cm": { "type": ["number", "null"], "minimum": 0, "description": "Niveau d'eau au-delà duquel la jauge passe en rouge" }
+    }
+  }
+}

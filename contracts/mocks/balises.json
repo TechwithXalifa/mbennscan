@@ -1,0 +1,10 @@
+[
+  {
+    "id": "bal-01",
+    "nom": "[FICTIF] Bac de démonstration",
+    "lon": 2.5523,
+    "lat": 48.8392,
+    "hauteur_capteur_cm": 80,
+    "seuil_alerte_cm": 40
+  }
+]

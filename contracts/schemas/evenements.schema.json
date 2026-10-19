@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mbennscan/contracts/evenements.schema.json",
+  "title": "Épisodes de pluie",
+  "description": "Liste des épisodes affichables dans l'écran E3 « Après une pluie ». eau_geojson contient les polygones de l'eau détectée (simplifiés à 10 m).",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "date_pluie", "pluie_mm", "station", "date_image", "eau_geojson"],
+    "properties": {
+      "id": { "type": "integer", "minimum": 1 },
+      "date_pluie": { "type": "string", "format": "date" },
+      "pluie_mm": { "type": ["number", "null"], "minimum": 0 },
+      "station": { "type": ["string", "null"], "description": "Source du cumul : nom de station ou « CHIRPS »" },
+      "date_image": { "type": ["string", "null"], "format": "date", "description": "Première image radar exploitable après la pluie ; null si aucune" },
+      "eau_geojson": {
+        "oneOf": [
+          { "type": "null" },
+          {
+            "type": "object",
+            "required": ["type", "features"],
+            "properties": {
+              "type": { "const": "FeatureCollection" },
+              "features": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["type", "geometry"],
+                  "properties": {
+                    "type": { "const": "Feature" },
+                    "geometry": {
+                      "type": "object",
+                      "required": ["type", "coordinates"],
+                      "properties": { "type": { "enum": ["Polygon", "MultiPolygon"] } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

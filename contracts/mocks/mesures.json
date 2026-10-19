@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:00:00Z",
+    "distance_cm": 70.0,
+    "niveau_cm": 10.0,
+    "batterie_v": 4.1,
+    "rssi": -60
+  },
+  {
+    "id": 2,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:05:00Z",
+    "distance_cm": 66.5,
+    "niveau_cm": 13.5,
+    "batterie_v": 4.095,
+    "rssi": -61
+  },
+  {
+    "id": 3,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:10:00Z",
+    "distance_cm": 63.0,
+    "niveau_cm": 17.0,
+    "batterie_v": 4.09,
+    "rssi": -62
+  },
+  {
+    "id": 4,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:15:00Z",
+    "distance_cm": 59.5,
+    "niveau_cm": 20.5,
+    "batterie_v": 4.085,
+    "rssi": -63
+  },
+  {
+    "id": 5,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:20:00Z",
+    "distance_cm": 56.0,
+    "niveau_cm": 24.0,
+    "batterie_v": 4.08,
+    "rssi": -60
+  },
+  {
+    "id": 6,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:25:00Z",
+    "distance_cm": 52.5,
+    "niveau_cm": 27.5,
+    "batterie_v": 4.075,
+    "rssi": -61
+  },
+  {
+    "id": 7,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:30:00Z",
+    "distance_cm": 49.0,
+    "niveau_cm": 31.0,
+    "batterie_v": 4.07,
+    "rssi": -62
+  },
+  {
+    "id": 8,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:35:00Z",
+    "distance_cm": 45.5,
+    "niveau_cm": 34.5,
+    "batterie_v": 4.065,
+    "rssi": -63
+  },
+  {
+    "id": 9,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:40:00Z",
+    "distance_cm": 42.0,
+    "niveau_cm": 38.0,
+    "batterie_v": 4.06,
+    "rssi": -60
+  },
+  {
+    "id": 10,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:45:00Z",
+    "distance_cm": 38.5,
+    "niveau_cm": 41.5,
+    "batterie_v": 4.055,
+    "rssi": -61
+  },
+  {
+    "id": 11,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:50:00Z",
+    "distance_cm": 35.0,
+    "niveau_cm": 45.0,
+    "batterie_v": 4.05,
+    "rssi": -62
+  },
+  {
+    "id": 12,
+    "balise_id": "bal-01",
+    "ts": "2026-10-19T12:55:00Z",
+    "distance_cm": 31.5,
+    "niveau_cm": 48.5,
+    "batterie_v": 4.045,
+    "rssi": -63
+  }
+]

@@ -1,0 +1,342 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -17.288567,
+              14.7808
+            ],
+            [
+              -17.29,
+              14.7816
+            ],
+            [
+              -17.291433,
+              14.7808
+            ],
+            [
+              -17.291433,
+              14.7792
+            ],
+            [
+              -17.29,
+              14.7784
+            ],
+            [
+              -17.288567,
+              14.7792
+            ],
+            [
+              -17.288567,
+              14.7808
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "mock-01",
+        "nom": "[FICTIF] Jaxaay, maille 1",
+        "commune": "Jaxaay-Parcelles",
+        "population": 2400,
+        "part_bati": 0.62,
+        "habitants_jours_an": 18500,
+        "priorite": "forte",
+        "rang": 1,
+        "classe_eau": "stagnation",
+        "confiance": "moyenne",
+        "batiments_touches": 310,
+        "ecoles_touchees": 2,
+        "ecoles_noms": [
+          "[FICTIF] École A",
+          "[FICTIF] École B"
+        ],
+        "routes_km": 1.4,
+        "maj": "2026-10-19T12:00:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -17.303567,
+              14.7908
+            ],
+            [
+              -17.305,
+              14.7916
+            ],
+            [
+              -17.306433,
+              14.7908
+            ],
+            [
+              -17.306433,
+              14.7892
+            ],
+            [
+              -17.305,
+              14.7884
+            ],
+            [
+              -17.303567,
+              14.7892
+            ],
+            [
+              -17.303567,
+              14.7908
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "mock-02",
+        "nom": "[FICTIF] Keur Massar Nord, maille 2",
+        "commune": "Keur Massar Nord",
+        "population": 3100,
+        "part_bati": 0.71,
+        "habitants_jours_an": 12200,
+        "priorite": "forte",
+        "rang": 2,
+        "classe_eau": "intermediaire",
+        "confiance": "faible",
+        "batiments_touches": 280,
+        "ecoles_touchees": 1,
+        "ecoles_noms": [
+          "[FICTIF] École C"
+        ],
+        "routes_km": 0.9,
+        "maj": "2026-10-19T12:00:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -17.313567,
+              14.7708
+            ],
+            [
+              -17.315,
+              14.7716
+            ],
+            [
+              -17.316433,
+              14.7708
+            ],
+            [
+              -17.316433,
+              14.7692
+            ],
+            [
+              -17.315,
+              14.7684
+            ],
+            [
+              -17.313567,
+              14.7692
+            ],
+            [
+              -17.313567,
+              14.7708
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "mock-03",
+        "nom": "[FICTIF] Keur Massar Sud, maille 3",
+        "commune": "Keur Massar Sud",
+        "population": 2800,
+        "part_bati": 0.68,
+        "habitants_jours_an": 6400,
+        "priorite": "moyenne",
+        "rang": 3,
+        "classe_eau": "ruissellement",
+        "confiance": "moyenne",
+        "batiments_touches": 120,
+        "ecoles_touchees": 0,
+        "ecoles_noms": [],
+        "routes_km": 0.6,
+        "maj": "2026-10-19T12:00:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -17.333567,
+              14.7958
+            ],
+            [
+              -17.335,
+              14.7966
+            ],
+            [
+              -17.336433,
+              14.7958
+            ],
+            [
+              -17.336433,
+              14.7942
+            ],
+            [
+              -17.335,
+              14.7934
+            ],
+            [
+              -17.333567,
+              14.7942
+            ],
+            [
+              -17.333567,
+              14.7958
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "mock-04",
+        "nom": "[FICTIF] Malika, maille 4",
+        "commune": "Malika",
+        "population": 1500,
+        "part_bati": 0.4,
+        "habitants_jours_an": 3100,
+        "priorite": "moyenne",
+        "rang": 4,
+        "classe_eau": "ruissellement",
+        "confiance": "elevee",
+        "batiments_touches": 60,
+        "ecoles_touchees": 1,
+        "ecoles_noms": [
+          "[FICTIF] École D"
+        ],
+        "routes_km": 0.3,
+        "maj": "2026-10-19T12:00:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -17.348567,
+              14.7808
+            ],
+            [
+              -17.35,
+              14.7816
+            ],
+            [
+              -17.351433,
+              14.7808
+            ],
+            [
+              -17.351433,
+              14.7792
+            ],
+            [
+              -17.35,
+              14.7784
+            ],
+            [
+              -17.348567,
+              14.7792
+            ],
+            [
+              -17.348567,
+              14.7808
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "mock-05",
+        "nom": "[FICTIF] Yeumbeul Nord, maille 5",
+        "commune": "Yeumbeul Nord",
+        "population": 3600,
+        "part_bati": 0.8,
+        "habitants_jours_an": 900,
+        "priorite": "faible",
+        "rang": 5,
+        "classe_eau": "ruissellement",
+        "confiance": "faible",
+        "batiments_touches": 25,
+        "ecoles_touchees": 0,
+        "ecoles_noms": [],
+        "routes_km": 0.1,
+        "maj": "2026-10-19T12:00:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -17.343567,
+              14.7658
+            ],
+            [
+              -17.345,
+              14.7666
+            ],
+            [
+              -17.346433,
+              14.7658
+            ],
+            [
+              -17.346433,
+              14.7642
+            ],
+            [
+              -17.345,
+              14.7634
+            ],
+            [
+              -17.343567,
+              14.7642
+            ],
+            [
+              -17.343567,
+              14.7658
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "mock-06",
+        "nom": "[FICTIF] Yeumbeul Sud, maille 6",
+        "commune": "Yeumbeul Sud",
+        "population": 3300,
+        "part_bati": 0.78,
+        "habitants_jours_an": 0,
+        "priorite": "nulle",
+        "rang": null,
+        "classe_eau": null,
+        "confiance": "moyenne",
+        "batiments_touches": 0,
+        "ecoles_touchees": 0,
+        "ecoles_noms": [],
+        "routes_km": 0.0,
+        "maj": "2026-10-19T12:00:00Z"
+      }
+    }
+  ]
+}

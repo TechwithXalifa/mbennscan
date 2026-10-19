@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mbennscan/contracts/mesures.schema.json",
+  "title": "Mesures enregistrées",
+  "description": "Lignes de la table mesures, telles que lues par l'écran E5 (requête REST ou événement Realtime). niveau_cm = hauteur_capteur_cm - distance_cm, rempli par trigger.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "balise_id", "ts", "distance_cm", "niveau_cm", "batterie_v", "rssi"],
+    "properties": {
+      "id": { "type": "integer", "minimum": 1 },
+      "balise_id": { "type": "string", "pattern": "^bal-[0-9]{2}$" },
+      "ts": { "type": "string", "format": "date-time" },
+      "distance_cm": { "type": "number", "minimum": 20, "maximum": 600 },
+      "niveau_cm": { "type": ["number", "null"], "description": "Peut être négatif si la balise est mal étalonnée : l'afficher à 0 et signaler l'anomalie" },
+      "batterie_v": { "type": ["number", "null"] },
+      "rssi": { "type": ["integer", "null"] }
+    }
+  }
+}

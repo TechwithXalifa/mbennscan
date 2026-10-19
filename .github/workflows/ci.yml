@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contrats:
+    name: Contrats de données
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install jsonschema
+      - run: python scripts/validate_contracts.py
+
+  pipeline:
+    name: Pipeline (lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        if: hashFiles('pipeline/**/*.py') != ''
+        with:
+          python-version: "3.11"
+      - if: hashFiles('pipeline/**/*.py') != ''
+        run: pip install ruff && ruff check pipeline
+      - if: hashFiles('pipeline/**/*.py') == ''
+        run: echo "Pas encore de code Python dans pipeline/"
+
+  web:
+    name: Web (lint, types, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    env:
+      NEXT_PUBLIC_USE_MOCKS: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        if: hashFiles('web/package.json') != ''
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - if: hashFiles('web/package.json') != ''
+        run: npm ci
+      - if: hashFiles('web/package.json') != ''
+        run: npm run lint
+      - if: hashFiles('web/package.json') != ''
+        run: npm run typecheck --if-present
+      - if: hashFiles('web/package.json') != ''
+        run: npm run build
+      - if: hashFiles('web/package.json') == ''
+        working-directory: .
+        run: echo "Pas encore d'application dans web/"
+
+  secrets:
+    name: Recherche de secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest detect --source /repo --redact -v
+      - name: Pas de clé service_role côté web
+        run: |
+          if grep -rniE "service_role|SERVICE_ROLE_KEY" web --include='*.ts' --include='*.tsx' --include='*.js' 2>/dev/null; then
+            echo "La clé service_role ne doit jamais apparaître dans web/" && exit 1
+          fi

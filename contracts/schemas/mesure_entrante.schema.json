@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mbennscan/contracts/mesure_entrante.schema.json",
+  "title": "Mesure envoyée par la balise",
+  "description": "Corps de POST /functions/v1/mesure (en-tête Authorization: Bearer <clé de la balise>). Réponses : 201, 400 (champ manquant ou hors bornes), 401 (clé invalide), 429 (plus d'une mesure par seconde).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["balise_id", "distance_cm"],
+  "properties": {
+    "balise_id": { "type": "string", "pattern": "^bal-[0-9]{2}$" },
+    "distance_cm": { "type": "number", "minimum": 20, "maximum": 600, "description": "Médiane de 5 lectures" },
+    "batterie_v": { "type": ["number", "null"], "minimum": 2.5, "maximum": 5.5 },
+    "rssi": { "type": ["integer", "null"], "minimum": -120, "maximum": 0 }
+  }
+}

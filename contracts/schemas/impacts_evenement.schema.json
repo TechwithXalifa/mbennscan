@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mbennscan/contracts/impacts_evenement.schema.json",
+  "title": "Impacts d'un épisode par zone",
+  "description": "Lignes de la liste « À visiter en priorité » et des fiches d'urgence (écran E3), triées par habitants_touches décroissant.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["evenement_id", "zone_id", "surface_eau_pct", "habitants_touches", "batiments_touches", "ecoles_touchees", "action_suggeree"],
+    "properties": {
+      "evenement_id": { "type": "integer", "minimum": 1 },
+      "zone_id": { "type": "string", "minLength": 1 },
+      "surface_eau_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+      "habitants_touches": { "type": "integer", "minimum": 0, "description": "Arrondi à la dizaine" },
+      "batiments_touches": { "type": "integer", "minimum": 0 },
+      "ecoles_touchees": { "type": "integer", "minimum": 0 },
+      "action_suggeree": { "enum": ["pomper", "recenser", "visiter"] }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "date_calcul": "2026-10-19T12:00:00Z",
+  "version_pipeline": "mock",
+  "zone_etude_bbox": [
+    -17.44,
+    14.715,
+    -17.23,
+    14.835
+  ],
+  "periode": {
+    "debut": "2020-02-01",
+    "fin": "2026-10-18"
+  },
+  "parametres": {
+    "seuil_pluie_mm": 30,
+    "seuil_db_defaut": -18,
+    "seuil_db_min": -22,
+    "seuil_db_max": -14,
+    "baisse_min_db": 3,
+    "part_zone_inondee_min": 0.05,
+    "h3_resolution": 9,
+    "persistance_courte_j": 6,
+    "persistance_longue_j": 12,
+    "occurrence_eau_permanente_min": 50,
+    "pente_max_deg": 5
+  },
+  "images": [
+    {
+      "id": "[FICTIF] S1C_IW_GRDH_20261006",
+      "date": "2026-10-06",
+      "orbite_relative": 125,
+      "satellite": "S1C"
+    }
+  ],
+  "sources": [
+    "Copernicus Sentinel-1 (fictif pour les mocks)",
+    "WorldPop",
+    "OpenStreetMap"
+  ]
+}

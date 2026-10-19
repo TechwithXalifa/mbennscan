@@ -1,0 +1,94 @@
+{
+  "zone": {
+    "id": "mock-01",
+    "nom": "[FICTIF] Jaxaay, maille 1",
+    "commune": "Jaxaay-Parcelles",
+    "population": 2400,
+    "part_bati": 0.62,
+    "habitants_jours_an": 18500,
+    "priorite": "forte",
+    "rang": 1,
+    "classe_eau": "stagnation",
+    "confiance": "moyenne",
+    "batiments_touches": 310,
+    "ecoles_touchees": 2,
+    "ecoles_noms": [
+      "[FICTIF] École A",
+      "[FICTIF] École B"
+    ],
+    "routes_km": 1.4,
+    "maj": "2026-10-19T12:00:00Z"
+  },
+  "indicateurs_saison": [
+    {
+      "zone_id": "mock-01",
+      "annee": 2020,
+      "images_valides": 11,
+      "images_inondees": 6,
+      "frequence": 0.545,
+      "duree_moy_jours": 16,
+      "classe_eau": "stagnation",
+      "habitants_jours": 31000
+    },
+    {
+      "zone_id": "mock-01",
+      "annee": 2021,
+      "images_valides": 10,
+      "images_inondees": 4,
+      "frequence": 0.4,
+      "duree_moy_jours": 13,
+      "classe_eau": "stagnation",
+      "habitants_jours": 19000
+    },
+    {
+      "zone_id": "mock-01",
+      "annee": 2022,
+      "images_valides": 9,
+      "images_inondees": 3,
+      "frequence": 0.333,
+      "duree_moy_jours": 12,
+      "classe_eau": "stagnation",
+      "habitants_jours": 14000
+    },
+    {
+      "zone_id": "mock-01",
+      "annee": 2023,
+      "images_valides": 5,
+      "images_inondees": 2,
+      "frequence": 0.4,
+      "duree_moy_jours": 11,
+      "classe_eau": "intermediaire",
+      "habitants_jours": 9000
+    },
+    {
+      "zone_id": "mock-01",
+      "annee": 2024,
+      "images_valides": 0,
+      "images_inondees": 0,
+      "frequence": null,
+      "duree_moy_jours": null,
+      "classe_eau": null,
+      "habitants_jours": 0
+    },
+    {
+      "zone_id": "mock-01",
+      "annee": 2025,
+      "images_valides": 9,
+      "images_inondees": 4,
+      "frequence": 0.444,
+      "duree_moy_jours": 14,
+      "classe_eau": "stagnation",
+      "habitants_jours": 21000
+    },
+    {
+      "zone_id": "mock-01",
+      "annee": 2026,
+      "images_valides": 12,
+      "images_inondees": 5,
+      "frequence": 0.417,
+      "duree_moy_jours": 15,
+      "classe_eau": "stagnation",
+      "habitants_jours": 26000
+    }
+  ]
+}

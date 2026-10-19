@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mbennscan/contracts/run_meta.schema.json",
+  "title": "Métadonnées d'un calcul du pipeline",
+  "description": "Écrit par le pipeline à chaque exécution (pipeline/out/run_meta.json) pour pouvoir refaire le calcul à l'identique. La page Méthode en affiche les paramètres.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["date_calcul", "version_pipeline", "zone_etude_bbox", "periode", "parametres", "images", "sources"],
+  "properties": {
+    "date_calcul": { "type": "string", "format": "date-time" },
+    "version_pipeline": { "type": "string", "description": "Hash du commit git" },
+    "zone_etude_bbox": {
+      "type": "array",
+      "description": "[lon_min, lat_min, lon_max, lat_max]",
+      "prefixItems": [{ "type": "number" }, { "type": "number" }, { "type": "number" }, { "type": "number" }],
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "periode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["debut", "fin"],
+      "properties": {
+        "debut": { "type": "string", "format": "date" },
+        "fin": { "type": "string", "format": "date" }
+      }
+    },
+    "parametres": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seuil_pluie_mm", "seuil_db_defaut", "seuil_db_min", "seuil_db_max", "baisse_min_db",
+        "part_zone_inondee_min", "h3_resolution", "persistance_courte_j", "persistance_longue_j",
+        "occurrence_eau_permanente_min", "pente_max_deg"
+      ],
+      "properties": {
+        "seuil_pluie_mm": { "type": "number", "default": 30 },
+        "seuil_db_defaut": { "type": "number", "default": -18 },
+        "seuil_db_min": { "type": "number", "default": -22 },
+        "seuil_db_max": { "type": "number", "default": -14 },
+        "baisse_min_db": { "type": "number", "default": 3 },
+        "part_zone_inondee_min": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.05 },
+        "h3_resolution": { "type": "integer", "default": 9 },
+        "persistance_courte_j": { "type": "number", "default": 6 },
+        "persistance_longue_j": { "type": "number", "default": 12 },
+        "occurrence_eau_permanente_min": { "type": "number", "default": 50 },
+        "pente_max_deg": { "type": "number", "default": 5 }
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "date", "orbite_relative", "satellite"],
+        "properties": {
+          "id": { "type": "string" },
+          "date": { "type": "string", "format": "date" },
+          "orbite_relative": { "type": "integer" },
+          "satellite": { "enum": ["S1A", "S1B", "S1C", "S1D"] }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+[
+  {
+    "evenement_id": 1,
+    "zone_id": "mock-01",
+    "surface_eau_pct": 34.5,
+    "habitants_touches": 830,
+    "batiments_touches": 110,
+    "ecoles_touchees": 1,
+    "action_suggeree": "pomper"
+  },
+  {
+    "evenement_id": 1,
+    "zone_id": "mock-02",
+    "surface_eau_pct": 21.0,
+    "habitants_touches": 650,
+    "batiments_touches": 90,
+    "ecoles_touchees": 1,
+    "action_suggeree": "recenser"
+  },
+  {
+    "evenement_id": 1,
+    "zone_id": "mock-03",
+    "surface_eau_pct": 6.2,
+    "habitants_touches": 170,
+    "batiments_touches": 20,
+    "ecoles_touchees": 0,
+    "action_suggeree": "visiter"
+  }
+]
