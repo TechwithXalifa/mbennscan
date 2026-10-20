@@ -3,9 +3,10 @@
 | Document | Fichier |
 | --- | --- |
 | Appel à candidatures SENSAT-TRL | `appel-hackathon-sensat.pdf` |
-| Cahier des charges MbënnScan | à exporter depuis le document partagé en Markdown → `cahier-des-charges.md` (et PDF) |
+| Cahier des charges MbënnScan (v1.0 du 17 octobre 2026) | `cahier-des-charges.md` |
 | Dossier de candidature envoyé (version MbënnScan finale) | à ajouter → `dossier-candidature.pdf` |
 | Note d'orientation SENSAT (reçue après sélection) | à ajouter → `note-orientation.pdf` |
+| Méthode de travail de l'équipe | `methode-de-travail.md` |
 | Journal des décisions | `DECISIONS.md` |
 | Script de la démo de 30 secondes | à écrire → `demo.md` (base : cahier des charges, section 7) |
 

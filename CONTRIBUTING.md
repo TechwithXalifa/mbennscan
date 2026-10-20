@@ -1,6 +1,6 @@
 # Contribuer à MbënnScan
 
-Trois personnes, trois jours, un seul dépôt. Ces règles servent à ne jamais se bloquer ni s'écraser.
+Trois personnes, trois jours, un seul dépôt. Ces règles servent à ne jamais se bloquer ni s'écraser. Le déroulé (comment nos parties se rejoignent, rythme de fusion, relecture) est dans [docs/methode-de-travail.md](docs/methode-de-travail.md).
 
 ## Qui fait quoi
 
