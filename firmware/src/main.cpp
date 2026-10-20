@@ -36,6 +36,7 @@ static const uint8_t  NB_VALIDES_MIN = 3;
 static const float    DIST_MIN_CM    = 20.0f;
 static const float    DIST_MAX_CM    = 600.0f;
 static const uint32_t PAUSE_LECTURE_MS = 80;
+static const int      RSSI_INCONNU = 1;   // hors plage (-120…0) : pas de mesure → envoyé en null
 
 // ── File d'attente ───────────────────────────────────────────────────────────
 static const size_t FILE_MAX = 50;
@@ -126,10 +127,14 @@ static void connecterWifi() {
 static int envoyer(const Mesure &m) {
   if (WiFi.status() != WL_CONNECTED) return -1;
 
+  char rssiTxt[8];
+  if (m.rssi == RSSI_INCONNU) strcpy(rssiTxt, "null");
+  else snprintf(rssiTxt, sizeof rssiTxt, "%d", m.rssi);
+
   char corps[128];
   snprintf(corps, sizeof corps,
-           "{\"balise_id\":\"%s\",\"distance_cm\":%.1f,\"rssi\":%d}",
-           BALISE_ID, m.distance_cm, m.rssi);
+           "{\"balise_id\":\"%s\",\"distance_cm\":%.1f,\"rssi\":%s}",
+           BALISE_ID, m.distance_cm, rssiTxt);
 
   WiFiClientSecure client;
   client.setInsecure();   // TODO(sécurité) : épingler le certificat racine avant la mise en service terrain
@@ -194,11 +199,11 @@ void setup() {
 void loop() {
   uint32_t now = millis();
 
-  // Reconnexion Wi-Fi si coupée depuis plus de 10 s
-  if (WiFi.status() != WL_CONNECTED && now - dernierWifi > 10000) {
-    Serial.println("[wifi] reconnexion…");
-    WiFi.disconnect();
-    connecterWifi();
+  // L'auto-reconnexion gère les coupures ; si le Wi-Fi reste coupé 30 s, on relance
+  if (WiFi.status() != WL_CONNECTED && now - dernierWifi > 30000) {
+    Serial.println("[wifi] toujours coupé, nouvelle tentative…");
+    WiFi.reconnect();
+    dernierWifi = now;
   }
 
   if ((int32_t)(now - prochaineMesure) >= 0) {
@@ -207,7 +212,7 @@ void loop() {
     if (isnan(d)) {
       Serial.println("[mesure] lecture invalide (hors 20–600 cm ou capteur muet), ignorée");
     } else {
-      Mesure m = { d, WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : -120 };
+      Mesure m = { d, WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : RSSI_INCONNU };
       Serial.printf("[mesure] %.1f cm, rssi %d, file %u\n", m.distance_cm, m.rssi, (unsigned)(fileTaille + 1));
       empiler(m);
     }
