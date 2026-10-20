@@ -60,6 +60,18 @@ EE_GPM = "NASA/GPM_L3/IMERG_V07"
 EE_DEM = "COPERNICUS/DEM/GLO30"
 EE_JRC = "JRC/GSW1_4/GlobalSurfaceWater"
 
+# ── Actions suggérées (contrat impacts_evenement.action_suggeree) ────────────
+ACTIONS = ("pomper", "recenser", "visiter")
+# Stagnation durable (≥ persistance_longue_j) : remontée de nappe probable, pomper seul ne suffit pas
+# (cahier des charges, section 7, E2). Le contrat n'a qu'une action par zone : « pomper » y est exclu.
+ACTIONS_EXCLUES = {"stagnation": frozenset({"pomper"})}
+
+
+def actions_permises(classe_eau: str | None) -> tuple[str, ...]:
+    """Actions que le pipeline peut suggérer pour une zone de cette classe d'eau."""
+    exclues = ACTIONS_EXCLUES.get(classe_eau, frozenset())
+    return tuple(a for a in ACTIONS if a not in exclues)
+
 
 def zone_etude_bbox(chemin: Path = ZONE_ETUDE_PATH) -> list[float]:
     """Emprise de la zone d'étude : [lon_min, lat_min, lon_max, lat_max] (ordre de run_meta)."""

@@ -35,6 +35,24 @@ def test_bbox_zone_etude():
     assert -18 < lon_min < -17 and 14 < lat_min < 15  # banlieue de Dakar
 
 
+def test_actions_alignees_sur_le_contrat():
+    with (config.RACINE / "contracts" / "schemas" / "impacts_evenement.schema.json").open(
+        encoding="utf-8"
+    ) as f:
+        enum = json.load(f)["items"]["properties"]["action_suggeree"]["enum"]
+    assert set(config.ACTIONS) == set(enum)
+
+
+def test_pas_de_pompage_en_stagnation():
+    assert "pomper" not in config.actions_permises("stagnation")
+    assert config.actions_permises("stagnation")  # il reste une action possible
+
+
+@pytest.mark.parametrize("classe", ["ruissellement", "intermediaire", None])
+def test_pompage_possible_hors_stagnation(classe):
+    assert "pomper" in config.actions_permises(classe)
+
+
 def test_lire_env_absente(monkeypatch):
     monkeypatch.delenv("EE_PROJECT", raising=False)
     with pytest.raises(RuntimeError, match="EE_PROJECT"):
