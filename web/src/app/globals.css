@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Jetons de design : cahier des charges, section 6. Mode clair uniquement. */
+:root {
+  --ink: #101828;
+  --ink-2: #475467;
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --line: #e4e7ec;
+  --primary: #0e5a8a;
+  --primary-strong: #0a4670;
+  --water: #2e90fa;
+  --water-opacity: 0.55;
+  --water-line: #175cd3;
+  --prio-high: #d92d20;
+  --prio-mid: #f79009;
+  --prio-low: #3ba55c;
+  --prio-none: #d0d5dd;
+  --ok: #12b76a;
+  --off: #98a2b3;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+  --shadow-float: 0 4px 16px rgba(16, 24, 40, 0.12);
+  --topbar-h: 56px;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
