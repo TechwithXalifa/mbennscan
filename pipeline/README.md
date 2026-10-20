@@ -21,6 +21,16 @@ pytest                            # depuis pipeline/
 ruff check . && ruff format .
 ```
 
+## Exporter vers Supabase
+
+```bash
+python -m pipeline.export --depuis contracts/mocks --sans-ecriture   # valider et convertir, sans écrire
+python -m pipeline.export --depuis contracts/mocks                   # fil de bout en bout avec les mocks [FICTIF]
+python -m pipeline.export                                            # sorties réelles (PIPELINE_OUT_DIR)
+```
+
+L'export valide d'abord le dossier avec `scripts/validate_contracts.py` et n'écrit rien s'il y a une erreur. Il remplace ensuite tout le contenu satellite (zones, synthèses, indicateurs, épisodes, impacts) : les mocks disparaissent à la première vraie sortie. Il faut `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY` dans `pipeline/.env`. `run_meta.json` reste un fichier : il n'a pas de table.
+
 ## Paramètres
 
 Tous dans `config.py`. `Parametres` reprend exactement `parametres` de `contracts/schemas/run_meta.schema.json`, avec ses valeurs par défaut : un test échoue si les deux divergent. Ajouter un paramètre recopié dans `run_meta.json` demande donc un changement de contrat.
