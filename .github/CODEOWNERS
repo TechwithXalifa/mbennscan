@@ -1,8 +1,14 @@
-# Remplacer les identifiants GitHub, puis décommenter.
 # Le propriétaire d'un dossier est demandé automatiquement en relecture.
+# La dernière règle qui correspond l'emporte : la règle générale reste en premier.
+# Plusieurs noms sur une ligne : l'approbation d'un seul suffit pour GitHub. Pour un
+# contrat, l'accord du producteur et du consommateur reste obligatoire (contracts/README.md).
 
-# /pipeline/      @github-khalifa
-# /web/           @github-aziz
-# /firmware/      @github-aboubacry
-# /supabase/      @github-aziz @github-aboubacry
-# /contracts/     @github-khalifa @github-aziz
+*               @TechwithXalifa
+
+/pipeline/      @TechwithXalifa
+/scripts/       @TechwithXalifa
+/web/           @abdlaziz221
+/firmware/      @assidikh04
+/supabase/      @abdlaziz221 @assidikh04
+/contracts/     @TechwithXalifa @abdlaziz221 @assidikh04
+/docs/          @TechwithXalifa @abdlaziz221 @assidikh04
