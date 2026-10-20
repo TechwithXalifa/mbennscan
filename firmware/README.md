@@ -7,10 +7,13 @@ ESP32 + capteur à ultrasons étanche (JSN-SR04T ou A02YYUW), PlatformIO, framew
 ```bash
 pip install platformio
 cd firmware
-pio project init --board esp32dev
 cp include/secrets.example.h include/secrets.h   # remplir Wi-Fi, URL, clé, id
-pio run -t upload && pio device monitor
+pio run -e jsn_sr04t -t upload && pio device monitor   # ou -e a02yyuw selon le capteur
 ```
+
+Un environnement par capteur (`platformio.ini`) : `jsn_sr04t` (broches TRIG 25 / ECHO 26, ECHO en 5 V → pont diviseur 1 kΩ / 2 kΩ) et `a02yyuw` (UART, RX 16 / TX 17). Compiler sans flasher : `pio run -e jsn_sr04t`.
+
+Limites connues : la tension de batterie n'est pas envoyée (`batterie_v` absent) et `rssi` part à `null` quand le Wi-Fi est coupé ; l'écran balise doit gérer ces absences.
 
 ## Comportement attendu
 
