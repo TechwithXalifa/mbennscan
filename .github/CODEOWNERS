@@ -2,13 +2,16 @@
 # La dernière règle qui correspond l'emporte : la règle générale reste en premier.
 # Plusieurs noms sur une ligne : l'approbation d'un seul suffit pour GitHub. Pour un
 # contrat, l'accord du producteur et du consommateur reste obligatoire (contracts/README.md).
+# Chaque ligne a au moins deux noms : GitHub ne compte pas l'approbation de l'auteur, donc
+# un propriétaire seul ne pourrait jamais fusionner ses propres PR. Le premier nom est le
+# propriétaire, le second son suppléant.
 
-*               @TechwithXalifa
+*               @TechwithXalifa @abdlaziz221
 
-/pipeline/      @TechwithXalifa
-/scripts/       @TechwithXalifa
-/web/           @abdlaziz221
-/firmware/      @assidikh04
+/pipeline/      @TechwithXalifa @abdlaziz221
+/scripts/       @TechwithXalifa @abdlaziz221
+/web/           @abdlaziz221 @TechwithXalifa
+/firmware/      @assidikh04 @TechwithXalifa
 /supabase/      @abdlaziz221 @assidikh04
 /contracts/     @TechwithXalifa @abdlaziz221 @assidikh04
 /docs/          @TechwithXalifa @abdlaziz221 @assidikh04
