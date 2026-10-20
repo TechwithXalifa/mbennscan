@@ -14,7 +14,7 @@ Prototype de l'équipe **fflush** pour le hackathon national « Du satellite à 
 
 | Je travaille sur | Lire |
 | --- | --- |
-| tout le projet | [`CONTRIBUTING.md`](CONTRIBUTING.md), [`CLAUDE.md`](CLAUDE.md) |
+| tout le projet | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | les formats de données | [`contracts/README.md`](contracts/README.md) |
 | le traitement satellite | [`pipeline/README.md`](pipeline/README.md) |
 | l'application | [`web/README.md`](web/README.md) |

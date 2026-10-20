@@ -65,13 +65,6 @@ C'est ce qui permet de travailler en parallèle : le web avance sur les mocks pe
 - Les clés se partagent par message privé, pas dans le dépôt.
 - Une clé publiée par erreur : la révoquer immédiatement dans Supabase, puis prévenir l'équipe.
 
-## Travailler avec Claude Code
-
-- Lancer Claude Code depuis la racine du dépôt : il lit `CLAUDE.md` automatiquement.
-- Une session = une tâche = une branche. Donner le numéro d'issue en début de session.
-- Toujours relire le diff proposé avant de commiter. Claude ne fusionne rien dans `main`.
-- Quand Claude apprend une règle utile pour tous (commande, piège, convention), l'ajouter à `CLAUDE.md` dans la PR.
-
 ## Définition de « terminé »
 
 Une tâche est terminée quand :
@@ -80,7 +73,7 @@ Une tâche est terminée quand :
 - elle fonctionne avec les mocks **et** avec les vraies données dès qu'elles existent ;
 - les états chargement, vide, erreur et hors ligne sont gérés ;
 - la CI est verte et un autre membre l'a essayée ;
-- `CLAUDE.md` et les README sont à jour si une commande ou une règle a changé.
+- les README sont à jour si une commande ou une règle a changé.
 
 ## Rythme pendant le hackathon
 

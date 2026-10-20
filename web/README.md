@@ -27,6 +27,6 @@ Ajouter au `package.json` :
 
 - Une seule couche d'accès aux données, `src/lib/data.ts`, qui lit `public/mocks/` si `NEXT_PUBLIC_USE_MOCKS=true`, sinon Supabase (clé `anon` uniquement).
 - Types dans `src/types/contracts.ts`, écrits d'après `contracts/schemas/` (ne pas inventer de champ).
-- Jetons de design de `CLAUDE.md` dans `src/app/globals.css` (variables CSS) et `tailwind.config.ts`.
+- Jetons de design du cahier des charges (section 6) dans `src/app/globals.css` (variables CSS) et `tailwind.config.ts`.
 - Écrans et parcours : cahier des charges, sections 6 et 7. Ordre : E1 carte → E2 fiche → E3 après une pluie → E5 balise → E4 avant / après → E6 méthode.
 - Tester sur téléphone (Chrome Android) à chaque PR.
