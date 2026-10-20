@@ -55,7 +55,7 @@ Les **fils de bout en bout (étape 2)** sont **la** priorité du 20 octobre, ava
 
 **Délai** : moins d'une heure en journée. Une PR qui attend bloque son auteur ; on prévient sur le groupe quand une PR attend.
 
-**Exception du hackathon** : une PR qui ne touche **que** ses propres dossiers peut être fusionnée par son auteur si la CI est verte et que personne n'a répondu en une heure, en prévenant le groupe. Les PR de contrat attendent **toujours** l'accord du producteur et du consommateur.
+**Pas de fusion sans relecture** : `main` est protégée (une approbation, dont celle du propriétaire du dossier selon `.github/CODEOWNERS`, et CI verte). Si personne ne relit dans l'heure, on relance sur le groupe plutôt que de contourner. Les PR de contrat attendent **toujours** l'accord du producteur et du consommateur.
 
 **Quoi regarder** (pas le style : la CI s'en charge) :
 
@@ -88,8 +88,8 @@ On formule : « **Bloquant :** … » (à corriger avant fusion) ou « **Suggest
 **Khalifa :**
 
 1. Inviter Aziz et Aboubacry sur `TechwithXalifa/mbennscan` avec le rôle **Maintain**.
-2. Protéger `main` (*Settings → Branches*) : PR obligatoire, 1 approbation, CI verte obligatoire, pas de push direct, historique linéaire.
-3. Remplir `.github/CODEOWNERS` avec les vrais identifiants GitHub (Aziz : `@abdlaziz221` ; Aboubacry : à demander) et le décommenter.
+2. Protéger `main` (*Settings → Branches*) : PR obligatoire, 1 approbation dont celle du propriétaire du dossier, CI verte obligatoire, pas de push direct, historique linéaire (fusion par « Squash and merge » uniquement).
+3. Remplir `.github/CODEOWNERS` avec les identifiants GitHub : `@TechwithXalifa`, `@abdlaziz221`, `@assidikh04`.
 4. Créer le tableau GitHub Projects et les issues du 20 octobre (cahier des charges, section 10).
 
 **Aziz et Aboubacry :**
