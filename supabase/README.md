@@ -22,5 +22,5 @@ Le schéma a été testé sur PostgreSQL 16 + PostGIS 3 avec les mocks : `zones_
 
 ## À faire
 
-- [ ] Edge Function `functions/mesure/index.ts` (Aboubacry) : vérifier `Authorization: Bearer <clé>` contre `balises.cle_api_hash` (SHA-256), valider le corps avec `mesure_entrante.schema.json`, insérer avec la clé `service_role`, limiter à une mesure par seconde. Réponses 201 / 400 / 401 / 429.
+- [x] Edge Function `functions/mesure/index.ts` (Aboubacry) : vérifier `Authorization: Bearer <clé>` contre `balises.cle_api_hash` (SHA-256), valider le corps avec `mesure_entrante.schema.json`, insérer avec la clé `service_role`, limiter à une mesure par seconde. Réponses 201 / 400 / 401 / 429.
 - [ ] Script d'enregistrement d'une balise (génère la clé, stocke son hachage).
