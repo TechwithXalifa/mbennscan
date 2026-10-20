@@ -87,6 +87,13 @@ def test_run_meta_conforme(tmp_path):
     assert json.loads(p.read_text(encoding="utf-8")) == meta
 
 
+def test_publier_run_meta(tmp_path):
+    cible = tmp_path / "web" / "public" / "data" / "run_meta.json"
+    assert export.publier_run_meta(MOCKS, cible) == cible
+    assert cible.read_bytes() == (MOCKS / "run_meta.json").read_bytes()
+    assert export.publier_run_meta(tmp_path, cible) is None  # dossier sans run_meta.json
+
+
 class _FauxClient:
     """Enregistre les appels table(...).delete()/insert(...)...execute()."""
 

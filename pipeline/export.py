@@ -6,7 +6,8 @@
 
 Les fichiers suivent contracts/schemas/ ; les lignes suivent supabase/schema.sql. L'écriture remplace
 tout le contenu satellite (zones, synthèses, indicateurs, épisodes, impacts) : les mocks chargés
-pour tester disparaissent dès la première vraie sortie. run_meta.json n'a pas de table.
+pour tester disparaissent dès la première vraie sortie. run_meta.json n'a pas de table : il est
+copié dans web/public/data/, où la page Méthode le lit (à commiter pour qu'il parte sur Vercel).
 """
 
 from __future__ import annotations
@@ -25,6 +26,7 @@ from pipeline import config
 
 VALIDATEUR = config.RACINE / "scripts" / "validate_contracts.py"
 TAILLE_LOT = 500
+RUN_META_WEB = config.RACINE / "web" / "public" / "data" / "run_meta.json"
 
 
 # ── Lecture et validation ────────────────────────────────────────────────────
@@ -162,6 +164,17 @@ def ecrire_supabase(client, lignes: dict[str, list[dict]]) -> None:
         print(f"  {table} : {len(rows)} ligne(s)")
 
 
+def publier_run_meta(dossier: Path, cible: Path | None = None) -> Path | None:
+    """Copie run_meta.json (déjà validé) là où la page Méthode le lit ; None s'il n'y en a pas."""
+    source = dossier / "run_meta.json"
+    if not source.exists():
+        return None
+    cible = cible or RUN_META_WEB
+    cible.parent.mkdir(parents=True, exist_ok=True)
+    cible.write_bytes(source.read_bytes())
+    return cible
+
+
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument(
@@ -179,6 +192,11 @@ def main(argv: list[str] | None = None) -> None:
         return
     print(f"Écriture dans Supabase depuis {dossier}")
     ecrire_supabase(client_supabase(), lignes)
+    cible = publier_run_meta(dossier)
+    if cible:
+        print(f"  run_meta.json copié dans {cible.relative_to(config.RACINE)} (à commiter)")
+    else:
+        print("  pas de run_meta.json : la page Méthode n'aura pas de paramètres")
 
 
 if __name__ == "__main__":

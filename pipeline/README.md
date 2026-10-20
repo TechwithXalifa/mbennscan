@@ -29,7 +29,7 @@ python -m pipeline.export --depuis contracts/mocks                   # fil de bo
 python -m pipeline.export                                            # sorties réelles (PIPELINE_OUT_DIR)
 ```
 
-L'export valide d'abord le dossier avec `scripts/validate_contracts.py` et n'écrit rien s'il y a une erreur. Il remplace ensuite tout le contenu satellite (zones, synthèses, indicateurs, épisodes, impacts) : les mocks disparaissent à la première vraie sortie. Il faut `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY` dans `pipeline/.env`. `run_meta.json` reste un fichier : il n'a pas de table.
+L'export valide d'abord le dossier avec `scripts/validate_contracts.py` et n'écrit rien s'il y a une erreur. Il remplace ensuite tout le contenu satellite (zones, synthèses, indicateurs, épisodes, impacts) : les mocks disparaissent à la première vraie sortie. Il faut `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY` dans `pipeline/.env`. `run_meta.json` n'a pas de table : l'export le copie dans `web/public/data/run_meta.json`, où la page Méthode le lit. Ce fichier est à commiter avec les vraies données pour qu'il parte sur Vercel.
 
 ## Paramètres
 
