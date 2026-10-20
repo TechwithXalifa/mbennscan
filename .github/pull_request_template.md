@@ -19,4 +19,4 @@
 - [ ] Aucune donnée inventée présentée comme réelle (les mocks restent `[FICTIF]`)
 - [ ] Web : testé sur téléphone, états chargement / vide / erreur gérés
 - [ ] Si un contrat change : schéma + mocks + `supabase/schema.sql` + accord de l'autre côté + ligne dans `docs/DECISIONS.md`
-- [ ] `CLAUDE.md` / README mis à jour si une commande ou une règle change
+- [ ] README mis à jour si une commande ou une règle change

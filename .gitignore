@@ -46,3 +46,8 @@ firmware/.pio/
 # Supabase local
 supabase/.temp/
 supabase/.branches/
+
+# Assistant de code (fichiers locaux, propres à chacun)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
