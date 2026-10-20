@@ -4,6 +4,7 @@ Une ligne par décision qui change l'architecture, un contrat ou le périmètre.
 
 | Date | Décision | Pourquoi | Qui |
 | --- | --- | --- | --- |
+| 2026-10-20 | Un suppléant par dossier dans `CODEOWNERS` (Aziz pour `pipeline/`, `scripts/` et la règle générale ; Khalifa pour `web/` et `firmware/`) | GitHub ne compte pas l'approbation de l'auteur : un propriétaire seul ne pouvait pas fusionner ses propres PR (#4 bloquée) | Khalifa |
 | 2026-10-19 | Dépôt structuré autour de contrats JSON validés en CI, mocks marqués `[FICTIF]` | Permettre au web et au pipeline d'avancer en parallèle sans se bloquer | Équipe |
 | 2026-10-19 | Zone d'étude envoyée à SENSAT-TRL : rectangle 14.715-14.835 N, 17.230-17.440 O (`data/zone_etude.geojson`) | Couvrir Keur Massar, Pikine et Guédiawaye avec une marge | Khalifa |
 | 2026-10-17 | Indicateur unique « habitants-jours sous l'eau », classement par tiers, pas de score composite | Lisible par un maire, explicable au jury | Équipe |
