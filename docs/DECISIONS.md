@@ -4,6 +4,7 @@ Une ligne par décision qui change l'architecture, un contrat ou le périmètre.
 
 | Date | Décision | Pourquoi | Qui |
 | --- | --- | --- | --- |
+| 2026-10-21 | `mesure_entrante` gagne `age_s` (entier facultatif, 0 à 86 400 s) ; la mesure est datée `ts = réception - age_s`, la file de la balise part dans l'ordre. La limite 1/s porte sur une nouvelle colonne `mesures.recu_le` (heure de réception) | Le serveur datait chaque mesure à sa réception : après une coupure Wi-Fi, la courbe était fausse et la jauge affichait d'anciens niveaux. Abandonner les anciennes mesures faisait perdre des données | Équipe |
 | 2026-10-19 | Dépôt structuré autour de contrats JSON validés en CI, mocks marqués `[FICTIF]` | Permettre au web et au pipeline d'avancer en parallèle sans se bloquer | Équipe |
 | 2026-10-19 | Zone d'étude envoyée à SENSAT-TRL : rectangle 14.715-14.835 N, 17.230-17.440 O (`data/zone_etude.geojson`) | Couvrir Keur Massar, Pikine et Guédiawaye avec une marge | Khalifa |
 | 2026-10-17 | Indicateur unique « habitants-jours sous l'eau », classement par tiers, pas de score composite | Lisible par un maire, explicable au jury | Équipe |
