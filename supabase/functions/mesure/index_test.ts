@@ -25,9 +25,9 @@ function faux(
       if (opts.echec) throw new Error("base indisponible");
       return Promise.resolve((opts.hash ?? { "bal-01": HASH })[id] ?? null);
     },
-    dernierTs: () => Promise.resolve(opts.dernier ?? null),
-    inserer: (m) => {
-      inserees.push(m);
+    dernierRecu: () => Promise.resolve(opts.dernier ?? null),
+    inserer: (m, ts) => {
+      inserees.push({ ...m, ts: ts.getTime() });
       return Promise.resolve();
     },
   };
@@ -47,16 +47,48 @@ const requete = (corps: unknown, cle: string | null = CLE, methode = "POST") =>
 
 const OK = { balise_id: "bal-01", distance_cm: 37.4 };
 
-Deno.test("201 : mesure valide enregistrée (champs facultatifs à null)", async () => {
+Deno.test("201 : mesure valide enregistrée, datée à la réception sans age_s", async () => {
+  const t = 1_000_000;
   const { acces, inserees } = faux();
-  const r = await traiter(requete({ ...OK, rssi: null }), acces);
+  const r = await traiter(requete({ ...OK, rssi: null }), acces, t);
   assertEquals(r.status, 201);
   assertEquals(inserees, [{
     balise_id: "bal-01",
     distance_cm: 37.4,
     batterie_v: null,
     rssi: null,
+    ts: t,
   }]);
+});
+
+Deno.test("201 : age_s antidate la mesure (ts = réception - age_s)", async () => {
+  const t = 10_000_000;
+  const { acces, inserees } = faux();
+  const r = await traiter(requete({ ...OK, age_s: 90 }), acces, t);
+  assertEquals(r.status, 201);
+  assertEquals((inserees[0] as { ts: number }).ts, t - 90_000);
+  assertEquals("age_s" in (inserees[0] as object), false); // age_s n'est pas une colonne
+});
+
+Deno.test("429 : la limite 1/s porte sur la réception, pas sur la date de la mesure", async () => {
+  // Une mesure antidatée de 1 h ne doit pas permettre de contourner la limite :
+  // `dernier` est l'heure de réception de la mesure précédente (400 ms plus tôt).
+  const t = 10_000_000;
+  const { acces, inserees } = faux({ dernier: t - 400 });
+  const r = await traiter(requete({ ...OK, age_s: 3600 }), acces, t);
+  assertEquals(r.status, 429);
+  assertEquals(inserees.length, 0);
+});
+
+Deno.test("400 : age_s négatif, décimal, trop grand ou texte", async () => {
+  const { acces } = faux();
+  for (const age_s of [-1, 1.5, 86401, "10", null]) {
+    assertEquals((await traiter(requete({ ...OK, age_s }), acces)).status, 400);
+  }
+  assertEquals(
+    (await traiter(requete({ ...OK, age_s: 86400 }), acces)).status,
+    201,
+  );
 });
 
 Deno.test("405 : GET refusé", async () => {
@@ -149,4 +181,8 @@ Deno.test("validerMesure : bornes de batterie_v et de distance_cm", () => {
     false,
   );
   assertEquals(validerMesure([]).ok, false);
+  const v = validerMesure({ ...OK, age_s: 5 });
+  assertEquals(v.ok && v.mesure.age_s, 5);
+  const v0 = validerMesure(OK);
+  assertEquals(v0.ok && v0.mesure.age_s, 0);
 });

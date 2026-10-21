@@ -7,11 +7,12 @@
   "items": {
     "type": "object",
     "additionalProperties": false,
-    "required": ["id", "balise_id", "ts", "distance_cm", "niveau_cm", "batterie_v", "rssi"],
+    "required": ["id", "balise_id", "ts", "recu_le", "distance_cm", "niveau_cm", "batterie_v", "rssi"],
     "properties": {
       "id": { "type": "integer", "minimum": 1 },
       "balise_id": { "type": "string", "pattern": "^bal-[0-9]{2}$" },
       "ts": { "type": "string", "format": "date-time" },
+      "recu_le": { "type": "string", "format": "date-time", "description": "Heure de réception par le serveur ; ts = recu_le - age_s" },
       "distance_cm": { "type": "number", "minimum": 20, "maximum": 600 },
       "niveau_cm": { "type": ["number", "null"], "description": "Peut être négatif si la balise est mal étalonnée : l'afficher à 0 et signaler l'anomalie" },
       "batterie_v": { "type": ["number", "null"] },

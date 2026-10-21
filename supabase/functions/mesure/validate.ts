@@ -6,13 +6,16 @@ export type MesureEntrante = {
   distance_cm: number;
   batterie_v: number | null;
   rssi: number | null;
+  /** Secondes écoulées depuis la mesure ; 0 si absent. */
+  age_s: number;
 };
 
 export type Validation =
   | { ok: true; mesure: MesureEntrante }
   | { ok: false; erreur: string };
 
-const CHAMPS_PERMIS = new Set(["balise_id", "distance_cm", "batterie_v", "rssi"]);
+const CHAMPS_PERMIS = new Set(["balise_id", "distance_cm", "batterie_v", "rssi", "age_s"]);
+const AGE_MAX_S = 86400; // 24 h
 
 const refus = (erreur: string): Validation => ({ ok: false, erreur });
 
@@ -50,5 +53,13 @@ export function validerMesure(corps: unknown): Validation {
     rssi = c.rssi;
   }
 
-  return { ok: true, mesure: { balise_id: c.balise_id, distance_cm: c.distance_cm, batterie_v, rssi } };
+  let age_s = 0;
+  if (c.age_s !== undefined) {
+    if (!nombreDans(c.age_s, 0, AGE_MAX_S) || !Number.isInteger(c.age_s)) {
+      return refus(`age_s doit être un entier entre 0 et ${AGE_MAX_S}`);
+    }
+    age_s = c.age_s;
+  }
+
+  return { ok: true, mesure: { balise_id: c.balise_id, distance_cm: c.distance_cm, batterie_v, rssi, age_s } };
 }
