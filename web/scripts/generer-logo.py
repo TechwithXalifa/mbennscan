@@ -1,7 +1,7 @@
 """Génère les fichiers du logo MbënnScan (SVG, PNG, favicon, icônes d'app).
 
-Pictogramme : un hexagone (rappel des mailles de calcul) contenant une vague d'eau.
-Logotype : Inter Semibold, « Mbënn » en encre, « Scan » en bleu primaire (cahier des charges, section Identité).
+Pictogramme : une goutte faite de pixels d'image satellite ; les pixels pleins du bas sont l'eau détectée.
+Logotype : Inter Semibold, « Mbënn » en encre, « Scan » en bleu primaire.
 
 Usage : pip install fonttools cairosvg pillow && python web/scripts/generer-logo.py [chemin/Inter-SemiBold.otf]
 """
@@ -17,49 +17,39 @@ from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
 from PIL import Image
 
-ENCRE, PRIMAIRE, BLANC = "#101828", "#0E5A8A", "#FFFFFF"
+ENCRE, PRIMAIRE, CLAIR, BLANC = "#101828", "#0E5A8A", "#7FA9C6", "#FFFFFF"
 POLICE = sys.argv[1] if len(sys.argv) > 1 else "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf"
 WEB = Path(__file__).resolve().parents[1]
 BRAND, APP = WEB / "public" / "brand", WEB / "src" / "app"
 
 
-def hexagone(cx=32, cy=32, r=30, arrondi=4):
-    """Hexagone pointe en haut, coins arrondis, en chemin SVG."""
-    pts = [(cx + r * math.cos(math.radians(a)), cy + r * math.sin(math.radians(a))) for a in range(-90, 270, 60)]
-    d = []
-    for i, (x, y) in enumerate(pts):
-        (px, py), (nx, ny) = pts[i - 1], pts[(i + 1) % 6]
-        k = arrondi / r
-        a = (x + (px - x) * k, y + (py - y) * k)
-        b = (x + (nx - x) * k, y + (ny - y) * k)
-        d.append(f"{'M' if i == 0 else 'L'}{a[0]:.2f} {a[1]:.2f}Q{x:.2f} {y:.2f} {b[0]:.2f} {b[1]:.2f}")
-    return "".join(d) + "Z"
+# Demi-largeur de chaque rangée de pixels (en cases, autour de la colonne centrale) et rangée où commence l'eau.
+GOUTTES = {
+    "normal": ([0, 0, 1, 1, 2, 2, 3, 4, 5, 5, 5, 4, 3], 7),
+    "petit": ([0, 1, 1, 2, 2, 2, 1], 4),
+}
 
 
-def vague(y, x0=16, x1=48, amp=2.8, ep=5, n=48):
-    """Vague sur deux périodes, contournée en forme pleine (trait de largeur ep, bouts ronds)."""
-    pts = []
-    for i in range(n + 1):
-        t = i / n
-        a = 4 * math.pi * t
-        dy = -amp * 4 * math.pi / (x1 - x0) * math.cos(a)  # pente dy/dx
-        nx, ny = -dy / math.hypot(1, dy), 1 / math.hypot(1, dy)
-        pts.append((x0 + (x1 - x0) * t, y - amp * math.sin(a), nx, ny))
-    h = ep / 2
-    haut = [f"{x + nx * -h:.2f} {yy + ny * -h:.2f}" for x, yy, nx, ny in pts]
-    bas = [f"{x + nx * h:.2f} {yy + ny * h:.2f}" for x, yy, nx, ny in reversed(pts)]
-    return f"M{haut[0]}L{'L'.join(haut[1:])}A{h} {h} 0 0 1 {bas[0]}L{'L'.join(bas[1:])}A{h} {h} 0 0 1 {haut[0]}Z"
+def picto(couleur, sec=None, taille="normal"):
+    """Pictogramme 64x64 : une goutte faite de pixels d'image satellite.
 
-
-VAGUES = {"normal": [vague(26), vague(38)], "petit": [vague(32, 13, 51, 4.5, 9)]}
-
-
-def picto(couleur, vagues=BLANC, taille="normal", decoupe=False):
-    """Pictogramme 64x64. decoupe=True : vagues évidées (monochrome, une seule couleur)."""
-    v = "".join(VAGUES[taille])
-    if decoupe:
-        return f'<path d="{hexagone()}{v}" fill="{couleur}" fill-rule="evenodd"/>'
-    return f'<path d="{hexagone()}" fill="{couleur}"/><path d="{v}" fill="{vagues}"/>'
+    Les pixels du bas, pleins, sont l'eau détectée ; ceux du haut, plus petits, le reste de l'image.
+    sec : couleur des pixels du haut (par défaut la même, pour les versions monochromes).
+    """
+    rangees, eau = GOUTTES[taille]
+    n = len(rangees)
+    petit = taille == "petit"
+    c = 8 if petit else 60 / n  # en petit, cases de 2 px pile à 16 px, sans espace
+    haut = (64 - n * c) / 2
+    rects = []
+    for r, demi in enumerate(rangees):
+        for k in range(-demi, demi + 1):
+            mouille = r >= eau
+            m = 0 if petit else c * (0.08 if mouille else 0.17)
+            x, y = 32 + (k - 0.5) * c + m, haut + r * c + m
+            fill = "" if mouille or not sec else f' fill="{sec}"'
+            rects.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{c - 2 * m:.2f}" height="{c - 2 * m:.2f}" rx="{0 if petit else c * 0.18:.2f}"{fill}/>')
+    return f'<g fill="{couleur}">{"".join(rects)}</g>'
 
 
 def texte(police, mot, x, base, taille):
@@ -95,9 +85,9 @@ def png(src, chemin, largeur):
 def main():
     police = TTFont(POLICE)
     pictos = {
-        "couleur": picto(PRIMAIRE),
-        "noir": picto(ENCRE, decoupe=True),
-        "blanc": picto(BLANC, decoupe=True),
+        "couleur": picto(PRIMAIRE, CLAIR),
+        "noir": picto(ENCRE),
+        "blanc": picto(BLANC),
     }
     logos = {
         "couleur": logo(police, ENCRE, PRIMAIRE, pictos["couleur"]),
@@ -116,8 +106,8 @@ def main():
             w = int(src.split('width="')[1].split('"')[0])
             png(src, BRAND / "png" / f"logo-{nom}-{h}.png", w * h // 64)
 
-    # Petites tailles : une seule vague épaisse, monochrome primaire.
-    favicon = svg(picto(PRIMAIRE, taille="petit", decoupe=True))
+    # Petites tailles : moins de pixels, calés sur la grille de 16 px.
+    favicon = svg(picto(PRIMAIRE, CLAIR, taille="petit"))
     (APP / "icon.svg").write_text(favicon)
     images = [Image.open(io.BytesIO(cairosvg.svg2png(bytestring=favicon.encode(), output_width=t))) for t in (16, 32, 48)]
     images[-1].save(APP / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)], append_images=images[:-1])
@@ -125,7 +115,7 @@ def main():
     # Icônes d'app : pictogramme blanc sur carré primaire, avec marge (zone sûre des icônes masquables).
     def icone(marge):
         s = 64 * (1 - 2 * marge)
-        return svg(f'<rect width="64" height="64" fill="{PRIMAIRE}"/><g transform="translate({64 * marge} {64 * marge}) scale({s / 64})">{picto(BLANC, decoupe=True)}</g>')
+        return svg(f'<rect width="64" height="64" fill="{PRIMAIRE}"/><g transform="translate({64 * marge} {64 * marge}) scale({s / 64})">{picto(BLANC)}</g>')
 
     png(icone(0.14), APP / "apple-icon.png", 180)
     png(icone(0.14), BRAND / "icone-192.png", 192)
