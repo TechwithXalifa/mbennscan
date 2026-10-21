@@ -1,87 +1,93 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { getZones, USE_MOCKS } from "@/lib/data";
-import { formatDate, formatNombre } from "@/lib/format";
+import { Droplets, Waves, type LucideIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { formatNombre } from "@/lib/format";
 import { FOND_PRIORITE, LIBELLE_PRIORITE } from "@/lib/priorite";
-import type { ZoneSynthese } from "@/types/contracts";
+import type { ClasseEau, ZoneSynthese } from "@/types/contracts";
 
-type Etat = { statut: "chargement" } | { statut: "erreur"; message: string } | { statut: "ok"; zones: ZoneSynthese[] };
+const TYPE_EAU: Record<ClasseEau, { libelle: string; Icone: LucideIcon }> = {
+  ruissellement: { libelle: "Ruissellement", Icone: Waves },
+  intermediaire: { libelle: "Intermédiaire", Icone: Waves },
+  stagnation: { libelle: "Stagnation durable", Icone: Droplets },
+};
 
-export function ListeZones() {
-  const [etat, setEtat] = useState<Etat>({ statut: "chargement" });
+type Props = {
+  zones: ZoneSynthese[];
+  selection: string | null;
+  onSelection: (id: string) => void;
+};
 
-  const charger = useCallback(() => {
-    setEtat({ statut: "chargement" });
-    getZones()
-      .then((geo) => {
-        const zones = geo.features
-          .map((f) => f.properties)
-          .filter((z) => z.rang !== null)
-          .sort((a, b) => (a.rang ?? 0) - (b.rang ?? 0))
-          .slice(0, 10);
-        setEtat({ statut: "ok", zones });
-      })
-      .catch((e: unknown) => setEtat({ statut: "erreur", message: e instanceof Error ? e.message : String(e) }));
-  }, []);
+/** Top 10 des zones classées, filtrable par commune. Alternative accessible à la carte. */
+export function ListeZones({ zones, selection, onSelection }: Props) {
+  const [commune, setCommune] = useState<string | null>(null);
 
-  useEffect(charger, [charger]);
+  const classees = useMemo(
+    () => zones.filter((z) => z.rang !== null).sort((a, b) => (a.rang ?? 0) - (b.rang ?? 0)),
+    [zones],
+  );
+  const communes = useMemo(() => Array.from(new Set(classees.map((z) => z.commune))).sort(), [classees]);
+  const top = classees.filter((z) => !commune || z.commune === commune).slice(0, 10);
+
+  if (classees.length === 0) return <p className="py-4">Aucune eau détectée dans les zones calculées.</p>;
 
   return (
-    <section className="mt-6 rounded-md border border-line bg-surface p-4">
-      <h2 className="text-titre2">Zones à traiter en premier</h2>
-      <p className="text-petit text-ink-2">Source : {USE_MOCKS ? "données factices [FICTIF]" : "Supabase"}</p>
-
-      {etat.statut === "chargement" && (
-        <ul className="mt-4 space-y-2" aria-busy="true" aria-label="Chargement des zones">
-          {[0, 1, 2].map((i) => (
-            <li key={i} className="h-cible animate-pulse rounded-sm bg-line" />
+    <>
+      {communes.length > 1 && (
+        <div
+          className="-mx-1 flex gap-2 group-data-[apercu=true]:hidden lg:group-data-[apercu=true]:flex overflow-x-auto px-1 py-2"
+          role="group"
+          aria-label="Filtrer par commune"
+        >
+          {[null, ...communes].map((c) => (
+            <button
+              key={c ?? "toutes"}
+              type="button"
+              aria-pressed={commune === c}
+              onClick={() => setCommune(c)}
+              className="min-h-cible shrink-0 rounded-pill border border-line px-3 text-petit aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-surface"
+            >
+              {c ?? "Toutes"}
+            </button>
           ))}
-        </ul>
-      )}
-
-      {etat.statut === "erreur" && (
-        <div className="mt-4" role="alert">
-          <p>Impossible de charger les zones : {etat.message}</p>
-          <button
-            type="button"
-            onClick={charger}
-            className="mt-2 min-h-cible rounded-sm bg-primary px-4 text-surface hover:bg-primary-strong"
-          >
-            Réessayer
-          </button>
         </div>
       )}
-
-      {etat.statut === "ok" && etat.zones.length === 0 && (
-        <p className="mt-4">Aucune eau détectée dans les zones calculées.</p>
-      )}
-
-      {etat.statut === "ok" && etat.zones.length > 0 && (
-        <>
-          <ol className="mt-4 divide-y divide-line">
-            {etat.zones.map((z) => (
-              <li key={z.id} className="flex min-h-cible items-center gap-3 py-2">
+      <ol className="divide-y divide-line">
+        {top.map((z) => {
+          const eau = z.classe_eau ? TYPE_EAU[z.classe_eau] : null;
+          return (
+            <li key={z.id}>
+              <button
+                type="button"
+                onClick={() => onSelection(z.id)}
+                aria-current={selection === z.id || undefined}
+                className="flex min-h-cible w-full items-center gap-3 py-2 text-left hover:bg-bg aria-[current]:bg-bg"
+              >
                 <span className="w-6 text-right tabular-nums text-ink-2">{z.rang}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">{z.nom}</p>
-                  <p className="text-petit text-ink-2">{z.commune}</p>
-                </div>
-                <div className="text-right">
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-medium">{z.nom}</span>
+                  <span className="block truncate text-petit text-ink-2">{z.commune}</span>
+                  {eau && (
+                    <span className="flex items-center gap-1 text-petit text-ink-2">
+                      <eau.Icone size={16} strokeWidth={1.75} aria-hidden />
+                      {eau.libelle}
+                    </span>
+                  )}
+                </span>
+                <span className="text-right">
                   <span className="inline-flex items-center gap-1.5 rounded-sm border border-line px-2 text-petit">
                     <span className={`size-2 rounded-pill ${FOND_PRIORITE[z.priorite]}`} aria-hidden />
                     {LIBELLE_PRIORITE[z.priorite]}
                   </span>
-                  <p className="text-petit tabular-nums text-ink-2">
+                  <span className="block text-petit tabular-nums text-ink-2">
                     {formatNombre(Math.round(z.habitants_jours_an))} hab.-jours/an
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-3 text-mention text-ink-2">Calcul du {formatDate(etat.zones[0].maj)}</p>
-        </>
-      )}
-    </section>
+                  </span>
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </>
   );
 }

@@ -173,8 +173,17 @@ export default function CarteZones({ zones, selection = null, onSelection }: Pro
     if (!prete || !map) return;
     // MapLibre exige un id pour effacer une clé d'état : on n'efface que l'ancienne sélection.
     if (selPrecedente.current) map.removeFeatureState({ source: "zones", id: selPrecedente.current }, "selection");
-    if (selection) map.setFeatureState({ source: "zones", id: selection }, { selection: true });
     selPrecedente.current = selection;
+    if (!selection) return;
+    map.setFeatureState({ source: "zones", id: selection }, { selection: true });
+    // Choix depuis la liste : centrer la zone si elle est hors de la vue.
+    const anneau = zones.features.find((f) => f.properties.id === selection)?.geometry.coordinates[0];
+    if (!anneau) return;
+    const centre: [number, number] = [
+      anneau.reduce((s, p) => s + p[0], 0) / anneau.length,
+      anneau.reduce((s, p) => s + p[1], 0) / anneau.length,
+    ];
+    if (!map.getBounds().contains(centre)) map.easeTo({ center: centre, zoom: Math.max(map.getZoom(), 14) });
   }, [prete, selection, zones]);
 
   // La feuille de style MapLibre impose position: relative au conteneur, d'où l'enveloppe.
