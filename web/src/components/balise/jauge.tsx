@@ -23,7 +23,7 @@ export function Jauge({ niveauCm, hauteurCm, seuilCm }: Props) {
       className="relative h-64 w-28 overflow-hidden rounded-md border-2 border-ink-2 bg-surface"
     >
       <div
-        className={`absolute inset-x-0 bottom-0 transition-[height] duration-700 ${depasse ? "bg-prio-high" : "bg-water"}`}
+        className="absolute inset-x-0 bottom-0 bg-water transition-[height] duration-700"
         style={{ height: `${pct(niveauCm)}%`, opacity: depasse ? 0.85 : 0.55 }}
       />
       {seuilCm !== null && (

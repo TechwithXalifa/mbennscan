@@ -31,7 +31,12 @@ export function VueBalise({ id }: { id: string }) {
   }, [id]);
 
   useEffect(charger, [charger]);
-  useEffect(() => abonnerMesures(id, setDerniere), [id]);
+  // Après une coupure, la file arrive dans le désordre : on ne garde que la mesure la plus récente.
+  useEffect(
+    () =>
+      abonnerMesures(id, (m) => setDerniere((prev) => (!prev || Date.parse(m.ts) > Date.parse(prev.ts) ? m : prev))),
+    [id],
+  );
   useEffect(() => {
     const t = setInterval(() => setMaintenant(Date.now()), 1000);
     return () => clearInterval(t);
