@@ -85,3 +85,15 @@ Logotype en Inter Semibold : « Mbënn » en `--ink`, « Scan » en `--primary`.
 | `Pastille` | Filtre à bascule | `active` se traduit en `aria-pressed`. |
 | `ControleSegmente` | Sélecteur de mode, bascule de graphique | Groupe radio, flèches gauche / droite. |
 | `Squelette` | Chargement | Reprend la forme du contenu ; le conteneur porte `aria-busy`. |
+| `Infobulle` | Bouton « i » et explication courte | S'ouvre au toucher, se ferme avec Échap ou un clic ailleurs. |
+| `ChiffreCle` | Valeur principale d'une fiche | Toujours une phrase d'explication ; `mot` pour une valeur en lettres. |
+| `AlerteErreur` | Erreur réseau | Message et « Réessayer ». |
+| `EtatVide` | Rien à montrer | Une phrase : « Aucune eau détectée dans cette zone sur cette image. » |
+| `Bandeau` | Fraîcheur de l'image ; `horsLigne` | « Image radar Sentinel-1 du 6 octobre 2026 » sous chaque vue qui en dépend. |
+| `PastilleEtat` | Balise en ligne / hors ligne | Point `--ok` / `--off` et texte (« Dernière mesure il y a 5 min »). |
+
+Composants métier existants : `BadgePriorite` et `IndicateurConfiance` (`components/zone/badges.tsx`), `Legende` et `PanneauZones` (`components/carte/`).
+
+## États de chaque écran
+
+Chargement (`Squelette`), vide (`EtatVide`), erreur réseau (`AlerteErreur`), hors ligne (`Bandeau horsLigne` : « Vous êtes hors ligne : données du 17 octobre affichées. »), balise muette depuis plus de 2 minutes (`PastilleEtat enLigne={false}`).
