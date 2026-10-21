@@ -3,21 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { getZones, USE_MOCKS } from "@/lib/data";
 import { formatDate, formatNombre } from "@/lib/format";
-import type { Priorite, ZoneSynthese } from "@/types/contracts";
-
-const LIBELLE_PRIORITE: Record<Priorite, string> = {
-  forte: "Priorité forte",
-  moyenne: "Priorité moyenne",
-  faible: "Priorité faible",
-  nulle: "Pas d'eau observée",
-};
-
-const COULEUR_PRIORITE: Record<Priorite, string> = {
-  forte: "bg-prio-high",
-  moyenne: "bg-prio-mid",
-  faible: "bg-prio-low",
-  nulle: "bg-prio-none",
-};
+import { FOND_PRIORITE, LIBELLE_PRIORITE } from "@/lib/priorite";
+import type { ZoneSynthese } from "@/types/contracts";
 
 type Etat = { statut: "chargement" } | { statut: "erreur"; message: string } | { statut: "ok"; zones: ZoneSynthese[] };
 
@@ -82,7 +69,7 @@ export function ListeZones() {
                 </div>
                 <div className="text-right">
                   <span className="inline-flex items-center gap-1.5 rounded-sm border border-line px-2 text-petit">
-                    <span className={`size-2 rounded-pill ${COULEUR_PRIORITE[z.priorite]}`} aria-hidden />
+                    <span className={`size-2 rounded-pill ${FOND_PRIORITE[z.priorite]}`} aria-hidden />
                     {LIBELLE_PRIORITE[z.priorite]}
                   </span>
                   <p className="text-petit tabular-nums text-ink-2">

@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
+import { Legende } from "@/components/carte/legende";
 import { getZones, USE_MOCKS } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import type { ZonesGeoJSON } from "@/types/contracts";
@@ -57,6 +58,7 @@ export function VueCarte() {
           Aucune zone calculée pour l&apos;instant.
         </p>
       )}
+      <Legende />
       <p className="absolute left-3 right-14 top-3 z-10 w-fit rounded-sm bg-surface px-2 py-1 text-mention text-ink-2 shadow-float">
         {sousTitre}
       </p>

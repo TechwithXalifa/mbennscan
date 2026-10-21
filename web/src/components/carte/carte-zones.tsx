@@ -21,6 +21,24 @@ function couleur(variable: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
 }
 
+/** Motif de hachures diagonales pour signaler une confiance moyenne ou faible. */
+function hachures(opacite: number): ImageData {
+  const taille = 8;
+  const ctx = document.createElement("canvas").getContext("2d")!;
+  ctx.canvas.width = ctx.canvas.height = taille;
+  ctx.strokeStyle = `rgba(16, 24, 40, ${opacite})`;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(0, taille);
+  ctx.lineTo(taille, 0);
+  ctx.moveTo(-taille / 2, taille / 2);
+  ctx.lineTo(taille / 2, -taille / 2);
+  ctx.moveTo(taille / 2, taille * 1.5);
+  ctx.lineTo(taille * 1.5, taille / 2);
+  ctx.stroke();
+  return ctx.getImageData(0, 0, taille, taille);
+}
+
 type Props = {
   zones: ZonesGeoJSON;
   selection?: string | null;
@@ -51,6 +69,8 @@ export default function CarteZones({ zones, selection = null, onSelection }: Pro
     let survol: string | number | undefined;
 
     map.on("load", () => {
+      map.addImage("hachures-legeres", hachures(0.25));
+      map.addImage("hachures-fortes", hachures(0.55));
       map.addSource("zones", { type: "geojson", data: { type: "FeatureCollection", features: [] }, promoteId: "id" });
       const priorites: Priorite[] = ["forte", "moyenne", "faible", "nulle"];
       map.addLayer({
@@ -68,10 +88,26 @@ export default function CarteZones({ zones, selection = null, onSelection }: Pro
         },
       });
       map.addLayer({
+        id: "zones-hachures",
+        type: "fill",
+        source: "zones",
+        filter: ["!=", ["get", "confiance"], "elevee"],
+        paint: {
+          "fill-pattern": ["match", ["get", "confiance"], "faible", "hachures-fortes", "hachures-legeres"],
+        },
+      });
+      map.addLayer({
         id: "zones-contour",
         type: "line",
         source: "zones",
         paint: { "line-color": "#ffffff", "line-width": 1 },
+      });
+      map.addLayer({
+        id: "zones-contour-faible",
+        type: "line",
+        source: "zones",
+        filter: ["==", ["get", "confiance"], "faible"],
+        paint: { "line-color": couleur("--ink"), "line-width": 1, "line-dasharray": [2, 2] },
       });
       map.addLayer({
         id: "zones-etat",
