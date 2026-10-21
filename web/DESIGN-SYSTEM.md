@@ -1,6 +1,6 @@
 # Design system MbënnScan
 
-Source : cahier des charges, sections 6 et 7. Les jetons vivent dans `src/app/globals.css` (variables CSS) et sont exposés par `tailwind.config.ts`. Ne jamais écrire une couleur, une taille ou une ombre en dur dans un composant.
+Source : cahier des charges, sections 6 et 7. Catalogue vivant : `/design-system` (non référencé). Les jetons vivent dans `src/app/globals.css` (variables CSS) et sont exposés par `tailwind.config.ts`. Ne jamais écrire une couleur, une taille ou une ombre en dur dans un composant.
 
 ## Principes
 
@@ -97,3 +97,5 @@ Composants métier existants : `BadgePriorite` et `IndicateurConfiance` (`compon
 ## États de chaque écran
 
 Chargement (`Squelette`), vide (`EtatVide`), erreur réseau (`AlerteErreur`), hors ligne (`Bandeau horsLigne` : « Vous êtes hors ligne : données du 17 octobre affichées. »), balise muette depuis plus de 2 minutes (`PastilleEtat enLigne={false}`).
+
+Fichiers du logo : `public/brand/` (couleur, noir `#101828`, blanc ; règles d'usage dans `public/brand/README.md`). En-tête : `/brand/logo-couleur.svg`. Sous 24 px, pictogramme seul.
