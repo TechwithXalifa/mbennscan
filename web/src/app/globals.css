@@ -2,8 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Jetons de design : cahier des charges, section 6. Mode clair uniquement. */
+/*
+ * Jetons de design : cahier des charges, section 6. Mode clair uniquement.
+ * Documentation : web/DESIGN-SYSTEM.md.
+ */
 :root {
+  /* Couleurs */
   --ink: #101828;
   --ink-2: #475467;
   --bg: #f7f8fa;
@@ -20,12 +24,24 @@
   --prio-none: #d0d5dd;
   --ok: #12b76a;
   --off: #98a2b3;
+  /* Texte posé sur une couleur pleine : blanc sur primaire et priorité forte, encre ailleurs. */
+  --on-color: #ffffff;
+  --zone-opacity: 0.6;
 
+  /* Formes */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-pill: 999px;
   --shadow-float: 0 4px 16px rgba(16, 24, 40, 0.12);
+
+  /* Mise en page */
   --topbar-h: 56px;
+  --panneau-w: 400px;
+  --apercu-h: 140px;
+  --lecture-w: 680px;
+
+  /* Mouvement (coupé si l'utilisateur réduit les animations) */
+  --duree: 150ms;
 }
 
 html {
@@ -43,6 +59,16 @@ body {
 :focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+
+@layer utilities {
+  /* Hachures de confiance (la couleur n'est jamais seule) */
+  .hachures-moyenne {
+    background-image: repeating-linear-gradient(135deg, var(--ink-2) 0 1px, transparent 1px 4px);
+  }
+  .hachures-faible {
+    background-image: repeating-linear-gradient(135deg, var(--ink) 0 1.5px, transparent 1.5px 3px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

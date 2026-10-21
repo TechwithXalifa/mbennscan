@@ -38,7 +38,7 @@ src/
 - Une seule couche d'accès aux données, `src/lib/data.ts`, qui lit `public/mocks/` si `NEXT_PUBLIC_USE_MOCKS=true`, sinon Supabase (clé `anon` uniquement, client chargé à la demande). Elle est appelée depuis le navigateur.
 - `run_meta` n'est pas dans Supabase : hors mocks, la page Méthode le lit dans `public/data/run_meta.json`.
 - Types dans `src/types/contracts.ts`, écrits d'après `contracts/schemas/` (ne pas inventer de champ).
-- Jetons de design du cahier des charges (section 6) dans `src/app/globals.css` (variables CSS) et `tailwind.config.ts` (`text-ink`, `bg-prio-high`, `text-titre1`, `min-h-cible`…).
+- Design system : `DESIGN-SYSTEM.md`. Jetons du cahier des charges (section 6) dans `src/app/globals.css` (variables CSS) et `tailwind.config.ts` (`text-ink`, `bg-prio-high`, `text-titre1`, `min-h-cible`…).
 - Écrans et parcours : cahier des charges, sections 6 et 7. Ordre : E1 carte → E2 fiche → E3 après une pluie → E5 balise → E4 avant / après → E6 méthode.
 - Tester sur téléphone (Chrome Android) à chaque PR.
 
