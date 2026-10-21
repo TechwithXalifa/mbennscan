@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowLeft } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 import { Legende } from "@/components/carte/legende";
@@ -14,6 +15,9 @@ const CarteZones = dynamic(() => import("@/components/carte/carte-zones"), {
   ssr: false,
   loading: () => <div className="absolute inset-0 animate-pulse bg-line" aria-label="Chargement de la carte" />,
 });
+
+// La fiche n'est chargée qu'au premier clic sur une zone.
+const FicheZone = dynamic(() => import("@/components/zone/fiche-zone").then((m) => m.FicheZone));
 
 type Etat = { statut: "chargement" } | { statut: "erreur"; message: string } | { statut: "ok"; zones: ZonesGeoJSON };
 
@@ -62,8 +66,25 @@ export function VueCarte() {
           {fraicheur || "Keur Massar · hivernages 2020-2026"}
         </p>
       </div>
-      <PanneauZones sousTitre="Keur Massar · hivernages 2020-2026">
-        {etat.statut === "ok" ? (
+      <PanneauZones
+        sousTitre="Keur Massar · hivernages 2020-2026"
+        ouvrirSur={selection}
+        entete={
+          selection && (
+            <button
+              type="button"
+              onClick={() => setSelection(null)}
+              className="mx-4 inline-flex min-h-cible items-center gap-2 text-primary lg:mt-2"
+            >
+              <ArrowLeft size={20} strokeWidth={1.75} aria-hidden />
+              Zones à traiter en premier
+            </button>
+          )
+        }
+      >
+        {selection ? (
+          <FicheZone key={selection} id={selection} />
+        ) : etat.statut === "ok" ? (
           <ListeZones
             zones={etat.zones.features.map((f) => f.properties)}
             selection={selection}

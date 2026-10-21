@@ -79,3 +79,17 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Fiche zone imprimée sur une page A4 */
+@page {
+  size: A4;
+  margin: 15mm;
+}
+
+@media print {
+  body {
+    background: #fff;
+    font-size: 12px;
+    line-height: 18px;
+  }
+}

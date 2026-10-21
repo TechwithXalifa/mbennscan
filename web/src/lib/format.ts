@@ -18,6 +18,14 @@ export function formatPourcent(fraction: number): string {
   return pourcent.format(fraction);
 }
 
+/** « il y a 4 s », « il y a 5 min », « il y a 2 h », « il y a 3 j ». */
+export function formatDepuis(secondes: number): string {
+  if (secondes < 60) return `il y a ${Math.floor(secondes)} s`;
+  if (secondes < 3600) return `il y a ${Math.floor(secondes / 60)} min`;
+  if (secondes < 86400) return `il y a ${Math.floor(secondes / 3600)} h`;
+  return `il y a ${Math.floor(secondes / 86400)} j`;
+}
+
 /** « 6 octobre 2026 » à partir d'une date ISO. */
 export function formatDate(iso: string): string {
   return date.format(new Date(iso));
