@@ -45,3 +45,23 @@ def test_borner_suit_les_parametres():
 def test_dates_demo_sur_l_orbite_retenue():
     assert eau.ORBITE_DEMO == 133
     assert eau.DATES_DEMO == ("2026-10-06", "2026-10-12", "2026-10-18")
+
+
+def test_type_de_lieu():
+    from pipeline import validation
+
+    assert validation.type_de_lieu([2019, 2020], 0.9) == "bord de lac ou cuvette"
+    assert validation.type_de_lieu([], 0.7) == "tissu bâti"
+    assert validation.type_de_lieu([], 0.2) == "terrain ouvert"
+    assert validation.type_de_lieu([], None) == "terrain ouvert"
+
+
+def test_lieux_figes():
+    from pipeline import validation
+
+    lieux = validation.charger_lieux()
+    assert len(lieux) == 16
+    assert {lieu.statut for lieu in lieux} == {"trouvé", "approché", "introuvable"}
+    # Un lieu introuvable n'a jamais de coordonnées (jamais placé au hasard).
+    assert all(lieu.geometrie is None for lieu in lieux if lieu.statut == "introuvable")
+    assert all(lieu.osm for lieu in lieux if lieu.statut != "introuvable")

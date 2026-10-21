@@ -135,6 +135,22 @@ def detecter(geom, jour: str, orbite: int, p: config.Parametres = config.PARAMET
     return Detection(jour, seuil, origine, eau.selfMask().rename("eau").clip(geom))
 
 
+PROJECTION_UTM = "EPSG:32628"  # UTM 28 N, en mètres
+
+
+def filtrer_taches(eau, min_px: int):
+    """Ne garde que les taches d'au moins `min_px` pixels de 10 m qui se touchent (4-connexité).
+
+    Le comptage est forcé à 10 m : sans `reproject`, Earth Engine compterait à l'échelle de
+    l'affichage ou de l'export, et « 10 pixels » ne voudrait plus dire 0,1 ha."""
+    import ee
+
+    proj = ee.Projection(PROJECTION_UTM).atScale(ECHELLE_M)
+    e = eau.unmask(0).reproject(proj)
+    taille = e.selfMask().connectedPixelCount(maxSize=256, eightConnected=False).reproject(proj)
+    return e.And(taille.gte(min_px)).selfMask().rename("eau")
+
+
 def surface_km2(eau, geom) -> float:
     import ee
 
