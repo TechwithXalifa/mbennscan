@@ -5,7 +5,7 @@ Base de données PostgreSQL + PostGIS, API REST automatique, temps réel pour la
 ## Installer le schéma
 
 1. Créer un projet sur supabase.com (région la plus proche : Europe).
-2. *SQL Editor* → coller `schema.sql` → *Run*. Le script peut être relancé sans erreur.
+2. *SQL Editor* → coller `schema.sql` → *Run*. Le script peut être relancé sans erreur. Base déjà créée avant `age_s` : relancer `schema.sql` ajoute la colonne `mesures.recu_le` (heure de réception, utilisée pour la limite 1/s). Redéployer ensuite la fonction (`supabase functions deploy mesure`) **avant** de flasher la balise : un ancien serveur refuse `age_s` (400).
 3. Récupérer dans *Project Settings → API* : l'URL, la clé `anon` (pour `web/.env.local`) et la clé `service_role` (pour `pipeline/.env` uniquement).
 
 Le schéma a été testé sur PostgreSQL 16 + PostGIS 3 avec les mocks : `zones_geojson()` renvoie un résultat conforme à `contracts/schemas/zones.schema.json`, le trigger calcule `niveau_cm`, le rôle `anon` lit tout sauf la clé des balises et ne peut rien écrire.

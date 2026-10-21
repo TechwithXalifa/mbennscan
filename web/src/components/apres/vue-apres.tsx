@@ -2,8 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { ListeUrgence } from "@/components/apres/liste-urgence";
+import { useCallback, useEffect, useState } from "react";
 import { PanneauZones } from "@/components/carte/panneau-zones";
 import { getEvenements, getImpacts, getZones, USE_MOCKS } from "@/lib/data";
 import { formatDate, formatNombre } from "@/lib/format";
@@ -45,7 +44,6 @@ function Chiffre({ valeur, intitule }: { valeur: string; intitule: string }) {
 export function VueApres({ evenementId }: { evenementId: number }) {
   const router = useRouter();
   const [etat, setEtat] = useState<Etat>({ statut: "chargement" });
-  const [selection, setSelection] = useState<string | null>(null);
 
   const charger = useCallback(() => {
     setEtat({ statut: "chargement" });
@@ -60,22 +58,12 @@ export function VueApres({ evenementId }: { evenementId: number }) {
   const impacts = etat.statut === "ok" ? etat.d.impacts : [];
   const habitants = impacts.reduce((s, i) => s + i.habitants_touches, 0);
   const ecoles = impacts.reduce((s, i) => s + i.ecoles_touchees, 0);
-  const zonesParId = useMemo(
-    () => new Map(etat.statut === "ok" ? etat.d.zones.features.map((f) => [f.properties.id, f.properties]) : []),
-    [etat],
-  );
 
   return (
     <>
       <div className="relative flex-1">
         {etat.statut === "ok" && (
-          <CarteZones
-            zones={etat.d.zones}
-            mode="contour"
-            eau={evenement?.eau_geojson ?? null}
-            selection={selection}
-            onSelection={(id) => impacts.some((i) => i.zone_id === id) && setSelection(id)}
-          />
+          <CarteZones zones={etat.d.zones} mode="contour" eau={evenement?.eau_geojson ?? null} />
         )}
         {etat.statut === "chargement" && <div className="absolute inset-0 animate-pulse bg-line" aria-busy="true" />}
         {etat.statut === "erreur" && (
@@ -93,7 +81,7 @@ export function VueApres({ evenementId }: { evenementId: number }) {
       </div>
       <PanneauZones
         sousTitre="Après une pluie"
-        ouvrirSur={selection ?? String(evenementId)}
+        ouvrirSur={String(evenementId)}
         entete={
           <header className="space-y-2 px-4 lg:pt-4">
             <h2 className="text-titre2">Après une pluie</h2>
@@ -133,9 +121,6 @@ export function VueApres({ evenementId }: { evenementId: number }) {
         )}
         {evenement && evenement.eau_geojson && impacts.length === 0 && (
           <p>Aucune eau détectée dans les zones calculées sur cette image.</p>
-        )}
-        {evenement && evenement.eau_geojson && (
-          <ListeUrgence impacts={impacts} zones={zonesParId} selection={selection} onSelection={setSelection} />
         )}
       </PanneauZones>
     </>

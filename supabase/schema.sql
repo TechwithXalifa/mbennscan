@@ -77,13 +77,17 @@ create table if not exists balises (
 create table if not exists mesures (
   id           bigserial primary key,
   balise_id    text not null references balises(id) on delete cascade,
-  ts           timestamptz not null default now(),
+  ts           timestamptz not null default now(),   -- date de la mesure (réception - age_s)
+  recu_le      timestamptz not null default now(),   -- heure de réception : sert à la limite 1/s
   distance_cm  real not null check (distance_cm between 20 and 600),
   niveau_cm    real,                          -- rempli par le trigger ci-dessous
   batterie_v   real,
   rssi         smallint
 );
+-- Base créée avant age_s : le script reste relançable.
+alter table mesures add column if not exists recu_le timestamptz not null default now();
 create index if not exists mesures_balise_ts_idx on mesures (balise_id, ts desc);
+create index if not exists mesures_balise_recu_idx on mesures (balise_id, recu_le desc);
 
 create or replace function calcul_niveau() returns trigger language plpgsql as $$
 begin

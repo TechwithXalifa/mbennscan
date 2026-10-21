@@ -5,6 +5,9 @@
 //   2. mesure empilée dans une file de 50 éléments (la plus ancienne est écrasée si pleine)
 //   3. envoi de la file en HTTPS vers l'Edge Function `mesure`, une mesure par seconde au plus
 //      (le serveur répond 429 au-delà), avec attente croissante en cas d'échec
+//   Chaque mesure part avec `age_s` : secondes écoulées depuis la lecture (millis(), pas besoin
+//   d'horloge réseau). Le serveur la date « réception - age_s » : après une coupure Wi-Fi, la file
+//   est vidée dans l'ordre et chaque mesure garde sa vraie date, sans en perdre aucune.
 // LED : lente = OK, rapide = erreur réseau.
 //
 // Contrat : contracts/schemas/mesure_entrante.schema.json
@@ -36,11 +39,12 @@ static const uint8_t  NB_VALIDES_MIN = 3;
 static const float    DIST_MIN_CM    = 20.0f;
 static const float    DIST_MAX_CM    = 600.0f;
 static const uint32_t PAUSE_LECTURE_MS = 80;
+static const uint32_t AGE_MAX_S    = 86400;  // limite du contrat (age_s ≤ 86400) ; au-delà, mesure abandonnée
 static const int      RSSI_INCONNU = 1;   // hors plage (-120…0) : pas de mesure → envoyé en null
 
 // ── File d'attente ───────────────────────────────────────────────────────────
 static const size_t FILE_MAX = 50;
-struct Mesure { float distance_cm; int rssi; };
+struct Mesure { float distance_cm; int rssi; uint32_t t_ms; };   // t_ms : millis() à la lecture
 static Mesure  file[FILE_MAX];
 static size_t  fileTete = 0, fileTaille = 0;
 
@@ -131,10 +135,11 @@ static int envoyer(const Mesure &m) {
   if (m.rssi == RSSI_INCONNU) strcpy(rssiTxt, "null");
   else snprintf(rssiTxt, sizeof rssiTxt, "%d", m.rssi);
 
-  char corps[128];
+  char corps[160];
+  uint32_t age_s = (millis() - m.t_ms) / 1000;           // soustraction non signée : sûre au débordement de millis()
   snprintf(corps, sizeof corps,
-           "{\"balise_id\":\"%s\",\"distance_cm\":%.1f,\"rssi\":%s}",
-           BALISE_ID, m.distance_cm, rssiTxt);
+           "{\"balise_id\":\"%s\",\"distance_cm\":%.1f,\"rssi\":%s,\"age_s\":%lu}",
+           BALISE_ID, m.distance_cm, rssiTxt, (unsigned long)age_s);
 
   WiFiClientSecure client;
   client.setInsecure();   // TODO(sécurité) : épingler le certificat racine avant la mise en service terrain
@@ -152,6 +157,11 @@ static void traiterFile() {
   if (fileTaille == 0 || (int32_t)(millis() - prochainEnvoi) < 0) return;
 
   const Mesure &m = file[fileTete];
+  if ((millis() - m.t_ms) / 1000 > AGE_MAX_S) {          // trop ancienne pour le contrat : 400 assuré
+    Serial.println("[file] mesure de plus de 24 h abandonnée");
+    depiler();
+    return;
+  }
   int code = envoyer(m);
 
   if (code == 201) {
@@ -212,7 +222,7 @@ void loop() {
     if (isnan(d)) {
       Serial.println("[mesure] lecture invalide (hors 20–600 cm ou capteur muet), ignorée");
     } else {
-      Mesure m = { d, WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : RSSI_INCONNU };
+      Mesure m = { d, WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : RSSI_INCONNU, millis() };
       Serial.printf("[mesure] %.1f cm, rssi %d, file %u\n", m.distance_cm, m.rssi, (unsigned)(fileTaille + 1));
       empiler(m);
     }
