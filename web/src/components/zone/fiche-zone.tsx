@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { BadgePriorite, IndicateurConfiance } from "@/components/zone/badges";
@@ -7,6 +8,12 @@ import { getZoneDetail, getZones, USE_MOCKS } from "@/lib/data";
 import { formatDate, formatNombre, formatPourcent } from "@/lib/format";
 import { EXPLICATION_EAU, historique, LIBELLE_EAU, ordinal, phraseSynthese, SUGGESTION_EAU } from "@/lib/synthese";
 import type { ZoneDetail } from "@/types/contracts";
+
+// Recharts n'est chargé que lorsqu'une fiche avec historique s'affiche.
+const HistogrammeSaisons = dynamic(() => import("@/components/zone/histogramme-saisons"), {
+  ssr: false,
+  loading: () => <div className="h-56 animate-pulse rounded-sm bg-line" />,
+});
 
 type Etat =
   | { statut: "chargement" }
@@ -118,6 +125,8 @@ export function FicheZone({ id }: { id: string }) {
           phrase={zone.classe_eau ? EXPLICATION_EAU[zone.classe_eau] : "Pas d'eau observée."}
         />
       </div>
+
+      {indicateurs_saison.length > 0 && <HistogrammeSaisons saisons={indicateurs_saison} />}
 
       <section>
         <h2 className="text-titre2">Ce qui est touché</h2>
