@@ -57,7 +57,7 @@ EE_S1 = "COPERNICUS/S1_GRD"
 EE_S2 = "COPERNICUS/S2_SR_HARMONIZED"
 EE_CHIRPS = "UCSB-CHG/CHIRPS/DAILY"
 EE_GPM = "NASA/GPM_L3/IMERG_V07"
-EE_DEM = "COPERNICUS/DEM/GLO30"
+EE_DEM = "COPERNICUS/DEM/GLO30_2024_1"
 EE_JRC = "JRC/GSW1_4/GlobalSurfaceWater"
 
 # ── Actions suggérées (contrat impacts_evenement.action_suggeree) ────────────
