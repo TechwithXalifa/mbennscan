@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mbennscan-pipeline"
+version = "0.1.0"
+description = "MbënnScan : détection de l'eau Sentinel-1 et indicateurs par zone"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "earthengine-api>=1.0,<2",
+  "geemap>=0.35",
+  "geopandas>=1.0,<2",
+  "rasterio>=1.4,<2",
+  "rasterstats>=0.20",
+  "h3>=4.0,<5",              # l'API h3 4.x n'est pas compatible avec la 3.x
+  "supabase>=2.0,<3",
+  "python-dotenv>=1.0",
+  "jsonschema>=4.20",
+]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.6", "pytest>=8"]
+
+# Le dossier pipeline/ est lui-même le paquet « pipeline » : from pipeline.config import PARAMETRES
+[tool.setuptools]
+package-dir = { "pipeline" = "." }
+packages = ["pipeline"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 110
+extend-exclude = ["out"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pipeline"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

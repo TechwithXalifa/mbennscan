@@ -6,13 +6,24 @@ Transforme l'archive Sentinel-1 (2020-2026) en indicateurs par zone, conformes a
 
 ```bash
 cd pipeline
-python -m venv .venv && source .venv/bin/activate
-pip install earthengine-api geemap geopandas rasterio rasterstats h3 supabase python-dotenv jsonschema ruff
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"           # dépendances de pyproject.toml, plus ruff et pytest
 earthengine authenticate          # compte Google enregistré pour Earth Engine (non commercial)
 cp .env.example .env              # remplir EE_PROJECT, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 ```
 
-Créer ensuite un `pyproject.toml` avec ces dépendances pour que tout le monde installe la même chose.
+Le dossier `pipeline/` est le paquet Python `pipeline` : `from pipeline.config import PARAMETRES`. Les scripts se lancent depuis la racine du dépôt : `python -m pipeline.<module>`.
+
+## Vérifier
+
+```bash
+pytest                            # depuis pipeline/
+ruff check . && ruff format .
+```
+
+## Paramètres
+
+Tous dans `config.py`. `Parametres` reprend exactement `parametres` de `contracts/schemas/run_meta.schema.json`, avec ses valeurs par défaut : un test échoue si les deux divergent. Ajouter un paramètre recopié dans `run_meta.json` demande donc un changement de contrat.
 
 ## Organisation proposée
 
