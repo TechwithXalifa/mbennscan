@@ -74,7 +74,7 @@ MapLibre et Recharts ne lisent pas les variables CSS : passer par `jeton("--prio
 
 ## Logo
 
-Logotype en Inter Semibold : « Mbënn » en `--ink`, « Scan » en `--primary`. Pictogramme : hexagone contenant une vague. Version monochrome (encre sur clair, blanc sur foncé) pour les petites tailles et le favicon. Toujours écrire MbënnScan avec le tréma et le S majuscule.
+Logotype en Inter Semibold : « Mbënn » en `--ink`, « Scan » en `--primary`. Pictogramme : une goutte faite de pixels satellite, pixels d'eau en `--primary` et pixels « secs » du haut en bleu clair `#7FA9C6` (couleur réservée au pictogramme couleur, ce n'est pas un jeton de l'interface). Version monochrome à une seule couleur (encre `#101828` sur clair, blanc sur foncé) pour les petites tailles et le favicon. Toujours écrire MbënnScan avec le tréma et le S majuscule.
 
 ## Composants de base (`src/components/ui/`)
 
