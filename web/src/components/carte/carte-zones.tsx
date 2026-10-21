@@ -31,6 +31,7 @@ export default function CarteZones({ zones, selection = null, onSelection }: Pro
   const conteneur = useRef<HTMLDivElement>(null);
   const carte = useRef<CarteMapLibre | null>(null);
   const [prete, setPrete] = useState(false);
+  const selPrecedente = useRef<string | null>(null);
   const rappel = useRef(onSelection);
   rappel.current = onSelection;
 
@@ -134,8 +135,10 @@ export default function CarteZones({ zones, selection = null, onSelection }: Pro
   useEffect(() => {
     const map = carte.current;
     if (!prete || !map) return;
-    map.removeFeatureState({ source: "zones" }, "selection");
+    // MapLibre exige un id pour effacer une clé d'état : on n'efface que l'ancienne sélection.
+    if (selPrecedente.current) map.removeFeatureState({ source: "zones", id: selPrecedente.current }, "selection");
     if (selection) map.setFeatureState({ source: "zones", id: selection }, { selection: true });
+    selPrecedente.current = selection;
   }, [prete, selection, zones]);
 
   // La feuille de style MapLibre impose position: relative au conteneur, d'où l'enveloppe.
