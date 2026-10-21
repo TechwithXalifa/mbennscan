@@ -18,7 +18,7 @@ Limites connues : la tension de batterie n'est pas envoyée (`batterie_v` absent
 ## Comportement attendu
 
 - Toutes les `MESURE_INTERVALLE_MS` : 5 lectures, médiane, rejet hors 20 à 600 cm.
-- POST JSON conforme à `contracts/schemas/mesure_entrante.schema.json` vers l'Edge Function `mesure`, en HTTPS.
+- POST JSON conforme à `contracts/schemas/mesure_entrante.schema.json` vers l'Edge Function `mesure`, en HTTPS. Chaque mesure porte `age_s` (secondes depuis la lecture, via `millis()`) : après une coupure Wi-Fi, la file est vidée dans l'ordre et chaque mesure garde sa vraie date. Au-delà de 24 h, une mesure est abandonnée.
 - Si l'envoi échoue : jusqu'à 50 mesures en mémoire, renvoi avec attente croissante.
 - LED : lente = OK, rapide = erreur réseau.
 
