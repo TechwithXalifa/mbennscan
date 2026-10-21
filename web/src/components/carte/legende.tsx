@@ -12,7 +12,7 @@ export function Legende() {
   const [ouverte, setOuverte] = useState(false);
 
   return (
-    <div className="absolute bottom-8 left-3 z-10">
+    <div className="absolute bottom-[152px] left-3 z-10 lg:bottom-8">
       <button
         type="button"
         onClick={() => setOuverte(true)}
