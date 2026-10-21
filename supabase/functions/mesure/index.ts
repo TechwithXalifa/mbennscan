@@ -1,7 +1,9 @@
 // Edge Function « mesure » : reçoit les mesures de la balise (ESP32).
 //
 // POST  Authorization: Bearer <clé de la balise>
-//       {"balise_id":"bal-01","distance_cm":37.4,"batterie_v":null,"rssi":-61}
+//       {"balise_id":"bal-01","distance_cm":37.4,"batterie_v":null,"rssi":-61,"age_s":0}
+//       age_s (facultatif) : secondes écoulées depuis la mesure ; la mesure est datée
+//       ts = heure de réception - age_s (la balise envoie sa file après une coupure).
 //
 // 201 enregistrée · 400 corps invalide · 401 clé absente/fausse · 405 mauvaise méthode
 // 429 plus d'une mesure par seconde et par balise · 500 erreur serveur
@@ -16,9 +18,10 @@ import { type MesureEntrante, validerMesure } from "./validate.ts";
 export interface Acces {
   /** Hachage SHA-256 (hex) de la clé de la balise, ou null si la balise n'existe pas. */
   cleHash(baliseId: string): Promise<string | null>;
-  /** Date (ms) de la dernière mesure de la balise, ou null s'il n'y en a pas. */
-  dernierTs(baliseId: string): Promise<number | null>;
-  inserer(m: MesureEntrante): Promise<void>;
+  /** Heure de RÉCEPTION (ms) de la dernière mesure de la balise, ou null s'il n'y en a pas. */
+  dernierRecu(baliseId: string): Promise<number | null>;
+  /** `ts` = date de la mesure elle-même (réception - age_s). */
+  inserer(m: Omit<MesureEntrante, "age_s">, ts: Date): Promise<void>;
 }
 
 const INTERVALLE_MIN_MS = 1000;
@@ -81,14 +84,16 @@ export async function traiter(
     }
 
     // Limite lue en base (une Edge Function peut tourner en plusieurs copies : pas de compteur en mémoire).
-    const dernier = await acces.dernierTs(mesure.balise_id);
+    // Elle porte sur l'heure de réception (recu_le), pas sur ts : ts est antidaté par age_s.
+    const dernier = await acces.dernierRecu(mesure.balise_id);
     if (dernier !== null && maintenant - dernier < INTERVALLE_MIN_MS) {
       return json(429, { erreur: "une mesure par seconde au maximum" }, {
         "Retry-After": "1",
       });
     }
 
-    await acces.inserer(mesure);
+    const { age_s, ...champs } = mesure;
+    await acces.inserer(champs, new Date(maintenant - age_s * 1000));
     return json(201, { ok: true });
   } catch (e) {
     console.error("[mesure]", e);
@@ -111,18 +116,21 @@ function accesSupabase(): Acces {
       if (error) throw error;
       return data?.cle_api_hash ?? null;
     },
-    async dernierTs(id) {
-      const { data, error } = await db.from("mesures").select("ts").eq(
+    async dernierRecu(id) {
+      const { data, error } = await db.from("mesures").select("recu_le").eq(
         "balise_id",
         id,
       )
-        .order("ts", { ascending: false }).limit(1).maybeSingle();
+        .order("recu_le", { ascending: false }).limit(1).maybeSingle();
       if (error) throw error;
-      return data ? new Date(data.ts).getTime() : null;
+      return data ? new Date(data.recu_le).getTime() : null;
     },
-    async inserer(m) {
-      // niveau_cm est calculé par le trigger ; ts vaut now() par défaut.
-      const { error } = await db.from("mesures").insert(m);
+    async inserer(m, ts) {
+      // niveau_cm est calculé par le trigger ; recu_le vaut now() par défaut.
+      const { error } = await db.from("mesures").insert({
+        ...m,
+        ts: ts.toISOString(),
+      });
       if (error) throw error;
     },
   };

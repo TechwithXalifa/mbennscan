@@ -116,6 +116,8 @@ export interface Mesure {
   id: number;
   balise_id: string;
   ts: string;
+  /** Heure de réception par le serveur (ISO 8601) ; ts = recu_le - age_s */
+  recu_le: string;
   distance_cm: number;
   /** Peut être négatif si la balise est mal étalonnée : afficher 0 et signaler */
   niveau_cm: number | null;
@@ -129,6 +131,8 @@ export interface MesureEntrante {
   distance_cm: number;
   batterie_v?: number | null;
   rssi?: number | null;
+  /** Secondes écoulées depuis la mesure (0 à 86 400) ; ts = réception - age_s */
+  age_s?: number;
 }
 
 // run_meta.schema.json

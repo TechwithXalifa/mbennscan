@@ -1,12 +1,20 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { ActionsFiche } from "@/components/zone/actions-fiche";
 import { BadgePriorite, IndicateurConfiance } from "@/components/zone/badges";
 import { getZoneDetail, getZones, USE_MOCKS } from "@/lib/data";
 import { formatDate, formatNombre, formatPourcent } from "@/lib/format";
 import { EXPLICATION_EAU, historique, LIBELLE_EAU, ordinal, phraseSynthese, SUGGESTION_EAU } from "@/lib/synthese";
 import type { ZoneDetail } from "@/types/contracts";
+
+// Recharts n'est chargé que lorsqu'une fiche avec historique s'affiche.
+const HistogrammeSaisons = dynamic(() => import("@/components/zone/histogramme-saisons"), {
+  ssr: false,
+  loading: () => <div className="h-56 animate-pulse rounded-sm bg-line" />,
+});
 
 type Etat =
   | { statut: "chargement" }
@@ -35,7 +43,15 @@ function ChiffreCle({
   );
 }
 
-export function FicheZone({ id }: { id: string }) {
+type Props = {
+  id: string;
+  /** Page /zone/[id] (et non panneau de la carte) */
+  autonome?: boolean;
+  /** Lance l'impression dès que la fiche est chargée (lien « Imprimer » depuis la carte) */
+  imprimerAuChargement?: boolean;
+};
+
+export function FicheZone({ id, autonome = false, imprimerAuChargement = false }: Props) {
   const [etat, setEtat] = useState<Etat>({ statut: "chargement" });
 
   const charger = useCallback(() => {
@@ -48,6 +64,14 @@ export function FicheZone({ id }: { id: string }) {
   }, [id]);
 
   useEffect(charger, [charger]);
+
+  const pret = etat.statut === "ok";
+  useEffect(() => {
+    if (!pret || !imprimerAuChargement) return;
+    // Laisse le temps à l'histogramme de s'afficher avant l'impression.
+    const t = setTimeout(() => window.print(), 800);
+    return () => clearTimeout(t);
+  }, [pret, imprimerAuChargement]);
 
   if (etat.statut === "chargement") {
     return (
@@ -119,6 +143,8 @@ export function FicheZone({ id }: { id: string }) {
         />
       </div>
 
+      {indicateurs_saison.length > 0 && <HistogrammeSaisons saisons={indicateurs_saison} />}
+
       <section>
         <h2 className="text-titre2">Ce qui est touché</h2>
         <ul className="mt-2 space-y-1">
@@ -153,6 +179,7 @@ export function FicheZone({ id }: { id: string }) {
           Comment ces chiffres sont calculés
         </Link>
       </section>
+      <ActionsFiche id={zone.id} nom={zone.nom} autonome={autonome} />
     </article>
   );
 }
