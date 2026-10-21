@@ -40,24 +40,18 @@ export function Legende() {
         <ul className="mt-2 space-y-1 text-petit">
           {PRIORITES.map((p) => (
             <li key={p} className="flex items-center gap-2">
-              <span className={`size-3 rounded-sm opacity-60 ${FOND_PRIORITE[p]}`} aria-hidden />
+              <span className={`size-3 rounded-sm opacity-zone ${FOND_PRIORITE[p]}`} aria-hidden />
               {LIBELLE_PRIORITE[p]}
             </li>
           ))}
         </ul>
         <ul className="mt-3 space-y-1 border-t border-line pt-2 text-petit">
           <li className="flex items-center gap-2">
-            <span
-              className="size-3 rounded-sm border border-ink-2 bg-[repeating-linear-gradient(135deg,#475467_0_1px,transparent_1px_4px)]"
-              aria-hidden
-            />
+            <span className="hachures-moyenne size-3 rounded-sm border border-ink-2" aria-hidden />
             Confiance moyenne
           </li>
           <li className="flex items-center gap-2">
-            <span
-              className="size-3 rounded-sm border border-dashed border-ink bg-[repeating-linear-gradient(135deg,#101828_0_1.5px,transparent_1.5px_3px)]"
-              aria-hidden
-            />
+            <span className="hachures-faible size-3 rounded-sm border border-dashed border-ink" aria-hidden />
             Confiance faible : à vérifier sur le terrain
           </li>
         </ul>

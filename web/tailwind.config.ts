@@ -26,7 +26,9 @@ const config: Config = {
         },
         ok: "var(--ok)",
         off: "var(--off)",
+        "on-color": "var(--on-color)",
       },
+      opacity: { zone: "var(--zone-opacity)", eau: "var(--water-opacity)" },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
@@ -49,8 +51,14 @@ const config: Config = {
       },
       spacing: {
         topbar: "var(--topbar-h)",
+        apercu: "var(--apercu-h)",
+        panneau: "var(--panneau-w)",
         cible: "44px",
       },
+      maxWidth: { lecture: "var(--lecture-w)" },
+      // carte < contrôles flottants < panneau < barre du haut < infobulle
+      zIndex: { controle: "10", panneau: "20", barre: "30", infobulle: "40" },
+      transitionDuration: { DEFAULT: "var(--duree)" },
       minHeight: { cible: "44px" },
       minWidth: { cible: "44px" },
     },
