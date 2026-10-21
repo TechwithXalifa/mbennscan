@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { ActionsFiche } from "@/components/zone/actions-fiche";
 import { BadgePriorite, IndicateurConfiance } from "@/components/zone/badges";
 import { getZoneDetail, getZones, USE_MOCKS } from "@/lib/data";
 import { formatDate, formatNombre, formatPourcent } from "@/lib/format";
@@ -35,7 +36,15 @@ function ChiffreCle({
   );
 }
 
-export function FicheZone({ id }: { id: string }) {
+type Props = {
+  id: string;
+  /** Page /zone/[id] (et non panneau de la carte) */
+  autonome?: boolean;
+  /** Lance l'impression dès que la fiche est chargée (lien « Imprimer » depuis la carte) */
+  imprimerAuChargement?: boolean;
+};
+
+export function FicheZone({ id, autonome = false, imprimerAuChargement = false }: Props) {
   const [etat, setEtat] = useState<Etat>({ statut: "chargement" });
 
   const charger = useCallback(() => {
@@ -48,6 +57,14 @@ export function FicheZone({ id }: { id: string }) {
   }, [id]);
 
   useEffect(charger, [charger]);
+
+  const pret = etat.statut === "ok";
+  useEffect(() => {
+    if (!pret || !imprimerAuChargement) return;
+    // Laisse le temps à l'histogramme de s'afficher avant l'impression.
+    const t = setTimeout(() => window.print(), 800);
+    return () => clearTimeout(t);
+  }, [pret, imprimerAuChargement]);
 
   if (etat.statut === "chargement") {
     return (
@@ -153,6 +170,7 @@ export function FicheZone({ id }: { id: string }) {
           Comment ces chiffres sont calculés
         </Link>
       </section>
+      <ActionsFiche id={zone.id} nom={zone.nom} autonome={autonome} />
     </article>
   );
 }
