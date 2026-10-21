@@ -23,4 +23,12 @@ Le schéma a été testé sur PostgreSQL 16 + PostGIS 3 avec les mocks : `zones_
 ## À faire
 
 - [x] Edge Function `functions/mesure/index.ts` (Aboubacry) : vérifier `Authorization: Bearer <clé>` contre `balises.cle_api_hash` (SHA-256), valider le corps avec `mesure_entrante.schema.json`, insérer avec la clé `service_role`, limiter à une mesure par seconde. Réponses 201 / 400 / 401 / 429.
-- [ ] Script d'enregistrement d'une balise (génère la clé, stocke son hachage).
+- [x] Script d'enregistrement d'une balise (génère la clé, stocke son hachage) : voir ci-dessous.
+
+## Enregistrer une balise
+
+```bash
+python scripts/enregistrer_balise.py --id bal-01 --nom "Bac de démonstration" --lon -17.315 --lat 14.78 --hauteur 80 --seuil 40
+```
+
+Le script n'a besoin d'aucune clé Supabase. Il affiche le SQL à coller dans *SQL Editor* (qui stocke le hachage SHA-256 de la clé), la clé à mettre dans `firmware/include/secrets.h` et un `curl` d'essai. La clé n'est affichée qu'une fois : la transmettre en privé. Relancer le script pour une balise existante remplace sa clé.
