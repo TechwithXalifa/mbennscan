@@ -10,7 +10,7 @@ import {
 } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
 import { LIBELLE_PRIORITE, VARIABLE_PRIORITE } from "@/lib/priorite";
-import type { Priorite, ZonesGeoJSON } from "@/types/contracts";
+import type { EauGeoJSON, Priorite, ZonesGeoJSON } from "@/types/contracts";
 
 // Vue de départ : département de Keur Massar, zoom 12 (cahier des charges, section 6).
 const CENTRE: [number, number] = [-17.315, 14.78];
@@ -43,15 +43,22 @@ type Props = {
   zones: ZonesGeoJSON;
   selection?: string | null;
   onSelection?: (id: string) => void;
+  /** « contour » (écran Après une pluie) : zones seulement contourées pour que l'eau reste lisible */
+  mode?: "priorite" | "contour";
+  /** Eau détectée après un épisode, dessinée au-dessus des zones */
+  eau?: EauGeoJSON | null;
 };
 
-export default function CarteZones({ zones, selection = null, onSelection }: Props) {
+const VIDE = { type: "FeatureCollection" as const, features: [] };
+
+export default function CarteZones({ zones, selection = null, onSelection, mode = "priorite", eau = null }: Props) {
   const conteneur = useRef<HTMLDivElement>(null);
   const carte = useRef<CarteMapLibre | null>(null);
   const [prete, setPrete] = useState(false);
   const selPrecedente = useRef<string | null>(null);
   const rappel = useRef(onSelection);
   rappel.current = onSelection;
+  const contour = useRef(mode === "contour");
 
   useEffect(() => {
     if (!conteneur.current) return;
@@ -71,7 +78,8 @@ export default function CarteZones({ zones, selection = null, onSelection }: Pro
     map.on("load", () => {
       map.addImage("hachures-legeres", hachures(0.25));
       map.addImage("hachures-fortes", hachures(0.55));
-      map.addSource("zones", { type: "geojson", data: { type: "FeatureCollection", features: [] }, promoteId: "id" });
+      map.addSource("zones", { type: "geojson", data: VIDE, promoteId: "id" });
+      map.addSource("eau", { type: "geojson", data: VIDE });
       const priorites: Priorite[] = ["forte", "moyenne", "faible", "nulle"];
       map.addLayer({
         id: "zones-fond",
@@ -84,14 +92,14 @@ export default function CarteZones({ zones, selection = null, onSelection }: Pro
             ...priorites.flatMap((p) => [p, couleur(VARIABLE_PRIORITE[p])]),
             couleur("--prio-none"),
           ] as unknown as string,
-          "fill-opacity": 0.6,
+          "fill-opacity": contour.current ? 0 : 0.6,
         },
       });
       map.addLayer({
         id: "zones-hachures",
         type: "fill",
         source: "zones",
-        filter: ["!=", ["get", "confiance"], "elevee"],
+        filter: contour.current ? ["boolean", false] : ["!=", ["get", "confiance"], "elevee"],
         paint: {
           "fill-pattern": ["match", ["get", "confiance"], "faible", "hachures-fortes", "hachures-legeres"],
         },
@@ -100,7 +108,7 @@ export default function CarteZones({ zones, selection = null, onSelection }: Pro
         id: "zones-contour",
         type: "line",
         source: "zones",
-        paint: { "line-color": "#ffffff", "line-width": 1 },
+        paint: { "line-color": contour.current ? couleur("--ink-2") : "#ffffff", "line-width": 1 },
       });
       map.addLayer({
         id: "zones-contour-faible",
@@ -108,6 +116,18 @@ export default function CarteZones({ zones, selection = null, onSelection }: Pro
         source: "zones",
         filter: ["==", ["get", "confiance"], "faible"],
         paint: { "line-color": couleur("--ink"), "line-width": 1, "line-dasharray": [2, 2] },
+      });
+      map.addLayer({
+        id: "eau-fond",
+        type: "fill",
+        source: "eau",
+        paint: { "fill-color": couleur("--water"), "fill-opacity": Number(couleur("--water-opacity")) || 0.55 },
+      });
+      map.addLayer({
+        id: "eau-contour",
+        type: "line",
+        source: "eau",
+        paint: { "line-color": couleur("--water-line"), "line-width": 1 },
       });
       map.addLayer({
         id: "zones-etat",
@@ -167,6 +187,13 @@ export default function CarteZones({ zones, selection = null, onSelection }: Pro
     if (!prete) return;
     (carte.current?.getSource("zones") as GeoJSONSource | undefined)?.setData(zones);
   }, [prete, zones]);
+
+  useEffect(() => {
+    if (!prete) return;
+    (carte.current?.getSource("eau") as GeoJSONSource | undefined)?.setData(
+      (eau ?? VIDE) as Parameters<GeoJSONSource["setData"]>[0],
+    );
+  }, [prete, eau]);
 
   useEffect(() => {
     const map = carte.current;
