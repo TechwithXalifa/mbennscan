@@ -1,6 +1,6 @@
 # Design system MbënnScan
 
-Source : cahier des charges, sections 6 et 7. Catalogue vivant : `/design-system` (non référencé). Les jetons vivent dans `src/app/globals.css` (variables CSS) et sont exposés par `tailwind.config.ts`. Ne jamais écrire une couleur, une taille ou une ombre en dur dans un composant.
+Source : cahier des charges, sections 6 et 7. Les jetons vivent dans `src/app/globals.css` (variables CSS) et sont exposés par `tailwind.config.ts`. Ne jamais écrire une couleur, une taille ou une ombre en dur dans un composant.
 
 ## Principes
 
@@ -74,28 +74,4 @@ MapLibre et Recharts ne lisent pas les variables CSS : passer par `jeton("--prio
 
 ## Logo
 
-Logotype en Inter Semibold : « Mbënn » en `--ink`, « Scan » en `--primary`. Pictogramme : une goutte faite de pixels satellite, pixels d'eau en `--primary` et pixels « secs » du haut en bleu clair `#7FA9C6` (couleur réservée au pictogramme couleur, ce n'est pas un jeton de l'interface). Version monochrome à une seule couleur (encre `#101828` sur clair, blanc sur foncé) pour les petites tailles et le favicon. Toujours écrire MbënnScan avec le tréma et le S majuscule.
-
-## Composants de base (`src/components/ui/`)
-
-| Composant | Rôle | À retenir |
-| --- | --- | --- |
-| `Bouton` | Action | Variantes `primaire` (une par vue), `secondaire`, `discret` (lien d'action), `icone` (avec `aria-label`) ; `flottant` sur la carte. `styleBouton` pour styler un `Link`. |
-| `Encart` | Surface d'information | Bordure par défaut ; `flottant` (ombre) au-dessus de la carte. |
-| `Pastille` | Filtre à bascule | `active` se traduit en `aria-pressed`. |
-| `ControleSegmente` | Sélecteur de mode, bascule de graphique | Groupe radio, flèches gauche / droite. |
-| `Squelette` | Chargement | Reprend la forme du contenu ; le conteneur porte `aria-busy`. |
-| `Infobulle` | Bouton « i » et explication courte | S'ouvre au toucher, se ferme avec Échap ou un clic ailleurs. |
-| `ChiffreCle` | Valeur principale d'une fiche | Toujours une phrase d'explication ; `mot` pour une valeur en lettres. |
-| `AlerteErreur` | Erreur réseau | Message et « Réessayer ». |
-| `EtatVide` | Rien à montrer | Une phrase : « Aucune eau détectée dans cette zone sur cette image. » |
-| `Bandeau` | Fraîcheur de l'image ; `horsLigne` | « Image radar Sentinel-1 du 6 octobre 2026 » sous chaque vue qui en dépend. |
-| `PastilleEtat` | Balise en ligne / hors ligne | Point `--ok` / `--off` et texte (« Dernière mesure il y a 5 min »). |
-
-Composants métier existants : `BadgePriorite` et `IndicateurConfiance` (`components/zone/badges.tsx`), `Legende` et `PanneauZones` (`components/carte/`).
-
-## États de chaque écran
-
-Chargement (`Squelette`), vide (`EtatVide`), erreur réseau (`AlerteErreur`), hors ligne (`Bandeau horsLigne` : « Vous êtes hors ligne : données du 17 octobre affichées. »), balise muette depuis plus de 2 minutes (`PastilleEtat enLigne={false}`).
-
-Fichiers du logo : `public/brand/` (couleur, noir `#101828`, blanc ; règles d'usage dans `public/brand/README.md`). En-tête : `/brand/logo-couleur.svg`. Sous 24 px, pictogramme seul.
+Logotype en Inter Semibold : « Mbënn » en `--ink`, « Scan » en `--primary`. Pictogramme : hexagone contenant une vague. Version monochrome (encre sur clair, blanc sur foncé) pour les petites tailles et le favicon. Toujours écrire MbënnScan avec le tréma et le S majuscule.
