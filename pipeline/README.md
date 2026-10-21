@@ -6,13 +6,34 @@ Transforme l'archive Sentinel-1 (2020-2026) en indicateurs par zone, conformes a
 
 ```bash
 cd pipeline
-python -m venv .venv && source .venv/bin/activate
-pip install earthengine-api geemap geopandas rasterio rasterstats h3 supabase python-dotenv jsonschema ruff
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"           # dépendances de pyproject.toml, plus ruff et pytest
 earthengine authenticate          # compte Google enregistré pour Earth Engine (non commercial)
 cp .env.example .env              # remplir EE_PROJECT, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 ```
 
-Créer ensuite un `pyproject.toml` avec ces dépendances pour que tout le monde installe la même chose.
+Le dossier `pipeline/` est le paquet Python `pipeline` : `from pipeline.config import PARAMETRES`. Les scripts se lancent depuis la racine du dépôt : `python -m pipeline.<module>`.
+
+## Vérifier
+
+```bash
+pytest                            # depuis pipeline/
+ruff check . && ruff format .
+```
+
+## Exporter vers Supabase
+
+```bash
+python -m pipeline.export --depuis contracts/mocks --sans-ecriture   # valider et convertir, sans écrire
+python -m pipeline.export --depuis contracts/mocks                   # fil de bout en bout avec les mocks [FICTIF]
+python -m pipeline.export                                            # sorties réelles (PIPELINE_OUT_DIR)
+```
+
+L'export valide d'abord le dossier avec `scripts/validate_contracts.py` et n'écrit rien s'il y a une erreur. Il remplace ensuite tout le contenu satellite (zones, synthèses, indicateurs, épisodes, impacts) : les mocks disparaissent à la première vraie sortie. Il faut `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY` dans `pipeline/.env`. `run_meta.json` n'a pas de table : l'export le copie dans `web/public/data/run_meta.json`, où la page Méthode le lit. Ce fichier est à commiter avec les vraies données pour qu'il parte sur Vercel.
+
+## Paramètres
+
+Tous dans `config.py`. `Parametres` reprend exactement `parametres` de `contracts/schemas/run_meta.schema.json`, avec ses valeurs par défaut : un test échoue si les deux divergent. Ajouter un paramètre recopié dans `run_meta.json` demande donc un changement de contrat.
 
 ## Organisation proposée
 
