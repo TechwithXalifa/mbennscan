@@ -75,3 +75,13 @@ MapLibre et Recharts ne lisent pas les variables CSS : passer par `jeton("--prio
 ## Logo
 
 Logotype en Inter Semibold : « Mbënn » en `--ink`, « Scan » en `--primary`. Pictogramme : hexagone contenant une vague. Version monochrome (encre sur clair, blanc sur foncé) pour les petites tailles et le favicon. Toujours écrire MbënnScan avec le tréma et le S majuscule.
+
+## Composants de base (`src/components/ui/`)
+
+| Composant | Rôle | À retenir |
+| --- | --- | --- |
+| `Bouton` | Action | Variantes `primaire` (une par vue), `secondaire`, `discret` (lien d'action), `icone` (avec `aria-label`) ; `flottant` sur la carte. `styleBouton` pour styler un `Link`. |
+| `Encart` | Surface d'information | Bordure par défaut ; `flottant` (ombre) au-dessus de la carte. |
+| `Pastille` | Filtre à bascule | `active` se traduit en `aria-pressed`. |
+| `ControleSegmente` | Sélecteur de mode, bascule de graphique | Groupe radio, flèches gauche / droite. |
+| `Squelette` | Chargement | Reprend la forme du contenu ; le conteneur porte `aria-busy`. |
