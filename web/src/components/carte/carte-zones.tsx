@@ -71,6 +71,10 @@ export default function CarteZones({ zones, selection = null, onSelection, mode 
     });
     map.addControl(new NavigationControl({ showCompass: false }), "top-right");
     carte.current = map;
+    // Le verre devient opaque pendant un déplacement : le flou recalculé à chaque image coûte cher sur téléphone.
+    const racine = document.documentElement;
+    map.on("movestart", () => racine.setAttribute("data-carte-bouge", ""));
+    map.on("moveend", () => racine.removeAttribute("data-carte-bouge"));
 
     const infobulle = new Popup({ closeButton: false, closeOnClick: false, offset: 8 });
     let survol: string | number | undefined;
@@ -178,6 +182,7 @@ export default function CarteZones({ zones, selection = null, onSelection, mode 
     });
 
     return () => {
+      racine.removeAttribute("data-carte-bouge");
       map.remove();
       carte.current = null;
     };

@@ -58,7 +58,8 @@ const config: Config = {
       maxWidth: { lecture: "var(--lecture-w)" },
       // carte < contrôles flottants < panneau < barre du haut < infobulle
       zIndex: { controle: "10", panneau: "20", barre: "30", infobulle: "40" },
-      transitionDuration: { DEFAULT: "var(--duree)" },
+      transitionDuration: { DEFAULT: "var(--duree)", etat: "var(--duree-etat)", chiffre: "var(--duree-chiffre)" },
+      transitionTimingFunction: { sortie: "var(--ease-sortie)", ressort: "var(--ease-ressort)" },
       minHeight: { cible: "44px" },
       minWidth: { cible: "44px" },
     },
