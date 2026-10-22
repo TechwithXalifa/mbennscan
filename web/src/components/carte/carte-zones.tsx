@@ -26,7 +26,8 @@ const ATTRIBUTION = "© les contributeurs d'OpenStreetMap · Copernicus Sentinel
 function marges(feuille: "apercu" | "moitie") {
   if (window.matchMedia("(min-width: 1024px)").matches) return { top: 64, right: 64, bottom: 48, left: 48 };
   const bas = feuille === "apercu" ? 140 : window.innerHeight / 2;
-  return { top: 64, right: 56, bottom: bas + 24, left: 24 };
+  // En haut, de quoi laisser voir la zone sous le bandeau (trois lignes en maquette).
+  return { top: 120, right: 56, bottom: bas + 24, left: 24 };
 }
 
 function couleur(variable: string): string {
