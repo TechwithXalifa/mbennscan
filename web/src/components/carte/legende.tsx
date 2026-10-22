@@ -22,7 +22,10 @@ export function Legende() {
         Légende
       </button>
 
-      <section aria-label="Légende" className={`${ouverte ? "block" : "hidden"} verre w-64 rounded-md p-3 lg:block`}>
+      <section
+        aria-label="Légende"
+        className={`${ouverte ? "block" : "hidden"} verre apparition w-64 origin-bottom-left rounded-md p-3 lg:block`}
+      >
         <div className="flex items-start justify-between">
           <h2 className="text-titre3">Habitants-jours sous l&apos;eau</h2>
           <button
