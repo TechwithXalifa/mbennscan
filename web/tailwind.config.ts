@@ -62,9 +62,8 @@ const config: Config = {
       transitionTimingFunction: { sortie: "var(--ease-sortie)", ressort: "var(--ease-ressort)" },
       keyframes: {
         onde: { from: { transform: "scale(1)", opacity: "0.7" }, to: { transform: "scale(2.8)", opacity: "0" } },
-        alerte: { "50%": { boxShadow: "0 0 0 6px rgba(217, 45, 32, 0.18)" } },
       },
-      animation: { onde: "onde 1.8s var(--ease-sortie) infinite", alerte: "alerte 1.2s ease-in-out infinite" },
+      animation: { onde: "onde 1.8s var(--ease-sortie) infinite" },
       minHeight: { cible: "44px" },
       minWidth: { cible: "44px" },
     },
