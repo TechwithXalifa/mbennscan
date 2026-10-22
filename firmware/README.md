@@ -28,4 +28,6 @@ Limites connues : la tension de batterie n'est pas envoyée (`batterie_v` absent
 - Vérifier 3 niveaux à la règle (écart ≤ 1 cm), 30 minutes sans redémarrage.
 - Enregistrer une vidéo de secours de 30 secondes.
 
+- 🎥 [Voir la vidéo de démonstration : envoi normal, coupure réseau simulée et synchronisation de la file](https://drive.google.com/file/d/1ug1ObmSmp1jq-mfncsf61lRuvSe0pU8P/view?usp=sharing)
+
 Détails : cahier des charges, section 8.
