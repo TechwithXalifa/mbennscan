@@ -134,6 +134,34 @@ html[data-carte-bouge] .verre {
     backdrop-filter: none;
   }
 
+  /* Squelette de chargement : reflet qui balaie le bloc gris */
+  .squelette {
+    background-image: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.7) 50%, transparent 80%);
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: balayer 1.4s ease-in-out infinite;
+  }
+
+  /* Apparition en fondu et léger zoom quand l'élément s'affiche (infobulle, légende) */
+  .apparition {
+    transition:
+      opacity var(--duree-etat) var(--ease-sortie),
+      transform var(--duree-etat) var(--ease-sortie);
+  }
+
+  /* Reflet « liquid glass » qui suit le doigt sur le curseur du contrôle segmenté */
+  .reflet-liquide {
+    background-image: radial-gradient(
+      90px 40px at var(--reflet-x, 30%) var(--reflet-y, 0%),
+      rgba(255, 255, 255, 0.9),
+      transparent 70%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(16, 24, 40, 0.06),
+      var(--shadow-float);
+  }
+
   /* Hachures de confiance (la couleur n'est jamais seule) */
   .hachures-moyenne {
     background-image: repeating-linear-gradient(135deg, var(--ink-2) 0 1px, transparent 1px 4px);
@@ -143,11 +171,28 @@ html[data-carte-bouge] .verre {
   }
 }
 
+@starting-style {
+  .apparition {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+}
+
+@keyframes balayer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

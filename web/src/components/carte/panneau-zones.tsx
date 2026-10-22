@@ -30,7 +30,7 @@ export function PanneauZones({ sousTitre, entete, ouvrirSur, children }: Props) 
     <aside
       aria-label="Zones à traiter en premier"
       data-apercu={hauteur === 0}
-      className={`group absolute inset-x-0 bottom-0 z-20 verre flex flex-col rounded-t-md border-b-0 transition-[height] ${HAUTEURS[hauteur]} lg:sans-verre lg:static lg:h-auto lg:w-[400px] lg:shrink-0 lg:rounded-none lg:border-y-0 lg:border-l lg:border-r-0 lg:border-line`}
+      className={`group absolute inset-x-0 bottom-0 z-20 verre flex flex-col rounded-t-md border-b-0 transition-[height] duration-[420ms] ease-ressort ${HAUTEURS[hauteur]} lg:sans-verre lg:static lg:h-auto lg:w-[400px] lg:shrink-0 lg:rounded-none lg:border-y-0 lg:border-l lg:border-r-0 lg:border-line`}
     >
       <button
         type="button"

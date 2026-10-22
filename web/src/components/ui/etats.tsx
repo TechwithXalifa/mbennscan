@@ -49,7 +49,10 @@ export function Bandeau({
 export function PastilleEtat({ enLigne, children }: { enLigne: boolean; children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center gap-2 text-petit">
-      <span className={cn("size-2.5 rounded-pill", enLigne ? "bg-ok" : "bg-off")} aria-hidden />
+      <span className={cn("relative size-2.5 rounded-pill", enLigne ? "bg-ok" : "bg-off")} aria-hidden>
+        {/* Onde douce tant que la balise répond */}
+        {enLigne && <span className="absolute inset-0 animate-onde rounded-pill bg-ok" />}
+      </span>
       {children}
     </span>
   );

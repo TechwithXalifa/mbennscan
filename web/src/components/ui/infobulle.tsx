@@ -44,7 +44,7 @@ export function Infobulle({ libelle, children }: { libelle: string; children: Re
         <span
           id={id}
           role="note"
-          className="absolute right-0 top-full z-infobulle mt-2 w-64 rounded-sm bg-ink p-3 text-petit text-on-color shadow-float"
+          className="apparition absolute right-0 top-full z-infobulle mt-2 w-64 origin-top-right rounded-sm bg-ink p-3 text-petit text-on-color shadow-float"
         >
           {children}
         </span>

@@ -60,6 +60,10 @@ const config: Config = {
       zIndex: { controle: "10", panneau: "20", barre: "30", infobulle: "40" },
       transitionDuration: { DEFAULT: "var(--duree)", etat: "var(--duree-etat)", chiffre: "var(--duree-chiffre)" },
       transitionTimingFunction: { sortie: "var(--ease-sortie)", ressort: "var(--ease-ressort)" },
+      keyframes: {
+        onde: { from: { transform: "scale(1)", opacity: "0.7" }, to: { transform: "scale(2.8)", opacity: "0" } },
+      },
+      animation: { onde: "onde 1.8s var(--ease-sortie) infinite" },
       minHeight: { cible: "44px" },
       minWidth: { cible: "44px" },
     },

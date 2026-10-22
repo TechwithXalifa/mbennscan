@@ -2,6 +2,7 @@
 
 import { Droplets, Waves, type LucideIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Pastille } from "@/components/ui/pastille";
 import { formatNombre } from "@/lib/format";
 import { FOND_PRIORITE, LIBELLE_PRIORITE } from "@/lib/priorite";
 import type { ClasseEau, ZoneSynthese } from "@/types/contracts";
@@ -40,15 +41,14 @@ export function ListeZones({ zones, selection, onSelection }: Props) {
           aria-label="Filtrer par commune"
         >
           {[null, ...communes].map((c) => (
-            <button
+            <Pastille
               key={c ?? "toutes"}
-              type="button"
-              aria-pressed={commune === c}
+              active={commune === c}
               onClick={() => setCommune(c)}
-              className="min-h-cible shrink-0 rounded-pill border border-line px-3 text-petit aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-surface"
+              className="shrink-0 px-3"
             >
               {c ?? "Toutes"}
-            </button>
+            </Pastille>
           ))}
         </div>
       )}
