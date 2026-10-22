@@ -10,7 +10,7 @@ export default function PageZone({
   searchParams: { imprimer?: string };
 }) {
   return (
-    <main className="mx-auto min-h-dvh max-w-[680px] bg-surface px-4 py-6 print:max-w-none print:p-0">
+    <main className="mx-auto max-w-[680px] bg-surface px-4 py-6 print:max-w-none print:p-0">
       <Link href="/" className="inline-flex min-h-cible items-center text-petit text-primary print:hidden">
         ← Carte
       </Link>

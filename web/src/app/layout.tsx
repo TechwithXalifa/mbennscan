@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { BarreHaut } from "@/components/barre-haut";
+import { HorsLigne } from "@/components/hors-ligne";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -18,7 +20,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr" className={inter.variable}>
-      <body className="min-h-dvh bg-bg font-sans text-ink">{children}</body>
+      <body className="flex h-dvh flex-col bg-bg font-sans text-ink print:block print:h-auto">
+        <BarreHaut />
+        <HorsLigne />
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto print:overflow-visible">{children}</div>
+      </body>
     </html>
   );
 }

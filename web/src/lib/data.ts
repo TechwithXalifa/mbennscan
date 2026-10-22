@@ -64,9 +64,32 @@ function verifier<T>(data: T | null, error: { message: string } | null, quoi: st
   return data;
 }
 
+// ── Hors ligne ────────────────────────────────────────────────────────────────
+// Chaque lecture réussie est gardée dans le navigateur ; hors ligne, on la ressert.
+
+const PREFIXE = "mbennscan:";
+export const CLE_MAJ = `${PREFIXE}maj`;
+
+async function secours<T>(cle: string, lire: () => Promise<T>): Promise<T> {
+  try {
+    const valeur = await lire();
+    try {
+      localStorage.setItem(PREFIXE + cle, JSON.stringify(valeur));
+      localStorage.setItem(CLE_MAJ, new Date().toISOString());
+    } catch {
+      // Stockage plein ou interdit : l'application marche quand même, sans copie hors ligne.
+    }
+    return valeur;
+  } catch (e) {
+    const copie = typeof navigator !== "undefined" && !navigator.onLine ? localStorage.getItem(PREFIXE + cle) : null;
+    if (copie === null) throw e;
+    return JSON.parse(copie) as T;
+  }
+}
+
 // ── E1 : carte et top 10 ────────────────────────────────────────────────────
 
-export async function getZones(): Promise<ZonesGeoJSON> {
+async function lireZones(): Promise<ZonesGeoJSON> {
   if (USE_MOCKS) {
     const zones = await lireMock<ZonesGeoJSON>("zones.json");
     return zones ?? { type: "FeatureCollection", features: [] };
@@ -87,12 +110,12 @@ type LigneZone = Pick<ZoneSynthese, "id" | "nom" | "commune" | "population" | "p
   indicateurs_saison: IndicateurSaison[];
 };
 
-export async function getZoneDetail(id: string): Promise<ZoneDetail | null> {
+async function lireZoneDetail(id: string): Promise<ZoneDetail | null> {
   if (USE_MOCKS) {
     const detail = await lireMock<ZoneDetail>(`zone_detail_${id}.json`);
     if (detail) return detail;
     // Les mocks n'ont qu'une fiche complète : pour les autres zones, synthèse seule.
-    const zones = await getZones();
+    const zones = await lireZones();
     const zone = zones.features.find((f) => f.properties.id === id)?.properties;
     return zone ? { zone, indicateurs_saison: [] } : null;
   }
@@ -124,7 +147,7 @@ export async function getZoneDetail(id: string): Promise<ZoneDetail | null> {
 
 // ── E3 : après une pluie ────────────────────────────────────────────────────
 
-export async function getEvenements(): Promise<Evenement[]> {
+async function lireEvenements(): Promise<Evenement[]> {
   if (USE_MOCKS) {
     const evenements = (await lireMock<Evenement[]>("evenements.json")) ?? [];
     return [...evenements].sort((a, b) => b.date_pluie.localeCompare(a.date_pluie));
@@ -138,7 +161,7 @@ export async function getEvenements(): Promise<Evenement[]> {
   return verifier(data as Evenement[] | null, error, "Épisodes");
 }
 
-export async function getImpacts(evenementId: number): Promise<ImpactEvenement[]> {
+async function lireImpacts(evenementId: number): Promise<ImpactEvenement[]> {
   if (USE_MOCKS) {
     const impacts = (await lireMock<ImpactEvenement[]>(`impacts_evenement_${evenementId}.json`)) ?? [];
     return [...impacts].sort((a, b) => b.habitants_touches - a.habitants_touches);
@@ -220,6 +243,14 @@ export function abonnerMesures(baliseId: string, onMesure: (mesure: Mesure) => v
 // ── E6 : méthode ────────────────────────────────────────────────────────────
 
 /** run_meta n'est pas dans Supabase : hors mocks, il est lu dans public/data/run_meta.json. */
-export async function getRunMeta(): Promise<RunMeta | null> {
+async function lireRunMeta(): Promise<RunMeta | null> {
   return USE_MOCKS ? lireMock<RunMeta>("run_meta.json") : lireJson<RunMeta>("/data/run_meta.json");
 }
+
+// ── Lectures exportées, avec copie hors ligne ─────────────────────────────────
+
+export const getZones = () => secours("zones", lireZones);
+export const getZoneDetail = (id: string) => secours(`zone:${id}`, () => lireZoneDetail(id));
+export const getEvenements = () => secours("evenements", lireEvenements);
+export const getImpacts = (evenementId: number) => secours(`impacts:${evenementId}`, () => lireImpacts(evenementId));
+export const getRunMeta = () => secours("run_meta", lireRunMeta);

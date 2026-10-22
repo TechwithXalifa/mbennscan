@@ -7,10 +7,10 @@ import { ChiffreCle } from "@/components/ui/chiffre-cle";
 import { Compteur } from "@/components/ui/compteur";
 import { ActionsFiche } from "@/components/zone/actions-fiche";
 import { BadgePriorite, IndicateurConfiance } from "@/components/zone/badges";
-import { getZoneDetail, getZones, USE_MOCKS } from "@/lib/data";
+import { getEvenements, getZoneDetail, getZones, USE_MOCKS } from "@/lib/data";
 import { formatDate, formatNombre, formatPourcent } from "@/lib/format";
 import { EXPLICATION_EAU, historique, LIBELLE_EAU, ordinal, phraseSynthese, SUGGESTION_EAU } from "@/lib/synthese";
-import type { ZoneDetail } from "@/types/contracts";
+import type { Evenement, ZoneDetail } from "@/types/contracts";
 
 // Recharts n'est chargé que lorsqu'une fiche avec historique s'affiche.
 const HistogrammeSaisons = dynamic(() => import("@/components/zone/histogramme-saisons"), {
@@ -22,7 +22,7 @@ type Etat =
   | { statut: "chargement" }
   | { statut: "erreur"; message: string }
   | { statut: "inconnue" }
-  | { statut: "ok"; detail: ZoneDetail; total: number };
+  | { statut: "ok"; detail: ZoneDetail; total: number; pluie: Evenement | null };
 
 type Props = {
   id: string;
@@ -37,9 +37,14 @@ export function FicheZone({ id, autonome = false, imprimerAuChargement = false }
 
   const charger = useCallback(() => {
     setEtat({ statut: "chargement" });
-    Promise.all([getZoneDetail(id), getZones()])
-      .then(([detail, zones]) =>
-        setEtat(detail ? { statut: "ok", detail, total: zones.features.length } : { statut: "inconnue" }),
+    // Les épisodes servent au lien « Voir après la pluie » : leur absence ne bloque pas la fiche.
+    Promise.all([getZoneDetail(id), getZones(), getEvenements().catch(() => [])])
+      .then(([detail, zones, evenements]) =>
+        setEtat(
+          detail
+            ? { statut: "ok", detail, total: zones.features.length, pluie: evenements[0] ?? null }
+            : { statut: "inconnue" },
+        ),
       )
       .catch((e: unknown) => setEtat({ statut: "erreur", message: e instanceof Error ? e.message : String(e) }));
   }, [id]);
@@ -166,7 +171,7 @@ export function FicheZone({ id, autonome = false, imprimerAuChargement = false }
           Comment ces chiffres sont calculés
         </Link>
       </section>
-      <ActionsFiche id={zone.id} nom={zone.nom} autonome={autonome} />
+      <ActionsFiche id={zone.id} nom={zone.nom} autonome={autonome} pluie={etat.pluie} />
     </article>
   );
 }
