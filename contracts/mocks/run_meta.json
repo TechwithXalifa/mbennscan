@@ -22,7 +22,8 @@
     "persistance_courte_j": 6,
     "persistance_longue_j": 12,
     "occurrence_eau_permanente_min": 50,
-    "pente_max_deg": 5
+    "pente_max_deg": 5,
+    "taille_min_tache_px": 10
   },
   "images": [
     {
