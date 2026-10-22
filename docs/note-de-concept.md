@@ -26,7 +26,7 @@ MbënnScan repère par satellite les étendues d'eau qui persistent après les p
 **Comment un service l'utiliserait :**
 1. **Après une forte pluie**, il ouvre la carte de l'épisode : étendues d'eau détectées sur la première image radar, date de l'image, secteurs touchés.
 2. **Au fil des passages du satellite** (tous les 6 à 12 jours), il voit si l'eau se retire ou stagne : une eau qui reste plus de 12 jours signale une remontée probable de la nappe, où pomper seul risque d'être insuffisant.
-3. **Avant la saison**, il consulte le classement des zones selon les habitants exposés de 2020 à 2026, et l'imprime pour les réunions.
+3. **Avant la saison** (prévu), il consulte le classement des zones selon les habitants exposés de 2020 à 2026, et l'imprime pour les réunions.
 4. **Là où le satellite ne voit pas**, une balise mesure en continu le niveau d'eau d'un bassin ou d'un point bas.
 
 Nous avons esquissé ces écrans dans une application web (carte, fiche de zone, écran « après une pluie », balise en direct). **Ces écrans sont une maquette** : ils fonctionnent aujourd'hui sur des données fictives, marquées `[FICTIF]`. Les résultats réels sont ceux de la section 5.
@@ -59,7 +59,7 @@ Le traitement est fait dans Google Earth Engine (usage non commercial) avec un c
 
 - **Contrôle optique** : en 2020, l'eau radar recouvre bien les étendues d'eau visibles sur Sentinel-2.
 - **Sensibilité** : en faisant varier le seuil (-16 à -20 dB), la baisse minimale (2 à 4 dB) et la taille minimale (0,05 à 0,2 ha), l'eau nouvelle de 2020 reste entre 0,87 et 1,02 km². Le résultat principal ne dépend pas des réglages.
-- **Validation par des lieux signalés inondés** : 15 lieux cités ; 9 localisés dans OpenStreetMap (les 6 autres sont introuvables et n'ont pas été placés). L'eau est détectée aux abords de Mbeubeuss (22 ha en 2020), **mais pas dans les 8 lieux de quartier** (Parcelles Assainies, Jaxaay, Camille Basse, Darou Missette), à aucune des quatre dates testées. *Carte : `carte_validation_2020.jpg`.*
+- **Validation par des lieux signalés inondés** : 15 lieux cités ; 8 localisés dans OpenStreetMap (Jaxaay en deux secteurs), les 7 autres introuvables et non placés. L'eau est détectée aux abords de Mbeubeuss (22 ha en 2020), **mais pas dans les 7 lieux de quartier** (Parcelles Assainies, Jaxaay, Camille Basse, Darou Missette), à aucune des quatre dates testées. *Carte : `carte_validation_2020.jpg`.*
 
 ## 7. Limites
 

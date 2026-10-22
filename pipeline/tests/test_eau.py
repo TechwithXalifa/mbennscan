@@ -60,7 +60,9 @@ def test_lieux_figes():
     from pipeline import validation
 
     lieux = validation.charger_lieux()
+    # 15 lieux cités, 16 entrées : Jaxaay compte deux secteurs (Plan Jaxaay 01 et 02).
     assert len(lieux) == 16
+    assert sum(1 for lieu in lieux if lieu.statut == "introuvable") == 7
     assert {lieu.statut for lieu in lieux} == {"trouvé", "approché", "introuvable"}
     # Un lieu introuvable n'a jamais de coordonnées (jamais placé au hasard).
     assert all(lieu.geometrie is None for lieu in lieux if lieu.statut == "introuvable")

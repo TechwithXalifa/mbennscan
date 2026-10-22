@@ -12,7 +12,8 @@ import math
 import urllib.request
 
 from pipeline import config, eau
-from pipeline.validation import TAILLE_MIN_PX, ligne_markdown
+from pipeline.eau import TAILLE_MIN_PX
+from pipeline.validation import ligne_markdown
 
 ANNEES = range(2020, 2027)
 TAILLES_PX = (5, 10, 20)  # 0,05 / 0,1 / 0,2 ha

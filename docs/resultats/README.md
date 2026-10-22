@@ -14,7 +14,7 @@ Tous ces fichiers sortent d'Earth Engine (projet `sensat-hackathon`) avec les pa
 ## Ce qu'il faut retenir
 
 - **Le satellite voit les étendues d'eau** : en 2020, le débordement des lacs de Mbeubeuss et de Malika atteint environ 0,9 à 1 km² d'eau nouvelle, et ce résultat tient quel que soit le réglage (0,87 à 1,02 km²).
-- **Il ne voit pas l'eau dans les quartiers** à 10 m : sur 9 lieux signalés inondés et localisés dans OpenStreetMap, seuls les abords de Mbeubeuss montrent de l'eau. Réserve : les dates exactes des inondations signalées ne sont pas connues.
+- **Il ne voit pas l'eau dans les quartiers** à 10 m : sur 15 lieux signalés inondés, 8 sont localisés dans OpenStreetMap (7 introuvables, non placés) et seuls les abords de Mbeubeuss montrent de l'eau. Réserve : les dates exactes des inondations signalées ne sont pas connues.
 - **Octobre 2026** : peu d'eau nouvelle (0,11 à 0,14 km²), surtout au bord des lacs.
 - **Angle mort de la méthode** : une mare qui reste en eau toute l'année (près d'Unité 17, 2019 à 2021) est rangée dans la référence sèche et n'est pas comptée. À corriger avec une référence fixe antérieure aux inondations.
 - La baisse de l'eau nouvelle entre 2020 et 2026 ne peut pas être attribuée aux ouvrages : la pluie varie d'une année à l'autre et les lacs ont grossi entre 2021 et 2025.

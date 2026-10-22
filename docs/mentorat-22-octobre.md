@@ -18,7 +18,7 @@ Dans la banlieue de Dakar (Keur Massar, Pikine, Guédiawaye), l'eau des fortes p
 | --- | --- | --- |
 | Octobre 2020 | 0,9 à 1 km² | Débordement des lacs de Mbeubeuss et de Malika, confirmé par Sentinel-2 ; stable quel que soit le réglage (0,87 à 1,02 km²) |
 | Octobre 2026 | 0,11 / 0,14 / 0,13 km² (6, 12, 18 oct.) | Peu d'eau à découvert, surtout au bord des lacs |
-| Validation | 1 lieu sur 9 | Sur 9 lieux signalés inondés et localisés dans OSM, seuls les abords de Mbeubeuss montrent de l'eau |
+| Validation | 1 lieu sur 8 | 15 lieux signalés inondés, 8 localisés dans OSM (7 introuvables) : seuls les abords de Mbeubeuss montrent de l'eau |
 
 Cartes : `docs/resultats/` (séquence d'octobre 2026, carte de validation 2020, contrôle optique 2020).
 

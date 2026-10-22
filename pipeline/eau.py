@@ -5,7 +5,8 @@
 
 Pour chaque date : mosaïque des tranches de l'orbite, filtre de chatoiement, comparaison avec la
 référence sèche (médiane février-mai de la même orbite et de la même année), seuil d'Otsu borné,
-masques eau permanente et pentes. Écrit pipeline/out/eau_<date>.geojson et affiche les surfaces.
+masques eau permanente et pentes, taches d'au moins 0,1 ha. Écrit pipeline/out/eau_<date>.geojson
+et affiche les surfaces, comme docs/resultats.
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ from pipeline import config
 ORBITE_DEMO = 133
 DATES_DEMO = ("2026-10-06", "2026-10-12", "2026-10-18")
 ECHELLE_M = 10
+TAILLE_MIN_PX = 10  # 0,1 ha ; deviendra PARAMETRES.taille_min_tache_px avec la PR de contrat (#70)
 TOLERANCE_SIMPLIFICATION_M = 10
 
 
@@ -82,7 +84,10 @@ def image_du_jour(geom, jour: str, orbite: int):
 
     d = ee.Date(jour)
     col = _s1(geom, orbite).filterDate(d, d.advance(1, "day"))
-    return _filtre_chatoiement(col.mosaic()).set("nb_tranches", col.size())
+    # La mosaïque perd la projection native : sans elle, la médiane 3 × 3 se ferait à l'échelle demandée
+    # (20 m pour l'histogramme, 10 m pour la détection) au lieu des pixels de 10 m de Sentinel-1.
+    mosaique = col.mosaic().setDefaultProjection(col.first().projection())
+    return _filtre_chatoiement(mosaique).set("nb_tranches", col.size())
 
 
 def reference_seche(geom, annee: int, orbite: int):
@@ -185,10 +190,11 @@ def main(argv: list[str] | None = None) -> None:
     for jour in args.dates:
         date.fromisoformat(jour)  # format AAAA-MM-JJ
         d = detecter(geom, jour, args.orbite)
-        km2 = surface_km2(d.eau, geom)
+        eau_filtree = filtrer_taches(d.eau, TAILLE_MIN_PX)  # mêmes km² que docs/resultats
+        km2 = surface_km2(eau_filtree, geom)
         print(f"{jour}  seuil {d.seuil_db:.2f} dB ({d.origine_seuil})  eau {km2:.3f} km²")
         if not args.sans_polygones:
-            fc = polygones(d.eau, geom)
+            fc = polygones(eau_filtree, geom)
             p = sortie / f"eau_{jour}.geojson"
             p.write_text(json.dumps(fc), encoding="utf-8")
             print(f"  {len(fc['features'])} polygone(s) → {p.relative_to(config.RACINE)}")

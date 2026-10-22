@@ -5,6 +5,7 @@ Le satellite voit-il l'eau là où elle a été signalée ?
     python -m pipeline.validation
 
 Lieux : data/validation/lieux_osm.geojson (OpenStreetMap, ODbL), figés avec leur identifiant OSM.
+15 lieux cités, 16 entrées (Jaxaay en deux secteurs) : 8 lieux localisés, 7 introuvables.
 Pour chaque lieu localisé et chaque date : surface d'eau détectée (taches ≥ taille minimale) dans un
 rayon de 200 m, et type de lieu. Écrit pipeline/out/validation/ : tableau (CSV et Markdown) et carte.
 """
@@ -21,7 +22,7 @@ LIEUX_PATH = config.DATA_DIR / "validation" / "lieux_osm.geojson"
 RAYON_M = 200
 DISTANCE_BORD_EAU_M = 300
 PART_BATI_MIN = 0.5
-TAILLE_MIN_PX = 10  # 0,1 ha ; deviendra PARAMETRES.taille_min_tache_px avec la PR de contrat
+TAILLE_MIN_PX = eau.TAILLE_MIN_PX
 DATES = ("2020-10-06", "2022-08-21", "2026-10-06", "2026-10-12")
 ANNEES_SECHES = range(2017, 2027)
 
