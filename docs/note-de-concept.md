@@ -29,7 +29,7 @@ MbënnScan repère par satellite les étendues d'eau qui persistent après les p
 3. **Avant la saison** (prévu), il consulte le classement des zones selon les habitants exposés de 2020 à 2026, et l'imprime pour les réunions.
 4. **Là où le satellite ne voit pas**, une balise mesure en continu le niveau d'eau d'un bassin ou d'un point bas.
 
-Nous avons esquissé ces écrans dans une application web (carte, fiche de zone, écran « après une pluie », balise en direct). **Ces écrans sont une maquette** : ils fonctionnent aujourd'hui sur des données fictives, marquées `[FICTIF]`. Les résultats réels sont ceux de la section 5.
+Nous avons esquissé ces écrans dans une application web, consultable sur téléphone et ordinateur : **https://mbennscan-seven.vercel.app** (carte, fiche de zone, écran « après une pluie », balise en direct). **Ces écrans sont une maquette** : ils fonctionnent aujourd'hui sur des données fictives, marquées `[FICTIF]`. Les résultats réels sont ceux de la section 5.
 
 ## 4. Les données
 
