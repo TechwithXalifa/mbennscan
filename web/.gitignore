@@ -37,3 +37,7 @@ next-env.d.ts
 
 # mocks copiés depuis contracts/mocks (npm run mocks)
 /public/mocks/
+
+# Playwright
+/test-results/
+/playwright-report/

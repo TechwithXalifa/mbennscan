@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "mocks": "node scripts/copier-mocks.mjs",
     "predev": "npm run mocks",
-    "prebuild": "npm run mocks"
+    "prebuild": "npm run mocks",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
@@ -27,6 +28,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
