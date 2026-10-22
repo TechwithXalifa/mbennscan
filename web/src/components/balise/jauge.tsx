@@ -10,7 +10,8 @@ type Props = {
 
 /**
  * Réservoir vertical qui se remplit, avec la ligne du seuil d'alerte.
- * La surface de l'eau ondule ; au-delà du seuil, le bord passe au rouge et pulse (le texte « Seuil dépassé » reste affiché à côté).
+ * La surface de l'eau ondule. Au-delà du seuil, le bord ne change pas de couleur : les couleurs de priorité
+ * sont réservées à la priorité, « Seuil dépassé » est écrit à côté.
  */
 export function Jauge({ niveauCm, hauteurCm, seuilCm }: Props) {
   const pct = (cm: number) => Math.min(100, Math.max(0, (cm / hauteurCm) * 100));
@@ -23,7 +24,7 @@ export function Jauge({ niveauCm, hauteurCm, seuilCm }: Props) {
       aria-valuemax={hauteurCm}
       aria-valuenow={niveauCm}
       aria-valuetext={`${formatNombre(Math.round(niveauCm))} cm${depasse ? ", seuil dépassé" : ""}`}
-      className={`relative h-64 w-28 overflow-hidden rounded-md border-2 bg-surface ${depasse ? "animate-alerte border-prio-high" : "border-ink-2"}`}
+      className="relative h-64 w-28 overflow-hidden rounded-md border-2 border-ink-2 bg-surface"
     >
       <div
         className="absolute inset-x-0 bottom-0 bg-water transition-[height] duration-700"
