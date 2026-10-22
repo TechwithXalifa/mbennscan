@@ -4,10 +4,11 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ChiffreCle } from "@/components/ui/chiffre-cle";
+import { BandeauMaquette } from "@/components/ui/etats";
 import { Compteur } from "@/components/ui/compteur";
 import { ActionsFiche } from "@/components/zone/actions-fiche";
 import { BadgePriorite, IndicateurConfiance } from "@/components/zone/badges";
-import { getEvenements, getZoneDetail, getZones, USE_MOCKS } from "@/lib/data";
+import { estMaquette, getEvenements, getZoneDetail, getZones } from "@/lib/data";
 import { formatDate, formatNombre, formatPourcent } from "@/lib/format";
 import { EXPLICATION_EAU, historique, LIBELLE_EAU, ordinal, phraseSynthese, SUGGESTION_EAU } from "@/lib/synthese";
 import type { Evenement, ZoneDetail } from "@/types/contracts";
@@ -86,9 +87,12 @@ export function FicheZone({ id, autonome = false, imprimerAuChargement = false }
 
   const { zone, indicateurs_saison } = etat.detail;
   const h = historique(indicateurs_saison);
+  const maquette = estMaquette([zone.nom]);
 
   return (
     <article className="space-y-6">
+      {/* Dans le panneau de la carte, le bandeau de la carte suffit ; en page seule ou imprimée, il est ici. */}
+      {maquette && autonome && <BandeauMaquette />}
       <header>
         <h1 className="text-titre1">{zone.nom}</h1>
         <p className="text-ink-2">{zone.commune}</p>
@@ -131,7 +135,7 @@ export function FicheZone({ id, autonome = false, imprimerAuChargement = false }
           mot={zone.classe_eau !== null}
           valeur={zone.classe_eau ? LIBELLE_EAU[zone.classe_eau] : "–"}
           intitule="Type d'eau"
-          phrase={zone.classe_eau ? EXPLICATION_EAU[zone.classe_eau] : "Pas d'eau observée."}
+          phrase={zone.classe_eau ? EXPLICATION_EAU[zone.classe_eau] : "Pas d'étendue d'eau visible par satellite."}
         />
       </div>
 
@@ -166,7 +170,7 @@ export function FicheZone({ id, autonome = false, imprimerAuChargement = false }
         </p>
         {zone.confiance === "faible" && <p>Mesure moins fiable : à vérifier sur le terrain.</p>}
         {zone.part_bati != null && <p>Part de bâti dans la zone : {formatPourcent(zone.part_bati)}.</p>}
-        {USE_MOCKS && <p>Données factices [FICTIF].</p>}
+        {maquette && <p>Données fictives [FICTIF] : maquette de l&apos;outil.</p>}
         <Link href="/methode" className="mt-1 inline-flex min-h-cible items-center text-primary underline">
           Comment ces chiffres sont calculés
         </Link>

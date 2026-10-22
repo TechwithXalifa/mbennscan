@@ -342,7 +342,7 @@ Police unique : Inter (Google Fonts), qui gère le tréma et les accents. Chiffr
 
 | Composant | Description |
 | --- | --- |
-| Badge de priorité | Pastille arrondie : point de couleur + texte « Priorité forte / moyenne / faible » ou « Pas d'eau observée » |
+| Badge de priorité | Pastille arrondie : point de couleur + texte « Priorité forte / moyenne / faible » ou « Pas d'étendue d'eau visible par satellite » |
 | Indicateur de confiance | Trois points remplis selon le niveau + mot « Élevée / Moyenne / Faible » ; une infobulle explique pourquoi |
 | Carte de chiffre clé | Valeur en grand, intitulé, phrase d'explication, icône « i » qui ouvre une infobulle |
 | Sélecteur de mode | Contrôle segmenté en haut : « Avant la saison » · « Après une pluie » · « Balise » |

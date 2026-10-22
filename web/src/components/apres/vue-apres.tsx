@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ListeUrgence } from "@/components/apres/liste-urgence";
 import { PanneauZones } from "@/components/carte/panneau-zones";
-import { getEvenements, getImpacts, getZones, USE_MOCKS } from "@/lib/data";
+import { BandeauMaquette } from "@/components/ui/etats";
+import { estMaquette, getEvenements, getImpacts, getZones } from "@/lib/data";
 import { formatDate, formatNombre } from "@/lib/format";
 import { surfaceHectares } from "@/lib/geo";
 import type { Evenement, ImpactEvenement, ZonesGeoJSON } from "@/types/contracts";
@@ -64,6 +65,7 @@ export function VueApres({ evenementId }: { evenementId: number }) {
     () => new Map(etat.statut === "ok" ? etat.d.zones.features.map((f) => [f.properties.id, f.properties]) : []),
     [etat],
   );
+  const maquette = etat.statut === "ok" && estMaquette(etat.d.zones.features.map((f) => f.properties.nom));
 
   return (
     <>
@@ -91,6 +93,7 @@ export function VueApres({ evenementId }: { evenementId: number }) {
             </button>
           </div>
         )}
+        {maquette && <BandeauMaquette className="absolute left-3 right-16 top-3 z-10 w-fit" />}
       </div>
       <PanneauZones
         sousTitre="Après une pluie"
@@ -115,7 +118,7 @@ export function VueApres({ evenementId }: { evenementId: number }) {
             {evenement && (
               <p className="rounded-sm bg-bg p-2 text-petit">
                 {fraicheur(evenement)}
-                {USE_MOCKS && " Données factices [FICTIF]."}
+                {maquette && " Données fictives [FICTIF]."}
               </p>
             )}
           </header>
@@ -133,7 +136,7 @@ export function VueApres({ evenementId }: { evenementId: number }) {
           </div>
         )}
         {evenement && evenement.eau_geojson && impacts.length === 0 && (
-          <p>Aucune eau détectée dans les zones calculées sur cette image.</p>
+          <p>Aucune eau visible par le radar dans les zones calculées sur cette image.</p>
         )}
         {evenement && evenement.eau_geojson && (
           <ListeUrgence impacts={impacts} zones={zonesParId} selection={selection} onSelection={setSelection} />
