@@ -10,6 +10,11 @@
 //   est vidée dans l'ordre et chaque mesure garde sa vraie date, sans en perdre aucune.
 // LED : lente = OK, rapide = erreur réseau.
 //
+// [TEST] Bouton « Coupure » (GPIO 4) : simule une absence de réseau (compilé seulement avec
+//   -DSIMULATION_COUPURE ; absent du firmware de terrain).
+//   1er appui = coupure (les mesures continuent et s'accumulent dans la file, rien n'est envoyé)
+//   2e appui  = réseau rétabli (la file est vidée dans l'ordre, avec les bons age_s)
+//
 // Contrat : contracts/schemas/mesure_entrante.schema.json
 
 #include <Arduino.h>
@@ -22,6 +27,9 @@
 
 // ── Broches (modifiables) ────────────────────────────────────────────────────
 #define PIN_LED   2     // LED bleue intégrée de la plupart des ESP32 DevKit
+#ifdef SIMULATION_COUPURE
+#define PIN_BTN_COUPURE 4   // [TEST] bouton vers GND (INPUT_PULLUP) : simule une coupure réseau
+#endif
 #if defined(CAPTEUR_TRIG_ECHO)
   #define PIN_TRIG 25
   #define PIN_ECHO 26   // ATTENTION : si le capteur est alimenté en 5 V, ECHO sort en 5 V
@@ -33,6 +41,12 @@
   #error "Choisir un environnement PlatformIO : jsn_sr04t ou a02yyuw"
 #endif
 
+// Canal Wi-Fi : 0 = recherche automatique (valeur de terrain).
+// Wokwi-GUEST émet sur le canal 6 : y définir WIFI_CHANNEL 6 pour une connexion plus rapide.
+#ifndef WIFI_CHANNEL
+  #define WIFI_CHANNEL 0
+#endif
+
 // ── Paramètres de mesure ─────────────────────────────────────────────────────
 static const uint8_t  NB_LECTURES    = 5;
 static const uint8_t  NB_VALIDES_MIN = 3;
@@ -41,6 +55,7 @@ static const float    DIST_MAX_CM    = 600.0f;
 static const uint32_t PAUSE_LECTURE_MS = 80;
 static const uint32_t AGE_MAX_S    = 86400;  // limite du contrat (age_s ≤ 86400) ; au-delà, mesure abandonnée
 static const int      RSSI_INCONNU = 1;   // hors plage (-120…0) : pas de mesure → envoyé en null
+static const int      PAS_DE_WIFI  = -100; // [MODIF] code interne : Wi-Fi pas connecté, rien envoyé
 
 // ── File d'attente ───────────────────────────────────────────────────────────
 static const size_t FILE_MAX = 50;
@@ -68,6 +83,8 @@ static uint32_t prochainEnvoi   = 0;
 static uint32_t attenteMs       = 1000;      // attente croissante : 1 s → 60 s
 static bool     echecEnvoi      = false;
 static uint32_t dernierWifi     = 0;
+static bool     wifiOk          = false;     // [MODIF] état Wi-Fi au tour précédent
+static bool     reseauCoupe     = false;     // [TEST] true = coupure réseau simulée par le bouton
 
 // ── Capteur ──────────────────────────────────────────────────────────────────
 #if defined(CAPTEUR_TRIG_ECHO)
@@ -119,17 +136,47 @@ static float mesurerMediane() {
   return (n % 2) ? v[n / 2] : (v[n / 2 - 1] + v[n / 2]) / 2.0f;
 }
 
+#ifdef SIMULATION_COUPURE
+// ── [TEST] Bouton de coupure réseau simulée ─────────────────────────────────
+// Anti-rebond : l'état n'est pris en compte que s'il est stable depuis 50 ms.
+static void gererBoutonCoupure(uint32_t now) {
+  static bool     etatStable  = HIGH;   // INPUT_PULLUP : HIGH = relâché, LOW = appuyé
+  static bool     dernierLu   = HIGH;
+  static uint32_t tChangement = 0;
+
+  bool lu = digitalRead(PIN_BTN_COUPURE);
+  if (lu != dernierLu) { dernierLu = lu; tChangement = now; }
+
+  if ((now - tChangement) > 50 && lu != etatStable) {
+    etatStable = lu;
+    if (etatStable == LOW) {            // front descendant = un appui
+      reseauCoupe = !reseauCoupe;
+      if (reseauCoupe) {
+        Serial.println("[test] >>> COUPURE RESEAU simulee : les mesures s'accumulent en file");
+      } else {
+        Serial.printf("[test] >>> reseau retabli : %u mesure(s) a envoyer\n", (unsigned)fileTaille);
+        attenteMs = 1000;               // on repart tout de suite, sans attente résiduelle
+        prochainEnvoi = now;
+        echecEnvoi = false;
+      }
+    }
+  }
+}
+
+#endif  // SIMULATION_COUPURE
+
 // ── Réseau ───────────────────────────────────────────────────────────────────
 static void connecterWifi() {
   WiFi.mode(WIFI_STA);
   WiFi.setAutoReconnect(true);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);    // [MODIF] canal explicite
   dernierWifi = millis();
 }
 
-// Renvoie le code HTTP (201, 400, 401, 429…) ou -1 si la requête n'a pas abouti.
+// Renvoie le code HTTP (201, 400, 401, 429…), un code négatif de HTTPClient si la requête
+// n'a pas abouti, ou PAS_DE_WIFI si rien n'a été tenté.
 static int envoyer(const Mesure &m) {
-  if (WiFi.status() != WL_CONNECTED) return -1;
+  if (WiFi.status() != WL_CONNECTED) return PAS_DE_WIFI; // [MODIF] distinct d'un échec HTTP
 
   char rssiTxt[8];
   if (m.rssi == RSSI_INCONNU) strcpy(rssiTxt, "null");
@@ -141,20 +188,39 @@ static int envoyer(const Mesure &m) {
            "{\"balise_id\":\"%s\",\"distance_cm\":%.1f,\"rssi\":%s,\"age_s\":%lu}",
            BALISE_ID, m.distance_cm, rssiTxt, (unsigned long)age_s);
 
-  WiFiClientSecure client;
+  // [MODIF] Client TLS conservé entre les envois : on évite un handshake complet à chaque mesure
+  // (c'est lui qui provoque les « connection refused » sur la passerelle simulée de Wokwi).
+  static WiFiClientSecure client;
   client.setInsecure();   // TODO(sécurité) : épingler le certificat racine avant la mise en service terrain
   HTTPClient http;
+  http.setReuse(true);
   http.setTimeout(8000);
-  if (!http.begin(client, MESURE_URL)) return -1;
+  if (!http.begin(client, MESURE_URL)) {
+    Serial.println("[envoi] MESURE_URL invalide (vérifier secrets.h)");  // [MODIF]
+    return -1;
+  }
   http.addHeader("Content-Type", "application/json");
   http.addHeader("Authorization", String("Bearer ") + BALISE_API_KEY);
   int code = http.POST((uint8_t *)corps, strlen(corps));
+  if (code < 0) {                                        // [MODIF] cause lisible de l'échec
+    Serial.printf("[envoi] HTTPS : %s\n", http.errorToString(code).c_str());
+    client.stop();                                       // [MODIF] connexion douteuse : on repart d'une session neuve
+  } else if (code != 201) {
+    Serial.println(http.getString());                    // ex. {"erreur":"..."}
+  }
   http.end();
   return code;
 }
 
 static void traiterFile() {
   if (fileTaille == 0 || (int32_t)(millis() - prochainEnvoi) < 0) return;
+
+  // [TEST] Coupure simulée : rien n'est envoyé, la file continue de grossir.
+  if (reseauCoupe) return;
+
+  // [MODIF] Pas de Wi-Fi : on attend sans faire grimper l'attente ; l'envoi repart
+  // tout seul dès la reconnexion (voir loop()).
+  if (WiFi.status() != WL_CONNECTED) return;
 
   const Mesure &m = file[fileTete];
   if ((millis() - m.t_ms) / 1000 > AGE_MAX_S) {          // trop ancienne pour le contrat : 400 assuré
@@ -165,7 +231,8 @@ static void traiterFile() {
   int code = envoyer(m);
 
   if (code == 201) {
-    Serial.printf("[envoi] 201 OK  %.1f cm (reste %u)\n", m.distance_cm, (unsigned)(fileTaille - 1));
+    Serial.printf("[envoi] 201 OK  %.1f cm, age %lu s (reste %u)\n", m.distance_cm,
+                  (unsigned long)((millis() - m.t_ms) / 1000), (unsigned)(fileTaille - 1));
     depiler();
     echecEnvoi = false;
     attenteMs = 1000;
@@ -177,7 +244,7 @@ static void traiterFile() {
   } else if (code == 429) {
     Serial.println("[envoi] 429 trop rapide, on patiente");
     prochainEnvoi = millis() + 2000;
-  } else {                                               // 401, 5xx, pas de réseau…
+  } else {                                               // 401, 5xx, échec HTTPS…
     if (code == 401) Serial.println("[envoi] 401 clé de balise invalide (vérifier secrets.h)");
     else Serial.printf("[envoi] échec (%d), nouvel essai dans %lu s\n", code, (unsigned long)(attenteMs / 1000));
     echecEnvoi = true;
@@ -187,7 +254,8 @@ static void traiterFile() {
 }
 
 static void majLed() {
-  bool erreur = echecEnvoi || WiFi.status() != WL_CONNECTED;
+  // [TEST] la coupure simulée allume le même signal qu'une vraie erreur réseau
+  bool erreur = reseauCoupe || echecEnvoi || WiFi.status() != WL_CONNECTED;
   uint32_t demiPeriode = erreur ? 100 : 1000;            // rapide = erreur, lente = OK
   digitalWrite(PIN_LED, (millis() / demiPeriode) % 2);
 }
@@ -196,6 +264,9 @@ static void majLed() {
 void setup() {
   Serial.begin(115200);
   pinMode(PIN_LED, OUTPUT);
+#ifdef SIMULATION_COUPURE
+  pinMode(PIN_BTN_COUPURE, INPUT_PULLUP);                // [TEST]
+#endif
 #if defined(CAPTEUR_TRIG_ECHO)
   pinMode(PIN_TRIG, OUTPUT);
   pinMode(PIN_ECHO, INPUT);
@@ -204,13 +275,39 @@ void setup() {
 #endif
   Serial.printf("\nMbënnScan balise %s — intervalle %d ms\n", BALISE_ID, MESURE_INTERVALLE_MS);
   connecterWifi();
+
+  // [MODIF] On attend le Wi-Fi (15 s max) avant la première mesure,
+  // pour que le premier envoi parte tout de suite.
+  Serial.printf("[wifi] connexion à %s", WIFI_SSID);
+  uint32_t t0 = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - t0 < 15000) {
+    delay(250);
+    Serial.print(".");
+  }
+  Serial.println(WiFi.status() == WL_CONNECTED ? " OK" : " pas encore, on continue");
 }
 
 void loop() {
   uint32_t now = millis();
 
+#ifdef SIMULATION_COUPURE
+  gererBoutonCoupure(now);                               // [TEST]
+#endif
+
+  // [MODIF] Le Wi-Fi vient de (re)venir : on remet l'attente à zéro et on vide la file tout de suite
+  bool connecte = WiFi.status() == WL_CONNECTED;
+  if (connecte && !wifiOk) {
+    Serial.printf("[wifi] connecté, IP %s, rssi %d\n", WiFi.localIP().toString().c_str(), WiFi.RSSI());
+    attenteMs = 1000;
+    prochainEnvoi = now;
+    echecEnvoi = false;
+  } else if (!connecte && wifiOk) {
+    Serial.println("[wifi] coupé, les mesures sont gardées en file");
+  }
+  wifiOk = connecte;
+
   // L'auto-reconnexion gère les coupures ; si le Wi-Fi reste coupé 30 s, on relance
-  if (WiFi.status() != WL_CONNECTED && now - dernierWifi > 30000) {
+  if (!connecte && now - dernierWifi > 30000) {
     Serial.println("[wifi] toujours coupé, nouvelle tentative…");
     WiFi.reconnect();
     dernierWifi = now;
@@ -222,11 +319,20 @@ void loop() {
     if (isnan(d)) {
       Serial.println("[mesure] lecture invalide (hors 20–600 cm ou capteur muet), ignorée");
     } else {
-      Mesure m = { d, WiFi.status() == WL_CONNECTED ? WiFi.RSSI() : RSSI_INCONNU, millis() };
-      Serial.printf("[mesure] %.1f cm, rssi %d, file %u\n", m.distance_cm, m.rssi, (unsigned)(fileTaille + 1));
+      // [TEST] pendant la coupure simulée, pas de RSSI (comme sans réseau)
+      bool reseauOk = !reseauCoupe && WiFi.status() == WL_CONNECTED;
+      Mesure m = { d, reseauOk ? WiFi.RSSI() : RSSI_INCONNU, millis() };
       empiler(m);
+
+      if (reseauCoupe) {
+        Serial.printf("[file] pas de reseau : %.1f cm stockee en memoire (file %u)\n",
+                      m.distance_cm, (unsigned)fileTaille);
+      } else {
+        Serial.printf("[mesure] %.1f cm, rssi %d, file %u\n",
+                      m.distance_cm, m.rssi, (unsigned)fileTaille);
+      }
     }
-  }
+  } 
 
   traiterFile();
   majLed();
