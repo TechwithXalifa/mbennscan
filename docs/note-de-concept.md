@@ -29,7 +29,7 @@ MbënnScan repère par satellite les étendues d'eau qui persistent après les p
 3. **Avant la saison** (prévu), il consulte le classement des zones selon les habitants exposés de 2020 à 2026, et l'imprime pour les réunions.
 4. **Là où le satellite ne voit pas**, une balise mesure en continu le niveau d'eau d'un bassin ou d'un point bas.
 
-Nous avons esquissé ces écrans dans une application web (carte, fiche de zone, écran « après une pluie », balise en direct). **Ces écrans sont une maquette** : ils fonctionnent aujourd'hui sur des données fictives, marquées `[FICTIF]`. Les résultats réels sont ceux de la section 5.
+Nous avons esquissé ces écrans dans une application web, consultable sur téléphone et ordinateur : **https://mbennscan-seven.vercel.app** (carte, fiche de zone, écran « après une pluie », balise en direct). **Ces écrans sont une maquette** : ils fonctionnent aujourd'hui sur des données fictives, marquées `[FICTIF]`. Les résultats réels sont ceux de la section 5.
 
 ## 4. Les données
 
@@ -55,6 +55,8 @@ Le traitement est fait dans Google Earth Engine (usage non commercial) avec un c
 
 **Exemple 3 : sept hivernages comparés.** L'eau nouvelle maximale par saison passe de 0,95 km² en 2020 à 0,17 km² en 2026 (série dans `series_et_sensibilite.md`). Cette baisse ne peut pas être attribuée aux ouvrages : la pluie varie d'une année à l'autre et les lacs ont grossi entre 2021 et 2025.
 
+**Exemple 4 : la balise, testée en simulation.** Le firmware de l'ESP32 a été exécuté dans le simulateur Wokwi, avec un capteur à ultrasons simulé. La chaîne logicielle fonctionne de bout en bout : 498 mesures reçues par le serveur (fonction Supabase), gardées en file pendant une coupure réseau simulée, puis envoyées avec leur vraie date grâce au champ `age_s`. *Vidéo de la simulation : lien dans `firmware/README.md`.*
+
 ## 6. Contrôle des résultats
 
 - **Contrôle optique** : en 2020, l'eau radar recouvre bien les étendues d'eau visibles sur Sentinel-2.
@@ -70,6 +72,7 @@ Le traitement est fait dans Google Earth Engine (usage non commercial) avec un c
 - **« Stagnation durable » signale une remontée de nappe probable**, à confirmer avec les services hydrauliques.
 - **Une carte d'eau observée n'est pas une prévision**, et l'exposition n'est pas une évaluation complète du risque.
 - **Le nombre d'habitants au contact de l'eau** n'est pas encore calculé dans cette démonstration ; la méthode (population WorldPop, bâtiments Open Buildings) est prévue.
+- **La balise n'a pas encore été testée avec un capteur physique** : seule sa simulation (Wokwi) l'a été. L'écran « Balise » de l'application affiche ces mesures simulées, signalées comme telles.
 
 ## 8. Prochaines étapes
 
