@@ -50,7 +50,7 @@ export function ControleSegmente<T extends string>({
             onClick={() => onChange(s.valeur)}
             onKeyDown={(e) => clavier(e, i)}
             className={cn(
-              "min-h-cible flex-1 whitespace-nowrap rounded-sm px-3 text-petit font-medium transition-colors",
+              "min-h-cible flex-1 whitespace-nowrap rounded-sm px-2 text-petit font-medium transition-colors sm:px-3",
               coche ? "bg-surface text-ink shadow-float" : "text-ink-2 hover:text-ink",
             )}
           >

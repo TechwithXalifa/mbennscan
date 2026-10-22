@@ -3,7 +3,7 @@
 import { ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const HAUTEURS = ["h-[140px]", "h-[50dvh]", "h-[calc(100dvh-var(--topbar-h))]"] as const;
+const HAUTEURS = ["h-[140px]", "h-[50dvh]", "h-full"] as const;
 const LIBELLES = ["Agrandir la liste", "Afficher en plein écran", "Réduire la liste"] as const;
 
 /**
