@@ -63,7 +63,7 @@ export function VueApres({ evenementId }: { evenementId: number }) {
     <>
       <div className="relative flex-1">
         {etat.statut === "ok" && (
-          <CarteZones zones={etat.d.zones} mode="contour" eau={evenement?.eau_geojson ?? null} />
+          <CarteZones zones={etat.d.zones} mode="contour" eau={evenement?.eau_geojson ?? null} feuille="moitie" />
         )}
         {etat.statut === "chargement" && <div className="absolute inset-0 animate-pulse bg-line" aria-busy="true" />}
         {etat.statut === "erreur" && (

@@ -71,6 +71,12 @@ body {
   }
 }
 
+/* Boutons de zoom MapLibre à 44 px ; sélecteur renforcé car leur CSS se charge après celle-ci */
+.maplibregl-ctrl.maplibregl-ctrl-group button {
+  width: 44px;
+  height: 44px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

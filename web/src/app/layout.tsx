@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { STYLE_CARTE } from "@/lib/design";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -18,6 +19,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr" className={inter.variable}>
+      <head>
+        {/* Le fond de carte est le plus long à venir : ouvrir la connexion dès le HTML. */}
+        <link rel="preconnect" href={new URL(STYLE_CARTE).origin} crossOrigin="" />
+      </head>
       <body className="min-h-dvh bg-bg font-sans text-ink">{children}</body>
     </html>
   );
