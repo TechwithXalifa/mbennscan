@@ -63,6 +63,23 @@ jobs:
         working-directory: .
         run: echo "Pas encore d'application dans web/"
 
+  parcours:
+    name: Web (parcours de démo)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+
   secrets:
     name: Recherche de secrets
     runs-on: ubuntu-latest
