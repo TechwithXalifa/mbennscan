@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { useState } from "react";
 import { Bouton } from "@/components/ui/bouton";
 import { ChiffreCle } from "@/components/ui/chiffre-cle";
+import { Compteur } from "@/components/ui/compteur";
 import { ControleSegmente } from "@/components/ui/controle-segmente";
 import { Encart } from "@/components/ui/encart";
 import { AlerteErreur, Bandeau, EtatVide, PastilleEtat } from "@/components/ui/etats";
@@ -151,7 +152,7 @@ export function Catalogue() {
       <Section titre="Donnée">
         <div className="grid grid-cols-2 gap-3">
           <ChiffreCle
-            valeur="14 j"
+            valeur={<Compteur valeur={14} format={(n) => `${Math.round(n)} j`} />}
             intitule="Durée moyenne"
             phrase="Combien de temps l'eau reste après une forte pluie."
             info="Moyenne sur les hivernages 2020-2026, calculée sur les images radar exploitables."

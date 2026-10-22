@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Legende } from "@/components/carte/legende";
 import { PanneauZones } from "@/components/carte/panneau-zones";
 import { ListeZones } from "@/components/liste-zones";
+import { Squelette } from "@/components/ui/squelette";
 import { getZones, USE_MOCKS } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import type { ZonesGeoJSON } from "@/types/contracts";
@@ -93,7 +94,9 @@ export function VueCarte() {
         ) : (
           <ul className="space-y-2 py-2" aria-busy={etat.statut === "chargement"}>
             {[0, 1, 2].map((i) => (
-              <li key={i} className="h-cible animate-pulse rounded-sm bg-line" />
+              <li key={i}>
+                <Squelette className="h-cible" />
+              </li>
             ))}
           </ul>
         )}
