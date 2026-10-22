@@ -7,7 +7,7 @@ import { formatDate } from "@/lib/format";
 
 /**
  * Enregistre le service worker (en production) et affiche
- * « Vous êtes hors ligne : données du … affichées » quand le réseau tombe.
+ * « Vous êtes hors ligne : données enregistrées sur cet appareil le … » quand le réseau tombe.
  */
 export function HorsLigne() {
   const [horsLigne, setHorsLigne] = useState(false);
@@ -40,7 +40,7 @@ export function HorsLigne() {
   return (
     <Bandeau horsLigne className="rounded-none print:hidden">
       {maj
-        ? `Vous êtes hors ligne : données du ${formatDate(maj)} affichées.`
+        ? `Vous êtes hors ligne : données enregistrées sur cet appareil le ${formatDate(maj)}.`
         : "Vous êtes hors ligne : aucune donnée enregistrée sur cet appareil."}
     </Bandeau>
   );

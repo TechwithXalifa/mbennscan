@@ -41,11 +41,17 @@ export function VueBalise({ id }: { id: string }) {
   }, [id]);
 
   useEffect(charger, [charger]);
-  // Après une coupure, la file arrive dans le désordre : on retrie par date de mesure.
+  // Après une coupure, la file arrive dans le désordre : on retrie par date de mesure (Date.parse, car
+  // REST et Realtime n'écrivent pas l'heure pareil). Une mesure reçue pendant le chargement peut arriver
+  // par les deux chemins : on l'ignore si son id est déjà là.
   useEffect(
     () =>
       abonnerMesures(id, (m) =>
-        setMesures((prev) => [m, ...prev].sort((a, b) => b.ts.localeCompare(a.ts)).slice(0, 500)),
+        setMesures((prev) =>
+          prev.some((p) => p.id === m.id)
+            ? prev
+            : [m, ...prev].sort((a, b) => Date.parse(b.ts) - Date.parse(a.ts)).slice(0, 500),
+        ),
       ),
     [id],
   );
