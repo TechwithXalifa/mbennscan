@@ -10,7 +10,8 @@
 //   est vidée dans l'ordre et chaque mesure garde sa vraie date, sans en perdre aucune.
 // LED : lente = OK, rapide = erreur réseau.
 //
-// [TEST] Bouton « Coupure » (GPIO 4) : simule une absence de réseau sans toucher au Wi-Fi.
+// [TEST] Bouton « Coupure » (GPIO 4) : simule une absence de réseau (compilé seulement avec
+//   -DSIMULATION_COUPURE ; absent du firmware de terrain).
 //   1er appui = coupure (les mesures continuent et s'accumulent dans la file, rien n'est envoyé)
 //   2e appui  = réseau rétabli (la file est vidée dans l'ordre, avec les bons age_s)
 //
@@ -26,7 +27,9 @@
 
 // ── Broches (modifiables) ────────────────────────────────────────────────────
 #define PIN_LED   2     // LED bleue intégrée de la plupart des ESP32 DevKit
+#ifdef SIMULATION_COUPURE
 #define PIN_BTN_COUPURE 4   // [TEST] bouton vers GND (INPUT_PULLUP) : simule une coupure réseau
+#endif
 #if defined(CAPTEUR_TRIG_ECHO)
   #define PIN_TRIG 25
   #define PIN_ECHO 26   // ATTENTION : si le capteur est alimenté en 5 V, ECHO sort en 5 V
@@ -38,10 +41,10 @@
   #error "Choisir un environnement PlatformIO : jsn_sr04t ou a02yyuw"
 #endif
 
-// [MODIF] Canal Wi-Fi : 6 = canal de Wokwi-GUEST (connexion bien plus rapide).
-// Sur le vrai matériel, mettre 0 dans secrets.h (= recherche automatique).
+// Canal Wi-Fi : 0 = recherche automatique (valeur de terrain).
+// Wokwi-GUEST émet sur le canal 6 : y définir WIFI_CHANNEL 6 pour une connexion plus rapide.
 #ifndef WIFI_CHANNEL
-  #define WIFI_CHANNEL 6
+  #define WIFI_CHANNEL 0
 #endif
 
 // ── Paramètres de mesure ─────────────────────────────────────────────────────
@@ -133,6 +136,7 @@ static float mesurerMediane() {
   return (n % 2) ? v[n / 2] : (v[n / 2 - 1] + v[n / 2]) / 2.0f;
 }
 
+#ifdef SIMULATION_COUPURE
 // ── [TEST] Bouton de coupure réseau simulée ─────────────────────────────────
 // Anti-rebond : l'état n'est pris en compte que s'il est stable depuis 50 ms.
 static void gererBoutonCoupure(uint32_t now) {
@@ -158,6 +162,8 @@ static void gererBoutonCoupure(uint32_t now) {
     }
   }
 }
+
+#endif  // SIMULATION_COUPURE
 
 // ── Réseau ───────────────────────────────────────────────────────────────────
 static void connecterWifi() {
@@ -258,7 +264,9 @@ static void majLed() {
 void setup() {
   Serial.begin(115200);
   pinMode(PIN_LED, OUTPUT);
+#ifdef SIMULATION_COUPURE
   pinMode(PIN_BTN_COUPURE, INPUT_PULLUP);                // [TEST]
+#endif
 #if defined(CAPTEUR_TRIG_ECHO)
   pinMode(PIN_TRIG, OUTPUT);
   pinMode(PIN_ECHO, INPUT);
@@ -281,11 +289,10 @@ void setup() {
 
 void loop() {
   uint32_t now = millis();
-  static int bpAvant = -1;
-  int bpEtat = digitalRead(PIN_BTN_COUPURE);
-  if (bpEtat != bpAvant) { bpAvant = bpEtat; Serial.printf("[bp] etat=%d\n", bpEtat); }
 
+#ifdef SIMULATION_COUPURE
   gererBoutonCoupure(now);                               // [TEST]
+#endif
 
   // [MODIF] Le Wi-Fi vient de (re)venir : on remet l'attente à zéro et on vide la file tout de suite
   bool connecte = WiFi.status() == WL_CONNECTED;
