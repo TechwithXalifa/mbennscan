@@ -174,7 +174,7 @@ export function Catalogue() {
         <EtatVide>Aucune eau détectée dans cette zone sur cette image.</EtatVide>
         <AlerteErreur message="Impossible de charger les zones." onReessayer={() => undefined} />
         <Bandeau>Image radar Sentinel-1 du 6 octobre 2026, deux jours après la pluie.</Bandeau>
-        <Bandeau horsLigne>Vous êtes hors ligne : données du 17 octobre affichées.</Bandeau>
+        <Bandeau horsLigne>Vous êtes hors ligne : données enregistrées sur cet appareil le 17 octobre.</Bandeau>
       </Section>
     </main>
   );

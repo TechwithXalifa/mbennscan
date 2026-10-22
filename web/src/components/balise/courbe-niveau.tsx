@@ -65,7 +65,7 @@ export default function CourbeNiveau({
                 labelFormatter={(t) => heure.format(Number(t))}
                 formatter={(v) => [`${Math.round(Number(v))} cm`, "Niveau"]}
               />
-              {seuilCm !== null && <ReferenceLine y={seuilCm} stroke="var(--prio-high)" strokeDasharray="4 4" />}
+              {seuilCm !== null && <ReferenceLine y={seuilCm} stroke="var(--ink)" strokeDasharray="4 4" />}
               <Line dataKey="niveau" stroke="var(--water-line)" strokeWidth={2} dot={false} isAnimationActive={false} />
             </LineChart>
           </ResponsiveContainer>
