@@ -24,6 +24,8 @@
   --prio-none: #d0d5dd;
   --ok: #12b76a;
   --off: #98a2b3;
+  /* Pixels « secs » du pictogramme : réservé au logo et au chargeur, jamais à l'interface. */
+  --picto-sec: #7fa9c6;
   /* Texte posé sur une couleur pleine : blanc sur primaire et priorité forte, encre ailleurs. */
   --on-color: #ffffff;
   --zone-opacity: 0.6;
@@ -162,6 +164,18 @@ html[data-carte-bouge] .verre {
       var(--shadow-float);
   }
 
+  /* Pixel du chargeur en goutte : passe du gris à sa teinte, du bas vers le haut */
+  .pixel-goutte {
+    background-color: var(--line);
+    animation: remplir 2.4s var(--ease-sortie) infinite;
+    animation-delay: calc(var(--rang) * 80ms);
+  }
+
+  /* Surface de l'eau qui ondule dans la jauge de la balise */
+  .vague {
+    animation: onduler 2.4s linear infinite;
+  }
+
   /* Hachures de confiance (la couleur n'est jamais seule) */
   .hachures-moyenne {
     background-image: repeating-linear-gradient(135deg, var(--ink-2) 0 1px, transparent 1px 4px);
@@ -176,6 +190,39 @@ html[data-carte-bouge] .verre {
     opacity: 0;
     transform: scale(0.96) translateY(-4px);
   }
+}
+
+@keyframes remplir {
+  0%,
+  8% {
+    background-color: var(--line);
+    transform: scale(0.6);
+  }
+  30%,
+  80% {
+    background-color: var(--teinte);
+    transform: scale(1);
+  }
+  100% {
+    background-color: var(--line);
+    transform: scale(0.6);
+  }
+}
+
+@keyframes onduler {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Transition liste → fiche : seule la ligne choisie s'anime, le reste de la page (dont la carte) reste vivant. */
+:root {
+  view-transition-name: none;
+}
+
+::view-transition-group(fiche) {
+  animation-duration: 320ms;
+  animation-timing-function: var(--ease-sortie);
 }
 
 @keyframes balayer {
@@ -194,6 +241,12 @@ html[data-carte-bouge] .verre {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 

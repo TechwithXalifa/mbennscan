@@ -17,10 +17,12 @@ type Props = {
   zones: ZoneSynthese[];
   selection: string | null;
   onSelection: (id: string) => void;
+  /** Ligne qui s'agrandit en fiche (et dans laquelle la fiche se replie au retour) */
+  zoneAnimee?: string | null;
 };
 
 /** Top 10 des zones classées, filtrable par commune. Alternative accessible à la carte. */
-export function ListeZones({ zones, selection, onSelection }: Props) {
+export function ListeZones({ zones, selection, onSelection, zoneAnimee = null }: Props) {
   const [commune, setCommune] = useState<string | null>(null);
 
   const classees = useMemo(
@@ -61,7 +63,8 @@ export function ListeZones({ zones, selection, onSelection }: Props) {
                 type="button"
                 onClick={() => onSelection(z.id)}
                 aria-current={selection === z.id || undefined}
-                className="flex min-h-cible w-full items-center gap-3 py-2 text-left hover:bg-bg aria-[current]:bg-bg"
+                style={{ viewTransitionName: zoneAnimee === z.id ? "fiche" : undefined }}
+                className="flex min-h-cible w-full items-center gap-3 py-2 text-left transition-[background-color,transform] ease-sortie hover:bg-bg active:scale-[0.99] aria-[current]:bg-bg"
               >
                 <span className="w-6 text-right tabular-nums text-ink-2">{z.rang}</span>
                 <span className="min-w-0 flex-1">

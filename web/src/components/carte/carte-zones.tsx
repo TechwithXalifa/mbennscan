@@ -144,7 +144,13 @@ export default function CarteZones({ zones, selection = null, onSelection, mode 
             couleur("--primary"),
             couleur("--ink"),
           ],
-          "line-width": ["case", ["boolean", ["feature-state", "selection"], false], 3, 1.5],
+          // « pulse » (0 à 1) épaissit le contour une fois, à la sélection.
+          "line-width": [
+            "case",
+            ["boolean", ["feature-state", "selection"], false],
+            ["+", 3, ["*", 4, ["number", ["feature-state", "pulse"], 0]]],
+            1.5,
+          ],
           "line-opacity": [
             "case",
             [
@@ -208,14 +214,27 @@ export default function CarteZones({ zones, selection = null, onSelection, mode 
     selPrecedente.current = selection;
     if (!selection) return;
     map.setFeatureState({ source: "zones", id: selection }, { selection: true });
+    // Le contour pulse une fois pour que l'œil retrouve la zone sur la carte.
+    let image = 0;
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const debut = performance.now();
+      const pas = (t: number) => {
+        const p = Math.min(1, (t - debut) / 700);
+        map.setFeatureState({ source: "zones", id: selection }, { pulse: Math.sin(Math.PI * p) });
+        if (p < 1) image = requestAnimationFrame(pas);
+      };
+      image = requestAnimationFrame(pas);
+    }
     // Choix depuis la liste : centrer la zone si elle est hors de la vue.
     const anneau = zones.features.find((f) => f.properties.id === selection)?.geometry.coordinates[0];
-    if (!anneau) return;
-    const centre: [number, number] = [
-      anneau.reduce((s, p) => s + p[0], 0) / anneau.length,
-      anneau.reduce((s, p) => s + p[1], 0) / anneau.length,
-    ];
-    if (!map.getBounds().contains(centre)) map.easeTo({ center: centre, zoom: Math.max(map.getZoom(), 14) });
+    if (anneau) {
+      const centre: [number, number] = [
+        anneau.reduce((s, p) => s + p[0], 0) / anneau.length,
+        anneau.reduce((s, p) => s + p[1], 0) / anneau.length,
+      ];
+      if (!map.getBounds().contains(centre)) map.easeTo({ center: centre, zoom: Math.max(map.getZoom(), 14) });
+    }
+    return () => cancelAnimationFrame(image);
   }, [prete, selection, zones]);
 
   // La feuille de style MapLibre impose position: relative au conteneur, d'où l'enveloppe.
