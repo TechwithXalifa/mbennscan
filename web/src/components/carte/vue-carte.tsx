@@ -3,9 +3,12 @@
 import { ArrowLeft } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { Legende } from "@/components/carte/legende";
 import { PanneauZones } from "@/components/carte/panneau-zones";
 import { ListeZones } from "@/components/liste-zones";
+import { ChargeurGoutte } from "@/components/ui/chargeur-goutte";
+import { Squelette } from "@/components/ui/squelette";
 import { getZones, USE_MOCKS } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import type { ZonesGeoJSON } from "@/types/contracts";
@@ -13,7 +16,11 @@ import type { ZonesGeoJSON } from "@/types/contracts";
 // MapLibre est chargé à part pour garder un JavaScript initial léger.
 const CarteZones = dynamic(() => import("@/components/carte/carte-zones"), {
   ssr: false,
-  loading: () => <div className="absolute inset-0 animate-pulse bg-line" aria-label="Chargement de la carte" />,
+  loading: () => (
+    <div className="absolute inset-0 grid place-items-center bg-bg">
+      <ChargeurGoutte libelle="Chargement de la carte" />
+    </div>
+  ),
 });
 
 // La fiche n'est chargée qu'au premier clic sur une zone.
@@ -24,6 +31,17 @@ type Etat = { statut: "chargement" } | { statut: "erreur"; message: string } | {
 export function VueCarte() {
   const [etat, setEtat] = useState<Etat>({ statut: "chargement" });
   const [selection, setSelection] = useState<string | null>(null);
+  const [zoneAnimee, setZoneAnimee] = useState<string | null>(null);
+
+  // La ligne de la liste s'agrandit jusqu'à la fiche (View Transitions), et la fiche s'y replie au retour.
+  const choisir = useCallback((id: string | null) => {
+    if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setSelection(id);
+      return;
+    }
+    if (id) flushSync(() => setZoneAnimee(id));
+    document.startViewTransition(() => flushSync(() => setSelection(id)));
+  }, []);
 
   const charger = useCallback(() => {
     setEtat({ statut: "chargement" });
@@ -42,8 +60,12 @@ export function VueCarte() {
   return (
     <>
       <div className="relative flex-1">
-        {etat.statut === "ok" && <CarteZones zones={etat.zones} selection={selection} onSelection={setSelection} />}
-        {etat.statut === "chargement" && <div className="absolute inset-0 animate-pulse bg-line" aria-busy="true" />}
+        {etat.statut === "ok" && <CarteZones zones={etat.zones} selection={selection} onSelection={choisir} />}
+        {etat.statut === "chargement" && (
+          <div className="absolute inset-0 grid place-items-center bg-bg" aria-busy="true">
+            <ChargeurGoutte libelle="Chargement des zones" />
+          </div>
+        )}
         {etat.statut === "erreur" && (
           <div role="alert" className="absolute inset-x-3 top-3 z-10 rounded-md bg-surface p-4 shadow-float">
             <p>Impossible de charger les zones : {etat.message}</p>
@@ -62,7 +84,7 @@ export function VueCarte() {
           </p>
         )}
         <Legende />
-        <p className="absolute left-3 right-14 top-3 z-10 w-fit rounded-sm bg-surface px-2 py-1 text-mention text-ink-2 shadow-float">
+        <p className="verre absolute left-3 right-14 top-3 z-10 w-fit rounded-sm px-2 py-1 text-mention text-ink-2">
           {fraicheur || "Keur Massar · hivernages 2020-2026"}
         </p>
       </div>
@@ -73,7 +95,7 @@ export function VueCarte() {
           selection && (
             <button
               type="button"
-              onClick={() => setSelection(null)}
+              onClick={() => choisir(null)}
               className="mx-4 inline-flex min-h-cible items-center gap-2 text-primary lg:mt-2"
             >
               <ArrowLeft size={20} strokeWidth={1.75} aria-hidden />
@@ -83,17 +105,22 @@ export function VueCarte() {
         }
       >
         {selection ? (
-          <FicheZone key={selection} id={selection} />
+          <div style={{ viewTransitionName: "fiche" }}>
+            <FicheZone key={selection} id={selection} />
+          </div>
         ) : etat.statut === "ok" ? (
           <ListeZones
             zones={etat.zones.features.map((f) => f.properties)}
             selection={selection}
-            onSelection={setSelection}
+            onSelection={choisir}
+            zoneAnimee={zoneAnimee}
           />
         ) : (
           <ul className="space-y-2 py-2" aria-busy={etat.statut === "chargement"}>
             {[0, 1, 2].map((i) => (
-              <li key={i} className="h-cible animate-pulse rounded-sm bg-line" />
+              <li key={i}>
+                <Squelette className="h-cible" />
+              </li>
             ))}
           </ul>
         )}

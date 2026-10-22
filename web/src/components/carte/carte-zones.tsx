@@ -9,6 +9,7 @@ import {
   type MapGeoJSONFeature,
 } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
+import { ChargeurGoutte } from "@/components/ui/chargeur-goutte";
 import { STYLE_CARTE } from "@/lib/design";
 import { emprise } from "@/lib/geo";
 import { LIBELLE_PRIORITE, VARIABLE_PRIORITE } from "@/lib/priorite";
@@ -92,6 +93,10 @@ export default function CarteZones({
     });
     map.addControl(new NavigationControl({ showCompass: false }), "top-right");
     carte.current = map;
+    // Le verre devient opaque pendant un déplacement : le flou recalculé à chaque image coûte cher sur téléphone.
+    const racine = document.documentElement;
+    map.on("movestart", () => racine.setAttribute("data-carte-bouge", ""));
+    map.on("moveend", () => racine.removeAttribute("data-carte-bouge"));
 
     const infobulle = new Popup({ closeButton: false, closeOnClick: false, offset: 8 });
     let survol: string | number | undefined;
@@ -174,7 +179,13 @@ export default function CarteZones({
             couleur("--primary"),
             couleur("--ink"),
           ],
-          "line-width": ["case", ["boolean", ["feature-state", "selection"], false], 3, 1.5],
+          // « pulse » (0 à 1) épaissit le contour une fois, à la sélection.
+          "line-width": [
+            "case",
+            ["boolean", ["feature-state", "selection"], false],
+            ["+", 3, ["*", 4, ["number", ["feature-state", "pulse"], 0]]],
+            1.5,
+          ],
           "line-opacity": [
             "case",
             [
@@ -212,6 +223,7 @@ export default function CarteZones({
     });
 
     return () => {
+      racine.removeAttribute("data-carte-bouge");
       map.remove();
       carte.current = null;
     };
@@ -247,10 +259,22 @@ export default function CarteZones({
     selPrecedente.current = selection;
     if (!selection) return;
     map.setFeatureState({ source: "zones", id: selection }, { selection: true });
+    // Le contour pulse une fois pour que l'œil retrouve la zone sur la carte.
+    let image = 0;
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const debut = performance.now();
+      const pas = (t: number) => {
+        const p = Math.min(1, (t - debut) / 700);
+        map.setFeatureState({ source: "zones", id: selection }, { pulse: Math.sin(Math.PI * p) });
+        if (p < 1) image = requestAnimationFrame(pas);
+      };
+      image = requestAnimationFrame(pas);
+    }
     // La fiche s'ouvre à mi-hauteur sur mobile : centrer la zone dans la partie visible.
     const zone = zones.features.find((f) => f.properties.id === selection);
     const rect = zone && emprise([zone]);
     if (rect) map.fitBounds(rect, { padding: marges("moitie"), maxZoom: Math.max(map.getZoom(), 15) });
+    return () => cancelAnimationFrame(image);
   }, [prete, selection, zones]);
 
   // La feuille de style MapLibre impose position: relative au conteneur, d'où l'enveloppe.
@@ -258,8 +282,9 @@ export default function CarteZones({
     <div className="absolute inset-0">
       <div ref={conteneur} className="h-full w-full" role="region" aria-label="Carte des zones" />
       {!prete && (
-        <div className="absolute inset-0 flex items-center justify-center bg-line">
-          <p role="status" className="animate-pulse text-petit text-ink-2">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-line">
+          <ChargeurGoutte libelle="Chargement du fond de carte" />
+          <p className="text-petit text-ink-2" aria-hidden>
             Chargement du fond de carte…
           </p>
         </div>

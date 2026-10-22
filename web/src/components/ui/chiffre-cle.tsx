@@ -1,6 +1,9 @@
 import { Infobulle } from "@/components/ui/infobulle";
 
-/** Carte de chiffre clé : valeur en grand, intitulé, phrase d'explication, « i » facultatif. */
+/**
+ * Carte de chiffre clé : valeur en grand, intitulé, phrase d'explication, « i » facultatif.
+ * `valeur` accepte un `<Compteur>` pour que le chiffre défile à l'affichage.
+ */
 export function ChiffreCle({
   valeur,
   intitule,
@@ -8,7 +11,7 @@ export function ChiffreCle({
   info,
   mot = false,
 }: {
-  valeur: string;
+  valeur: React.ReactNode;
   intitule: string;
   phrase: string;
   info?: React.ReactNode;

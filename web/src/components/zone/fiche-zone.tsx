@@ -3,12 +3,14 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { ChiffreCle } from "@/components/ui/chiffre-cle";
+import { Compteur } from "@/components/ui/compteur";
 import { ActionsFiche } from "@/components/zone/actions-fiche";
 import { BadgePriorite, IndicateurConfiance } from "@/components/zone/badges";
-import { getZoneDetail, getZones, USE_MOCKS } from "@/lib/data";
+import { getEvenements, getZoneDetail, getZones, USE_MOCKS } from "@/lib/data";
 import { formatDate, formatNombre, formatPourcent } from "@/lib/format";
 import { EXPLICATION_EAU, historique, LIBELLE_EAU, ordinal, phraseSynthese, SUGGESTION_EAU } from "@/lib/synthese";
-import type { ZoneDetail } from "@/types/contracts";
+import type { Evenement, ZoneDetail } from "@/types/contracts";
 
 // Recharts n'est chargé que lorsqu'une fiche avec historique s'affiche.
 const HistogrammeSaisons = dynamic(() => import("@/components/zone/histogramme-saisons"), {
@@ -20,28 +22,7 @@ type Etat =
   | { statut: "chargement" }
   | { statut: "erreur"; message: string }
   | { statut: "inconnue" }
-  | { statut: "ok"; detail: ZoneDetail; total: number };
-
-function ChiffreCle({
-  valeur,
-  intitule,
-  phrase,
-  mot = false,
-}: {
-  valeur: string;
-  intitule: string;
-  phrase: string;
-  mot?: boolean;
-}) {
-  return (
-    <div className="rounded-md border border-line p-3">
-      {/* Un mot (type d'eau) est écrit plus petit pour tenir dans la carte sur mobile. */}
-      <p className={mot ? "text-titre2" : "text-chiffre tabular-nums"}>{valeur}</p>
-      <p className="text-titre3">{intitule}</p>
-      <p className="text-petit text-ink-2">{phrase}</p>
-    </div>
-  );
-}
+  | { statut: "ok"; detail: ZoneDetail; total: number; pluie: Evenement | null };
 
 type Props = {
   id: string;
@@ -56,9 +37,14 @@ export function FicheZone({ id, autonome = false, imprimerAuChargement = false }
 
   const charger = useCallback(() => {
     setEtat({ statut: "chargement" });
-    Promise.all([getZoneDetail(id), getZones()])
-      .then(([detail, zones]) =>
-        setEtat(detail ? { statut: "ok", detail, total: zones.features.length } : { statut: "inconnue" }),
+    // Les épisodes servent au lien « Voir après la pluie » : leur absence ne bloque pas la fiche.
+    Promise.all([getZoneDetail(id), getZones(), getEvenements().catch(() => [])])
+      .then(([detail, zones, evenements]) =>
+        setEtat(
+          detail
+            ? { statut: "ok", detail, total: zones.features.length, pluie: evenements[0] ?? null }
+            : { statut: "inconnue" },
+        ),
       )
       .catch((e: unknown) => setEtat({ statut: "erreur", message: e instanceof Error ? e.message : String(e) }));
   }, [id]);
@@ -121,17 +107,23 @@ export function FicheZone({ id, autonome = false, imprimerAuChargement = false }
 
       <div className="grid grid-cols-2 gap-3">
         <ChiffreCle
-          valeur={formatNombre(Math.round(zone.habitants_jours_an))}
+          valeur={<Compteur valeur={zone.habitants_jours_an} format={(n) => formatNombre(Math.round(n))} />}
           intitule="Habitants-jours par an"
           phrase="Habitants touchés × jours d'eau, en moyenne sur 2020-2026."
         />
         <ChiffreCle
-          valeur={h?.frequence != null ? formatPourcent(h.frequence) : "–"}
+          valeur={h?.frequence != null ? <Compteur valeur={h.frequence} format={formatPourcent} /> : "–"}
           intitule="Fréquence observée"
           phrase="Part des passages du satellite où l'eau était là."
         />
         <ChiffreCle
-          valeur={h?.dureeMoyJours != null ? `${formatNombre(Math.round(h.dureeMoyJours))} j` : "–"}
+          valeur={
+            h?.dureeMoyJours != null ? (
+              <Compteur valeur={h.dureeMoyJours} format={(n) => `${formatNombre(Math.round(n))} j`} />
+            ) : (
+              "–"
+            )
+          }
           intitule="Durée moyenne"
           phrase="Combien de temps l'eau reste après une forte pluie."
         />
@@ -179,7 +171,7 @@ export function FicheZone({ id, autonome = false, imprimerAuChargement = false }
           Comment ces chiffres sont calculés
         </Link>
       </section>
-      <ActionsFiche id={zone.id} nom={zone.nom} autonome={autonome} />
+      <ActionsFiche id={zone.id} nom={zone.nom} autonome={autonome} pluie={etat.pluie} />
     </article>
   );
 }

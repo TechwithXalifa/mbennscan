@@ -19,6 +19,7 @@ npm run dev                  # http://localhost:3000
 | `npm run typecheck` | `tsc --noEmit` (lancé en CI) |
 | `npm run build` | build de production (lancé en CI avec les mocks) |
 | `npm run format` | Prettier |
+| `npm run e2e` | parcours de démo joué par Playwright sur les mocks, téléphone et ordinateur (lancé en CI) |
 
 Composants shadcn/ui : `npx shadcn@latest add <composant>` (configuration dans `components.json`).
 

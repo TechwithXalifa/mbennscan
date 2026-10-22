@@ -16,7 +16,7 @@ export function Legende() {
       <button
         type="button"
         onClick={() => setOuverte(true)}
-        className={`${ouverte ? "hidden" : "inline-flex"} min-h-cible items-center gap-2 rounded-pill bg-surface px-4 shadow-float lg:hidden`}
+        className={`${ouverte ? "hidden" : "inline-flex"} verre min-h-cible items-center gap-2 rounded-pill px-4 lg:hidden`}
       >
         <Layers size={20} strokeWidth={1.75} aria-hidden />
         Légende
@@ -24,7 +24,7 @@ export function Legende() {
 
       <section
         aria-label="Légende"
-        className={`${ouverte ? "block" : "hidden"} w-64 rounded-md bg-surface p-3 shadow-float lg:block`}
+        className={`${ouverte ? "block" : "hidden"} verre apparition w-64 origin-bottom-left rounded-md p-3 lg:block`}
       >
         <div className="flex items-start justify-between">
           <h2 className="text-titre3">Habitants-jours sous l&apos;eau</h2>

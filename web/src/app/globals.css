@@ -24,6 +24,8 @@
   --prio-none: #d0d5dd;
   --ok: #12b76a;
   --off: #98a2b3;
+  /* Pixels « secs » du pictogramme : réservé au logo et au chargeur, jamais à l'interface. */
+  --picto-sec: #7fa9c6;
   /* Texte posé sur une couleur pleine : blanc sur primaire et priorité forte, encre ailleurs. */
   --on-color: #ffffff;
   --zone-opacity: 0.6;
@@ -40,8 +42,39 @@
   --apercu-h: 140px;
   --lecture-w: 680px;
 
+  /* Verre : réservé à ce qui flotte au-dessus de la carte. Blanc à 78 % : l'encre secondaire garde 4,8:1 sur n'importe quel fond. */
+  --glass-bg: rgba(255, 255, 255, 0.78);
+  --glass-solid: rgba(255, 255, 255, 0.94);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-blur: 12px;
+
   /* Mouvement (coupé si l'utilisateur réduit les animations) */
-  --duree: 150ms;
+  --duree: 150ms; /* retour d'appui, survol */
+  --duree-etat: 250ms; /* changement d'état : panneau, curseur, infobulle */
+  --duree-chiffre: 600ms; /* chiffre qui défile */
+  --ease-sortie: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Ressort amorti, 4 % de dépassement */
+  --ease-ressort: linear(
+    0,
+    0.08,
+    0.254,
+    0.453,
+    0.637,
+    0.786,
+    0.895,
+    0.968,
+    1.011,
+    1.032,
+    1.038,
+    1.036,
+    1.03,
+    1.022,
+    1.015,
+    1.009,
+    1.005,
+    1.002,
+    1
+  );
 }
 
 html {
@@ -61,13 +94,143 @@ body {
   outline-offset: 2px;
 }
 
+@layer components {
+  .verre {
+    background-color: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      var(--shadow-float);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  }
+}
+
+/* Replis opaques : navigateur sans flou, transparence réduite, carte en mouvement (le flou coûte cher pendant un déplacement). */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .verre {
+    background-color: var(--surface);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .verre {
+    background-color: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+html[data-carte-bouge] .verre {
+  background-color: var(--glass-solid);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 @layer utilities {
+  /* Annule le verre à partir d'un point de rupture (panneau en colonne sur ordinateur) */
+  .sans-verre {
+    background-color: var(--surface);
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* Squelette de chargement : reflet qui balaie le bloc gris */
+  .squelette {
+    background-image: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.7) 50%, transparent 80%);
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: balayer 1.4s ease-in-out infinite;
+  }
+
+  /* Apparition en fondu et léger zoom quand l'élément s'affiche (infobulle, légende) */
+  .apparition {
+    transition:
+      opacity var(--duree-etat) var(--ease-sortie),
+      transform var(--duree-etat) var(--ease-sortie);
+  }
+
+  /* Reflet « liquid glass » qui suit le doigt sur le curseur du contrôle segmenté */
+  .reflet-liquide {
+    background-image: radial-gradient(
+      90px 40px at var(--reflet-x, 30%) var(--reflet-y, 0%),
+      rgba(255, 255, 255, 0.9),
+      transparent 70%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(16, 24, 40, 0.06),
+      var(--shadow-float);
+  }
+
+  /* Pixel du chargeur en goutte : passe du gris à sa teinte, du bas vers le haut */
+  .pixel-goutte {
+    background-color: var(--line);
+    animation: remplir 2.4s var(--ease-sortie) infinite;
+    animation-delay: calc(var(--rang) * 80ms);
+  }
+
+  /* Surface de l'eau qui ondule dans la jauge de la balise */
+  .vague {
+    animation: onduler 2.4s linear infinite;
+  }
+
   /* Hachures de confiance (la couleur n'est jamais seule) */
   .hachures-moyenne {
     background-image: repeating-linear-gradient(135deg, var(--ink-2) 0 1px, transparent 1px 4px);
   }
   .hachures-faible {
     background-image: repeating-linear-gradient(135deg, var(--ink) 0 1.5px, transparent 1.5px 3px);
+  }
+}
+
+@starting-style {
+  .apparition {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+}
+
+@keyframes remplir {
+  0%,
+  8% {
+    background-color: var(--line);
+    transform: scale(0.6);
+  }
+  30%,
+  80% {
+    background-color: var(--teinte);
+    transform: scale(1);
+  }
+  100% {
+    background-color: var(--line);
+    transform: scale(0.6);
+  }
+}
+
+@keyframes onduler {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Transition liste → fiche : seule la ligne choisie s'anime, le reste de la page (dont la carte) reste vivant. */
+:root {
+  view-transition-name: none;
+}
+
+::view-transition-group(fiche) {
+  animation-duration: 320ms;
+  animation-timing-function: var(--ease-sortie);
+}
+
+@keyframes balayer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
   }
 }
 
@@ -82,7 +245,14 @@ body {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 
