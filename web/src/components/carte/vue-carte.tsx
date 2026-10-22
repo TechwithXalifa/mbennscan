@@ -8,8 +8,9 @@ import { Legende } from "@/components/carte/legende";
 import { PanneauZones } from "@/components/carte/panneau-zones";
 import { ListeZones } from "@/components/liste-zones";
 import { ChargeurGoutte } from "@/components/ui/chargeur-goutte";
+import { BandeauMaquette } from "@/components/ui/etats";
 import { Squelette } from "@/components/ui/squelette";
-import { getZones, USE_MOCKS } from "@/lib/data";
+import { estMaquette, getZones } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import type { ZonesGeoJSON } from "@/types/contracts";
 
@@ -53,9 +54,7 @@ export function VueCarte() {
   useEffect(charger, [charger]);
 
   const maj = etat.statut === "ok" ? etat.zones.features[0]?.properties.maj : undefined;
-  const fraicheur = [maj && `Calcul du ${formatDate(maj)}`, USE_MOCKS && "données factices [FICTIF]"]
-    .filter(Boolean)
-    .join(" · ");
+  const maquette = etat.statut === "ok" && estMaquette(etat.zones.features.map((f) => f.properties.nom));
 
   return (
     <>
@@ -84,9 +83,14 @@ export function VueCarte() {
           </p>
         )}
         <Legende />
-        <p className="verre absolute left-3 right-14 top-3 z-10 w-fit rounded-sm px-2 py-1 text-mention text-ink-2">
-          {fraicheur || "Keur Massar · hivernages 2020-2026"}
-        </p>
+        {/* En maquette, la date du calcul est fictive elle aussi : le bandeau la remplace. */}
+        {maquette ? (
+          <BandeauMaquette className="absolute left-3 right-16 top-3 z-10 w-fit" />
+        ) : (
+          <p className="verre absolute left-3 right-14 top-3 z-10 w-fit rounded-sm px-2 py-1 text-mention text-ink-2">
+            {maj ? `Calcul du ${formatDate(maj)}` : "Keur Massar · hivernages 2020-2026"}
+          </p>
+        )}
       </div>
       <PanneauZones
         sousTitre="Keur Massar · hivernages 2020-2026"

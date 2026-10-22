@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 // Les quatre étapes de la démo de 30 secondes, sur les mocks.
 test("E1 → E2 : de la carte à la fiche de la première zone", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByText("données factices [FICTIF]").first()).toBeVisible();
+  await expect(page.getByRole("note").filter({ hasText: "Maquette" }).first()).toBeVisible();
   await page.getByRole("button", { name: /Jaxaay, maille 1/ }).click();
   await expect(page.getByRole("heading", { name: /Jaxaay, maille 1/ })).toBeVisible();
   await expect(page.getByText("1re sur 6 zones")).toBeVisible();

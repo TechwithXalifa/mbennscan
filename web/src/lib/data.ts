@@ -18,6 +18,14 @@ import type {
 
 export const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === "true";
 
+/** Données de démonstration forcées (par exemple sur Vercel, quand Supabase contient les mocks). */
+const DONNEES_FICTIVES = USE_MOCKS || process.env.NEXT_PUBLIC_DONNEES_FICTIVES === "true";
+
+/** Vrai si l'écran montre la maquette : mocks, variable ci-dessus, ou un nom marqué [FICTIF] lu dans Supabase. */
+export function estMaquette(noms: (string | null | undefined)[]): boolean {
+  return DONNEES_FICTIVES || noms.some((n) => n?.startsWith("[FICTIF]"));
+}
+
 export class DataError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);

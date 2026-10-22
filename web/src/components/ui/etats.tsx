@@ -1,4 +1,4 @@
-import { WifiOff } from "lucide-react";
+import { FlaskConical, WifiOff } from "lucide-react";
 import { Bouton } from "@/components/ui/bouton";
 import { ICONE } from "@/lib/design";
 import { cn } from "@/lib/utils";
@@ -41,6 +41,27 @@ export function Bandeau({
     >
       {horsLigne && <WifiOff {...ICONE} aria-hidden />}
       {children}
+    </p>
+  );
+}
+
+/**
+ * Maquette : zones et chiffres inventés pour montrer l'outil. Toujours visible, pour qu'aucun lecteur
+ * ne prenne ces chiffres pour des résultats (guide du défi, règle n° 2).
+ */
+export function BandeauMaquette({ className }: { className?: string }) {
+  return (
+    <p
+      role="note"
+      className={cn(
+        "flex items-start gap-2 rounded-sm bg-ink px-3 py-2 text-petit text-on-color shadow-float print:border print:border-ink print:bg-transparent print:text-ink print:shadow-none",
+        className,
+      )}
+    >
+      <FlaskConical {...ICONE} className="mt-0.5 shrink-0" aria-hidden />
+      <span>
+        <strong>Maquette :</strong> zones et chiffres fictifs. Les résultats réels sont dans la note de concept.
+      </span>
     </p>
   );
 }

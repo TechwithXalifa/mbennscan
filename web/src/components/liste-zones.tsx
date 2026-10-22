@@ -32,7 +32,8 @@ export function ListeZones({ zones, selection, onSelection, zoneAnimee = null }:
   const communes = useMemo(() => Array.from(new Set(classees.map((z) => z.commune))).sort(), [classees]);
   const top = classees.filter((z) => !commune || z.commune === commune).slice(0, 10);
 
-  if (classees.length === 0) return <p className="py-4">Aucune eau détectée dans les zones calculées.</p>;
+  if (classees.length === 0)
+    return <p className="py-4">Aucune étendue d&apos;eau visible par satellite dans les zones calculées.</p>;
 
   return (
     <>

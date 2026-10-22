@@ -7,7 +7,7 @@ import { ChiffreCle } from "@/components/ui/chiffre-cle";
 import { Compteur } from "@/components/ui/compteur";
 import { ControleSegmente } from "@/components/ui/controle-segmente";
 import { Encart } from "@/components/ui/encart";
-import { AlerteErreur, Bandeau, EtatVide, PastilleEtat } from "@/components/ui/etats";
+import { AlerteErreur, Bandeau, BandeauMaquette, EtatVide, PastilleEtat } from "@/components/ui/etats";
 import { Infobulle } from "@/components/ui/infobulle";
 import { Pastille } from "@/components/ui/pastille";
 import { Squelette } from "@/components/ui/squelette";
@@ -27,7 +27,7 @@ const COULEURS = [
   ["--prio-high", "Priorité forte"],
   ["--prio-mid", "Priorité moyenne"],
   ["--prio-low", "Priorité faible"],
-  ["--prio-none", "Sans eau observée"],
+  ["--prio-none", "Sans étendue d'eau visible"],
   ["--ok", "Balise en ligne"],
   ["--off", "Balise hors ligne"],
 ] as const;
@@ -172,9 +172,10 @@ export function Catalogue() {
           <Squelette className="h-8 w-2/3" />
           <Squelette className="h-20" />
         </div>
-        <EtatVide>Aucune eau détectée dans cette zone sur cette image.</EtatVide>
+        <EtatVide>Aucune eau visible par le radar dans cette zone sur cette image.</EtatVide>
         <AlerteErreur message="Impossible de charger les zones." onReessayer={() => undefined} />
         <Bandeau>Image radar Sentinel-1 du 6 octobre 2026, deux jours après la pluie.</Bandeau>
+        <BandeauMaquette />
         <Bandeau horsLigne>Vous êtes hors ligne : données du 17 octobre affichées.</Bandeau>
       </Section>
     </main>

@@ -4,7 +4,7 @@ export const LIBELLE_PRIORITE: Record<Priorite, string> = {
   forte: "Priorité forte",
   moyenne: "Priorité moyenne",
   faible: "Priorité faible",
-  nulle: "Pas d'eau observée",
+  nulle: "Pas d'étendue d'eau visible par satellite",
 };
 
 /** Classe Tailwind de la pastille de couleur. */

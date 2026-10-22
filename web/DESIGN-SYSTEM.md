@@ -27,7 +27,7 @@ Source : cahier des charges, sections 6 et 7. Les jetons vivent dans `src/app/gl
 | `--prio-high` | `bg-prio-high` | `#D92D20` | Priorité forte | blanc (4,8:1) |
 | `--prio-mid` | `bg-prio-mid` | `#F79009` | Priorité moyenne | encre (7,6:1) |
 | `--prio-low` | `bg-prio-low` | `#3BA55C` | Priorité faible | encre (5,7:1) |
-| `--prio-none` | `bg-prio-none` | `#D0D5DD` | Pas d'eau observée | encre (12,0:1) |
+| `--prio-none` | `bg-prio-none` | `#D0D5DD` | Pas d'étendue d'eau visible par satellite | encre (12,0:1) |
 | `--ok` | `bg-ok` | `#12B76A` | Balise en ligne | encre (6,8:1) |
 | `--off` | `bg-off` | `#98A2B3` | Balise hors ligne | encre (6,9:1) |
 | `--on-color` | `text-on-color` | `#FFFFFF` | Texte sur primaire et priorité forte | |
