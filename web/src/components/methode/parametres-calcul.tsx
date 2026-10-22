@@ -43,6 +43,10 @@ export function ParametresCalcul() {
     ],
     ["Eau permanente masquée", `occurrence JRC supérieure à ${formatNombre(p.occurrence_eau_permanente_min)} %`],
     ["Pentes masquées", `plus de ${formatNombre(p.pente_max_deg)} degrés`],
+    [
+      "Taille minimale d'une étendue d'eau",
+      `${formatNombre(p.taille_min_tache_px)} pixels de 10 m d'un seul tenant (${formatNombre(p.taille_min_tache_px / 100)} ha)`,
+    ],
     ["Images Sentinel-1 utilisées", formatNombre(meta.images.length)],
   ];
 

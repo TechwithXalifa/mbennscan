@@ -38,6 +38,7 @@ class Parametres:
     persistance_longue_j: float = 12  # ≥ 12 j : stagnation
     occurrence_eau_permanente_min: float = 50  # occurrence JRC (%) au-delà de laquelle on masque
     pente_max_deg: float = 5
+    taille_min_tache_px: int = 10  # taches d'eau d'au moins 0,1 ha (pixels de 10 m qui se touchent)
 
     def to_dict(self) -> dict:
         return asdict(self)
