@@ -66,7 +66,6 @@ jobs:
   parcours:
     name: Web (parcours de démo)
     runs-on: ubuntu-latest
-    if: hashFiles('web/playwright.config.ts') != ''
     defaults:
       run:
         working-directory: web
