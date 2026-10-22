@@ -154,6 +154,8 @@ export interface RunMeta {
     persistance_longue_j: number;
     occurrence_eau_permanente_min: number;
     pente_max_deg: number;
+    /** Taille minimale d'une tache d'eau, en pixels de 10 m (10 = 0,1 ha) */
+    taille_min_tache_px: number;
   };
   images: {
     id: string;

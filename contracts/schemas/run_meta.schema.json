@@ -31,7 +31,7 @@
       "required": [
         "seuil_pluie_mm", "seuil_db_defaut", "seuil_db_min", "seuil_db_max", "baisse_min_db",
         "part_zone_inondee_min", "h3_resolution", "persistance_courte_j", "persistance_longue_j",
-        "occurrence_eau_permanente_min", "pente_max_deg"
+        "occurrence_eau_permanente_min", "pente_max_deg", "taille_min_tache_px"
       ],
       "properties": {
         "seuil_pluie_mm": { "type": "number", "default": 30 },
@@ -44,7 +44,8 @@
         "persistance_courte_j": { "type": "number", "default": 6 },
         "persistance_longue_j": { "type": "number", "default": 12 },
         "occurrence_eau_permanente_min": { "type": "number", "default": 50 },
-        "pente_max_deg": { "type": "number", "default": 5 }
+        "pente_max_deg": { "type": "number", "default": 5 },
+        "taille_min_tache_px": { "type": "integer", "minimum": 1, "default": 10, "description": "Taille minimale d'une tache d'eau : pixels de 10 m qui se touchent (10 = 0,1 ha). Les taches plus petites sont du grain radar." }
       }
     },
     "images": {
