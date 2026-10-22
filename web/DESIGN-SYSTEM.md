@@ -9,7 +9,7 @@ Source : cahier des charges, sections 6 et 7. Les jetons vivent dans `src/app/gl
 3. La carte est l'écran : tout le reste s'ouvre par-dessus.
 4. La couleur n'est jamais seule : étiquette écrite, forme ou hachures en plus.
 5. Honnête sur la donnée : date de l'image et confiance visibles à côté de chaque chiffre.
-6. Sobre et institutionnel : pas d'effets ni de dégradés, une seule ombre.
+6. Sobre et institutionnel : le verre est réservé à ce qui flotte au-dessus de la carte, les animations décrivent un changement d'état et restent courtes, une seule ombre.
 
 ## Couleurs
 
@@ -62,7 +62,31 @@ Police unique Inter (`font-sans`). Chiffres comparés en `tabular-nums`.
 - Superposition : `z-controle` (légende, boutons de carte) < `z-panneau` < `z-barre` < `z-infobulle`.
 - Mise en page : barre du haut `h-topbar` (56 px), panneau `w-panneau` (400 px), aperçu de la feuille du bas `h-apercu` (140 px), page de lecture `max-w-lecture` (680 px).
 - Points de rupture : mobile < 640 px, `sm` tablette, `lg` ordinateur (1024 px).
-- Mouvement : `duration` = `--duree` (150 ms), coupé si l'utilisateur réduit les animations.
+- Mouvement : voir ci-dessous.
+
+## Verre
+
+Classe `verre` : blanc à 78 % (`--glass-bg`), flou de 12 px (`--glass-blur`), liseré blanc et ombre flottante.
+
+- Uniquement sur ce qui flotte au-dessus de la carte : barre du haut, légende, bandeau de fraîcheur, feuille du bas, boutons flottants (`Bouton flottant`, `Encart flottant`). Jamais dans une page de lecture ni sur une surface qui n'est pas posée sur la carte.
+- Jamais de verre posé sur du verre ; le flou lui-même n'est jamais animé.
+- Contraste : à 78 % de blanc, `--ink-2` garde au moins 4,8:1 même sur l'encre ou une zone rouge.
+- Replis opaques automatiques : navigateur sans `backdrop-filter`, `prefers-reduced-transparency`, et pendant un déplacement de la carte (`html[data-carte-bouge]`, posé par `CarteZones`).
+- `lg:sans-verre` rend opaque un élément qui ne flotte plus sur ordinateur (panneau en colonne).
+
+## Mouvement
+
+Une animation dit toujours ce qui change. On n'anime que `transform` et `opacity`, sans bibliothèque. Tout est coupé si l'utilisateur réduit les animations (`globals.css`).
+
+| Jeton | Classe | Valeur | Usage |
+| --- | --- | --- | --- |
+| `--duree` | `duration` | 150 ms | Retour d'appui, survol |
+| `--duree-etat` | `duration-etat` | 250 ms | Panneau, curseur, infobulle |
+| `--duree-chiffre` | `duration-chiffre` | 600 ms | Chiffre qui défile, une seule fois |
+| `--ease-sortie` | `ease-sortie` | `cubic-bezier(0.2, 0.8, 0.2, 1)` | Ce qui apparaît |
+| `--ease-ressort` | `ease-ressort` | ressort amorti, 4 % de dépassement | Ce qui se déplace : feuille du bas, curseur |
+
+Les boutons s'enfoncent de 3 % à l'appui (`active:scale-[0.97]`) : sur téléphone, c'est le seul signe que l'appui est pris.
 
 ## Icônes
 

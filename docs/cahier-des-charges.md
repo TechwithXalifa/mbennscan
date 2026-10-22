@@ -273,7 +273,7 @@ Réponses : `201` mesure enregistrée · `400` champ manquant ou valeur hors bor
 3. **La carte est l'écran.** Elle occupe toute la surface ; tout le reste s'ouvre dans un panneau par-dessus, sans quitter la carte.
 4. **La couleur n'est jamais seule.** Chaque niveau de priorité a aussi une étiquette écrite et une forme de badge ; la confiance a aussi des hachures. Un daltonien doit tout comprendre.
 5. **Honnête sur la donnée.** La date de l'image et le niveau de confiance sont visibles partout où un chiffre apparaît.
-6. **Sobre et institutionnel.** Le public, ce sont des services de l'État et des mairies : un outil sérieux, sans effets ni dégradés, qui inspire confiance.
+6. **Sobre et institutionnel.** Le public, ce sont des services de l'État et des mairies : un outil sérieux, qui inspire confiance. Le verre dépoli est réservé aux éléments posés sur la carte ; les animations décrivent un changement d'état et restent courtes ; pas de dégradé décoratif.
 
 ### Identité
 

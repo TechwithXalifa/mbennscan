@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 export const styleBouton = cva(
-  "inline-flex min-h-cible min-w-cible items-center justify-center gap-2 rounded-sm text-texte font-medium transition-colors disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex min-h-cible min-w-cible items-center justify-center gap-2 rounded-sm text-texte font-medium transition-[color,background-color,border-color,transform] ease-sortie active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variante: {
@@ -12,7 +12,7 @@ export const styleBouton = cva(
         discret: "px-3 text-primary hover:bg-bg",
         icone: "text-ink hover:bg-bg",
       },
-      flottant: { true: "bg-surface shadow-float", false: "" },
+      flottant: { true: "verre", false: "" },
     },
     defaultVariants: { variante: "primaire", flottant: false },
   },

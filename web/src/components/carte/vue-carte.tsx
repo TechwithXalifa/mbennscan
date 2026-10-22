@@ -62,7 +62,7 @@ export function VueCarte() {
           </p>
         )}
         <Legende />
-        <p className="absolute left-3 right-14 top-3 z-10 w-fit rounded-sm bg-surface px-2 py-1 text-mention text-ink-2 shadow-float">
+        <p className="verre absolute left-3 right-14 top-3 z-10 w-fit rounded-sm px-2 py-1 text-mention text-ink-2">
           {fraicheur || "Keur Massar · hivernages 2020-2026"}
         </p>
       </div>
