@@ -1,0 +1,17 @@
+lieu,statut,osm,type,annees_eau_saison_seche,part_bati,nouvelle_ha_2020-10-06,presente_ha_2020-10-06,nouvelle_ha_2022-08-21,presente_ha_2022-08-21,nouvelle_ha_2026-10-06,presente_ha_2026-10-06,nouvelle_ha_2026-10-12,presente_ha_2026-10-12
+Jaxaay (Plan Jaxaay 01),trouvé,node/2965962949,tissu bâti,,0.96,0,0,0,0,0,0,0,0
+Jaxaay (Plan Jaxaay 02),trouvé,node/2965962950,bord de lac ou cuvette,2018,0.84,0,0.75,0,0.88,0,0.48,0,0.39
+Cité Camille Basse,trouvé,node/2270628840,tissu bâti,,0.97,0,0.05,0,0.13,0,0.04,0,0.08
+Unité 2 (Parcelles Assainies de Keur Massar),introuvable,,,,,,,,,,,,
+Unité 3 (Parcelles Assainies de Keur Massar),approché,way/305706690,tissu bâti,,0.93,0,0.12,0,0.25,0,0.24,0,0.25
+Unité 11 (Parcelles Assainies de Keur Massar),approché,way/628236659,tissu bâti,,0.77,0,0.39,0,0.1,0,0,0,0.21
+Unité 13 (Parcelles Assainies de Keur Massar),introuvable,,,,,,,,,,,,
+Unité 14 (Parcelles Assainies de Keur Massar),approché,way/617182012,bord de lac ou cuvette,2023,0.74,0,0.13,0,0,0,0,0,0
+Unité 15 (Parcelles Assainies de Keur Massar),introuvable,,,,,,,,,,,,
+Unité 17 (Parcelles Assainies de Keur Massar),trouvé,way/511076653,bord de lac ou cuvette,2019 2020 2021,0.83,0,0,0,0,0,0,0,0.15
+Ucad 1,introuvable,,,,,,,,,,,,
+Tawfekh,introuvable,,,,,,,,,,,,
+Cheikh Sylla,introuvable,,,,,,,,,,,,
+Darou Missette,trouvé,way/631736414 et autres,tissu bâti,,0.75,0,0,0,0.01,0,0,0,0
+Mame Abdou Aziz Dabakh,introuvable,,,,,,,,,,,,
+Abords de Mbeubeuss,trouvé,way/178571204,bord de lac ou cuvette,2017 2018 2019 2020 2021 2022 2023 2024 2025 2026,0.02,22.03,37.48,3.09,44.25,0.21,20.27,0.13,26.4
