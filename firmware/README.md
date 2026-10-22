@@ -31,3 +31,10 @@ Limites connues : la tension de batterie n'est pas envoyée (`batterie_v` absent
 - 🎥 [Voir la vidéo de démonstration : envoi normal, coupure réseau simulée et synchronisation de la file](https://drive.google.com/file/d/1ug1ObmSmp1jq-mfncsf61lRuvSe0pU8P/view?usp=sharing)
 
 Détails : cahier des charges, section 8.
+
+### Simulation Wokwi
+
+1. `pio run -e wokwi`
+2. Ouvrir le dossier `firmware/wokwi` avec l'extension Wokwi (VS Code) ou wokwi.com, puis lancer la simulation.
+
+Le HC-SR04 de Wokwi remplace le JSN-SR04T (même protocole TRIG / ECHO). Sur le vrai matériel, l'ECHO en 5 V demande le pont diviseur signalé dans `main.cpp`. Pour la simulation, utiliser un `secrets.h` avec `Wokwi-GUEST` et `WIFI_CHANNEL 6`, sans vraie clé.

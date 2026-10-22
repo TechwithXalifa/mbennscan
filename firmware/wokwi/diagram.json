@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "author": "MbënnScan Team",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 30, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic",
+      "top": -140,
+      "left": 60,
+      "attrs": { "distance": "50" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led",
+      "top": -51.6,
+      "left": -92.2,
+      "attrs": { "color": "green" }
+    },
+    { "type": "wokwi-resistor", "id": "r1", "top": 10, "left": -70, "attrs": { "value": "220" } },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btnCoupure",
+      "top": 92.6,
+      "left": -201.6,
+      "attrs": { "color": "red", "label": "Coupure" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:GND.1", "ultrasonic:GND", "black", [] ],
+    [ "esp:5V", "ultrasonic:VCC", "red", [] ],
+    [ "esp:25", "ultrasonic:TRIG", "blue", [] ],
+    [ "esp:26", "ultrasonic:ECHO", "green", [] ],
+    [ "esp:2", "led:A", "cyan", [] ],
+    [ "led:C", "r1:1", "black", [] ],
+    [ "r1:2", "esp:GND.1", "black", [] ],
+    [ "btnCoupure:1.l", "esp:4", "orange", [] ],
+    [ "btnCoupure:2.l", "esp:GND.1", "black", [] ]
+  ],
+  "dependencies": {}
+}
