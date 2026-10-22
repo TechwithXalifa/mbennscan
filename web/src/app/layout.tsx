@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { STYLE_CARTE } from "@/lib/design";
 import { BarreHaut } from "@/components/barre-haut";
 import { HorsLigne } from "@/components/hors-ligne";
 import "./globals.css";
@@ -20,6 +21,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr" className={inter.variable}>
+      <head>
+        {/* Le fond de carte est le plus long à venir : ouvrir la connexion dès le HTML. */}
+        <link rel="preconnect" href={new URL(STYLE_CARTE).origin} crossOrigin="" />
+      </head>
       <body className="flex h-dvh flex-col bg-bg font-sans text-ink print:block print:h-auto">
         <BarreHaut />
         <HorsLigne />

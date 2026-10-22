@@ -19,6 +19,26 @@ function airePolygone(anneaux: Position[][]): number {
   return anneaux.reduce((s, a, i) => (i === 0 ? s + aireAnneau(a) : s - aireAnneau(a)), 0);
 }
 
+type Emprise = [[number, number], [number, number]];
+
+/** Rectangle [[ouest, sud], [est, nord]] qui contient toutes les géométries, ou null si elles sont vides. */
+export function emprise(features: { geometry: { coordinates: unknown } }[]): Emprise | null {
+  let [o, s, e, n] = [Infinity, Infinity, -Infinity, -Infinity];
+  const parcourir = (c: unknown): void => {
+    if (!Array.isArray(c)) return;
+    if (typeof c[0] === "number") {
+      o = Math.min(o, c[0]);
+      e = Math.max(e, c[0]);
+      s = Math.min(s, c[1] as number);
+      n = Math.max(n, c[1] as number);
+    } else c.forEach(parcourir);
+  };
+  features.forEach((f) => parcourir(f.geometry.coordinates));
+  const sudOuest: [number, number] = [o, s];
+  const nordEst: [number, number] = [e, n];
+  return o === Infinity ? null : [sudOuest, nordEst];
+}
+
 /** Surface totale en hectares. */
 export function surfaceHectares(eau: EauGeoJSON): number {
   let m2 = 0;

@@ -73,6 +73,7 @@ export function VueApres({ evenementId }: { evenementId: number }) {
             zones={etat.d.zones}
             mode="contour"
             eau={evenement?.eau_geojson ?? null}
+            feuille="moitie"
             selection={selection}
             onSelection={(id) => impacts.some((i) => i.zone_id === id) && setSelection(id)}
           />

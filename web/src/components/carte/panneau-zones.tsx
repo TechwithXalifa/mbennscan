@@ -48,10 +48,7 @@ export function PanneauZones({ sousTitre, entete, ouvrirSur, children }: Props) 
       </button>
       {entete ?? (
         <header className="px-4 lg:pt-4">
-          <h2 className="text-titre2">
-            <span className="lg:hidden">10 zones à traiter en premier</span>
-            <span className="hidden lg:inline">Zones à traiter en premier</span>
-          </h2>
+          <h2 className="text-titre2">Zones à traiter en premier</h2>
           <p className="text-petit text-ink-2 group-data-[apercu=true]:hidden lg:group-data-[apercu=true]:block">
             {sousTitre}
           </p>
