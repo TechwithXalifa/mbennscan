@@ -96,6 +96,7 @@ export function VueApres({ evenementId }: { evenementId: number }) {
         {maquette && <BandeauMaquette className="absolute left-3 right-16 top-3 z-10 w-fit" />}
       </div>
       <PanneauZones
+        titre="Après une pluie"
         sousTitre="Après une pluie"
         ouvrirSur={selection ?? String(evenementId)}
         entete={
