@@ -1,98 +1,64 @@
 "use client";
 
-import { ArrowLeft, Droplets, Search, Users } from "lucide-react";
-import Link from "next/link";
-import { IndicateurConfiance } from "@/components/zone/badges";
+import { BadgeAction, FicheUrgence } from "@/components/apres/fiche-urgence";
 import { formatHabitants, formatNombre } from "@/lib/format";
-import { LIBELLE_EAU } from "@/lib/synthese";
-import type { ActionSuggeree, ImpactEvenement, ZoneSynthese } from "@/types/contracts";
-
-const ACTION: Record<ActionSuggeree, { libelle: string; Icone: typeof Droplets }> = {
-  pomper: { libelle: "Pomper", Icone: Droplets },
-  recenser: { libelle: "Recenser", Icone: Users },
-  visiter: { libelle: "Visiter", Icone: Search },
-};
-
-function BadgeAction({ action }: { action: ActionSuggeree }) {
-  const { libelle, Icone } = ACTION[action];
-  return (
-    <span className="inline-flex items-center gap-1 rounded-sm border border-line px-2 text-petit">
-      <Icone size={16} strokeWidth={1.75} aria-hidden />
-      {libelle}
-    </span>
-  );
-}
+import type { Evenement, ImpactEvenement, ZoneSynthese } from "@/types/contracts";
 
 type Props = {
   impacts: ImpactEvenement[];
   zones: Map<string, ZoneSynthese>;
+  evenement: Evenement;
   selection: string | null;
   onSelection: (id: string | null) => void;
 };
 
 /** Liste « À visiter en priorité » (triée par habitants touchés) et fiche d'urgence d'une zone. */
-export function ListeUrgence({ impacts, zones, selection, onSelection }: Props) {
+export function ListeUrgence({ impacts, zones, evenement, selection, onSelection }: Props) {
   const choisi = impacts.find((i) => i.zone_id === selection);
 
   if (choisi) {
-    const zone = zones.get(choisi.zone_id);
     return (
-      <article className="space-y-3 py-2">
-        <button
-          type="button"
-          onClick={() => onSelection(null)}
-          className="inline-flex min-h-cible items-center gap-2 text-primary"
-        >
-          <ArrowLeft size={20} strokeWidth={1.75} aria-hidden />À visiter en priorité
-        </button>
-        <h3 className="text-titre2">{zone?.nom ?? choisi.zone_id}</h3>
-        <div className="flex flex-wrap items-center gap-2">
-          <BadgeAction action={choisi.action_suggeree} />
-          {zone && <IndicateurConfiance confiance={zone.confiance} />}
-        </div>
-        <dl className="grid grid-cols-2 gap-x-3 gap-y-2">
-          <dt className="text-ink-2">Surface en eau</dt>
-          <dd className="tabular-nums">{formatNombre(choisi.surface_eau_pct)} %</dd>
-          <dt className="text-ink-2">Habitants</dt>
-          <dd className="tabular-nums">environ {formatHabitants(choisi.habitants_touches)}</dd>
-          <dt className="text-ink-2">Bâtiments</dt>
-          <dd className="tabular-nums">{formatNombre(choisi.batiments_touches)}</dd>
-          <dt className="text-ink-2">Écoles</dt>
-          <dd className="tabular-nums">{formatNombre(choisi.ecoles_touchees)}</dd>
-          {zone?.classe_eau && (
-            <>
-              <dt className="text-ink-2">D&apos;habitude</dt>
-              <dd>{LIBELLE_EAU[zone.classe_eau]} (2020-2026)</dd>
-            </>
-          )}
-        </dl>
-        <Link
-          href={`/zone/${encodeURIComponent(choisi.zone_id)}`}
-          className="inline-flex min-h-cible items-center text-primary underline"
-        >
-          Fiche complète de la zone
-        </Link>
-      </article>
+      <FicheUrgence
+        impact={choisi}
+        zone={zones.get(choisi.zone_id)}
+        evenement={evenement}
+        onRetour={() => onSelection(null)}
+      />
     );
   }
 
   if (impacts.length === 0) return null;
+  const max = Math.max(1, ...impacts.map((i) => i.habitants_touches));
 
   return (
-    <section>
-      <h3 className="text-titre3">À visiter en priorité</h3>
-      <ol className="divide-y divide-line">
-        {impacts.map((i) => (
+    <section aria-labelledby="titre-visiter">
+      <div className="flex items-baseline justify-between gap-2">
+        <h3 id="titre-visiter" className="text-titre3">
+          À visiter en priorité
+        </h3>
+        <p className="text-mention font-normal text-ink-3">triées par habitants touchés</p>
+      </div>
+      <ol className="-mx-2 mt-1">
+        {impacts.map((i, rang) => (
           <li key={i.zone_id}>
             <button
               type="button"
               onClick={() => onSelection(i.zone_id)}
-              className="flex min-h-cible w-full items-center gap-3 py-2 text-left hover:bg-bg"
+              className="grid min-h-cible w-full grid-cols-[24px_minmax(0,1fr)_auto] items-start gap-x-3 rounded-md px-2 py-3 text-left transition-[background-color,transform] ease-sortie hover:bg-surface-2 active:scale-[0.99]"
             >
-              <span className="min-w-0 flex-1">
-                <span className="block truncate font-medium">{zones.get(i.zone_id)?.nom ?? i.zone_id}</span>
-                <span className="block text-petit text-ink-2">
+              <span className="mt-0.5 text-petit font-semibold tabular-nums text-ink-3">{rang + 1}</span>
+              <span className="min-w-0">
+                <span className="line-clamp-2 font-medium leading-snug text-ink">
+                  {zones.get(i.zone_id)?.nom ?? i.zone_id}
+                </span>
+                <span className="mt-0.5 block text-petit tabular-nums text-ink-2">
                   environ {formatHabitants(i.habitants_touches)} habitants · {formatNombre(i.surface_eau_pct)} % en eau
+                </span>
+                <span className="mt-2 block h-1 w-full max-w-40 overflow-hidden rounded-pill bg-surface-3" aria-hidden>
+                  <span
+                    className="block h-full rounded-pill bg-primary"
+                    style={{ width: `${Math.max(4, Math.round((i.habitants_touches / max) * 100))}%` }}
+                  />
                 </span>
               </span>
               <BadgeAction action={i.action_suggeree} />
