@@ -1,3 +1,4 @@
+import { reperesCorps } from "@/lib/balise";
 import { formatNombre } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -16,17 +17,6 @@ type Props = {
 const SOL = 330;
 const HAUT_CM = 320;
 const y = (cm: number) => SOL - Math.min(HAUT_CM, Math.max(0, cm));
-
-/** Jusqu'où l'eau monterait sur un adulte de 1,75 m, en français courant. */
-export function reperesCorps(cm: number): string {
-  if (cm <= 0) return "Pas d'eau mesurée";
-  if (cm < 15) return "L'eau arriverait aux chevilles d'un adulte";
-  if (cm < 55) return "L'eau arriverait aux genoux d'un adulte";
-  if (cm < 105) return "L'eau arriverait à la taille d'un adulte";
-  if (cm < 140) return "L'eau arriverait à la poitrine d'un adulte";
-  if (cm < 175) return "L'eau arriverait aux épaules d'un adulte";
-  return "Un adulte serait entièrement submergé";
-}
 
 /**
  * Le niveau mesuré, rapporté à une maison et à un adulte : l'eau monte à l'échelle réelle
@@ -96,7 +86,7 @@ export function Jauge({ niveauCm, hauteurCm, seuilCm, sansMesure = false, classN
               height={SOL - y(niveauCm)}
               fill="var(--water)"
               opacity={depasse ? 0.7 : 0.55}
-              className="transition-[y,height] duration-700 ease-sortie"
+              className="transition-[y,height] duration-niveau ease-sortie"
             />
             <g className="vague">
               <path

@@ -4,12 +4,13 @@ import { AlertTriangle, ArrowUpRight, Cpu, Maximize2, Radio, X } from "lucide-re
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { Jauge, reperesCorps } from "@/components/balise/jauge";
+import { Jauge } from "@/components/balise/jauge";
+import { reperesCorps } from "@/lib/balise";
 import { Bouton } from "@/components/ui/bouton";
-import { AlerteErreur, Bandeau, EtatVide, PastilleEtat } from "@/components/ui/etats";
+import { AlerteErreur, Bandeau, EtatVide, EtatBalise } from "@/components/ui/etats";
 import { Squelette } from "@/components/ui/squelette";
 import { abonnerMesures, getBalise, getMesures, USE_MOCKS } from "@/lib/data";
-import { ICONE, ICONE_PETITE } from "@/lib/design";
+import { ICONE, ICONE_GRANDE, ICONE_PETITE } from "@/lib/design";
 import { formatDepuis, formatNombre } from "@/lib/format";
 import { BALISE_PAR_DEFAUT } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
@@ -165,7 +166,7 @@ export function VueBalise({ id }: { id: string }) {
               sansMesure={niveau === null}
             />
           </div>
-          <p className="text-[120px] font-semibold leading-none tracking-tight tabular-nums text-vif sm:text-[200px]">
+          <p className="text-ecran tabular-nums text-vif sm:text-ecran-xl">
             {niveau === null ? "–" : formatNombre(Math.round(niveau))}
             <span className="text-titre1 tracking-normal text-ink-2"> cm</span>
           </p>
@@ -173,15 +174,15 @@ export function VueBalise({ id }: { id: string }) {
         {niveau !== null && <p className="text-titre2 text-ink">{reperesCorps(niveau)}.</p>}
         {depasse && (
           <p className="flex items-center gap-2 text-titre1 text-danger">
-            <AlertTriangle size={28} strokeWidth={1.75} aria-hidden />
+            <AlertTriangle {...ICONE_GRANDE} aria-hidden />
             Seuil dépassé
           </p>
         )}
-        <PastilleEtat enLigne={enLigne}>
+        <EtatBalise enLigne={enLigne}>
           <span className="text-texte text-ink-2">
             {balise.nom} · {etatTexte}
           </span>
-        </PastilleEtat>
+        </EtatBalise>
       </div>
     );
   }
@@ -193,9 +194,9 @@ export function VueBalise({ id }: { id: string }) {
           <p className="text-surtitre uppercase text-ink-3">Balise · mesure au sol</p>
           <h1 className="mt-1 text-titre1 text-ink">{balise.nom}</h1>
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-            <PastilleEtat enLigne={enLigne}>
+            <EtatBalise enLigne={enLigne}>
               <span className="text-ink">{etatTexte}</span>
-            </PastilleEtat>
+            </EtatBalise>
             <span className="text-petit text-ink-3">
               {USE_MOCKS ? "Données de démonstration [FICTIF]" : "Mesures reçues en direct par le serveur"}
             </span>
@@ -217,21 +218,23 @@ export function VueBalise({ id }: { id: string }) {
 
       <div className="grid gap-4 lg:grid-cols-12">
         <Carte titre="Niveau d'eau" className="lg:col-span-5">
-          <div className="flex items-end justify-center gap-8">
+          <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:justify-center sm:gap-8">
             <Jauge
               niveauCm={niveau ?? 0}
               hauteurCm={balise.hauteur_capteur_cm}
               seuilCm={balise.seuil_alerte_cm}
               sansMesure={niveau === null}
             />
-            <div className="pb-1">
-              <p className="text-[64px] font-semibold leading-none tracking-tight tabular-nums text-vif">
+            <div className="text-center sm:pb-1 sm:text-left">
+              <p className="whitespace-nowrap text-geant tabular-nums text-vif">
                 {niveau === null ? "–" : formatNombre(Math.round(niveau))}
                 <span className="text-titre2 tracking-normal text-ink-2"> cm</span>
               </p>
               <p className="mt-1 text-petit text-ink-2">d&apos;eau dans le bac</p>
               {niveau !== null && (
-                <p className="mt-2 max-w-48 text-petit font-medium text-ink">{reperesCorps(niveau)}.</p>
+                <p className="mx-auto mt-2 max-w-56 text-petit font-medium text-ink sm:mx-0 sm:max-w-48">
+                  {reperesCorps(niveau)}.
+                </p>
               )}
               {balise.seuil_alerte_cm !== null && niveau !== null && (
                 <p
@@ -287,7 +290,7 @@ export function VueBalise({ id }: { id: string }) {
               <dd className="sm:mt-0.5">
                 <a
                   href={`https://www.openstreetmap.org/?mlat=${balise.lat}&mlon=${balise.lon}#map=17/${balise.lat}/${balise.lon}`}
-                  className="inline-flex items-center gap-1 font-medium text-primary-ink underline-offset-4 hover:underline"
+                  className="inline-flex items-center gap-1 font-medium text-primary-ink underline-offset-4 hover:underline [@media(pointer:coarse)]:min-h-cible"
                   target="_blank"
                   rel="noreferrer"
                 >

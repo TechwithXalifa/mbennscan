@@ -7,7 +7,7 @@ import { ChiffreCle } from "@/components/ui/chiffre-cle";
 import { Compteur } from "@/components/ui/compteur";
 import { ControleSegmente } from "@/components/ui/controle-segmente";
 import { Encart } from "@/components/ui/encart";
-import { AlerteErreur, Bandeau, BandeauMaquette, EtatVide, PastilleEtat } from "@/components/ui/etats";
+import { AlerteErreur, Bandeau, BandeauMaquette, EtatVide, EtatBalise } from "@/components/ui/etats";
 import { Infobulle } from "@/components/ui/infobulle";
 import { Pastille } from "@/components/ui/pastille";
 import { ChoixTheme } from "@/components/shell/choix-theme";
@@ -184,8 +184,8 @@ export function Catalogue() {
           <IndicateurConfiance confiance="faible" />
         </div>
         <div className="flex flex-wrap gap-4">
-          <PastilleEtat enLigne>Mis à jour il y a 4 s</PastilleEtat>
-          <PastilleEtat enLigne={false}>Dernière mesure il y a 5 min</PastilleEtat>
+          <EtatBalise enLigne>Mis à jour il y a 4 s</EtatBalise>
+          <EtatBalise enLigne={false}>Dernière mesure il y a 5 min</EtatBalise>
         </div>
       </Section>
 

@@ -94,7 +94,14 @@ async function secours<T>(cle: string, lire: () => Promise<T>): Promise<T> {
     }
     return valeur;
   } catch (e) {
-    const copie = typeof navigator !== "undefined" && !navigator.onLine ? localStorage.getItem(PREFIXE + cle) : null;
+    // Hors ligne, la copie gardée sur l'appareil ; sinon (ou si elle est illisible), l'erreur d'origine.
+    let copie: string | null = null;
+    try {
+      copie =
+        typeof navigator !== "undefined" && navigator.onLine === false ? localStorage.getItem(PREFIXE + cle) : null;
+    } catch {
+      copie = null;
+    }
     if (copie === null) throw e;
     return JSON.parse(copie) as T;
   }
@@ -235,18 +242,21 @@ export function abonnerMesures(baliseId: string, onMesure: (mesure: Mesure) => v
   if (USE_MOCKS) return () => {};
   let actif = true;
   let arreter = () => {};
-  void supabase().then((sb) => {
-    if (!actif) return;
-    const canal = sb
-      .channel(`mesures:${baliseId}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "mesures", filter: `balise_id=eq.${baliseId}` },
-        (payload) => onMesure(payload.new as Mesure),
-      )
-      .subscribe();
-    arreter = () => void sb.removeChannel(canal);
-  });
+  supabase()
+    .then((sb) => {
+      if (!actif) return;
+      const canal = sb
+        .channel(`mesures:${baliseId}`)
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "mesures", filter: `balise_id=eq.${baliseId}` },
+          (payload) => onMesure(payload.new as Mesure),
+        )
+        .subscribe();
+      arreter = () => void sb.removeChannel(canal);
+    })
+    // Sans Supabase configuré, pas de direct : les mesures déjà chargées restent affichées.
+    .catch(() => {});
   return () => {
     actif = false;
     arreter();
@@ -261,17 +271,18 @@ async function lireRunMeta(): Promise<RunMeta | null> {
 }
 
 // ── Lectures exportées, avec copie hors ligne ─────────────────────────────────
-// Les résultats du pipeline ne changent pas pendant une visite : une lecture réussie est partagée par
-// tous les écrans (carte, fiche, recherche) au lieu d'être refaite. Un échec est oublié pour que
-// « Réessayer » relance vraiment la lecture.
+// Les résultats du pipeline changent rarement : une lecture réussie est partagée par tous les écrans
+// (carte, fiche, recherche) pendant 10 minutes au lieu d'être refaite, puis relue pour voir un nouveau calcul.
+// Un échec est oublié pour que « Réessayer » relance vraiment la lecture.
 
-const memoire = new Map<string, Promise<unknown>>();
+export const DUREE_PARTAGE_MS = 10 * 60 * 1000;
+const memoire = new Map<string, { promesse: Promise<unknown>; depuis: number }>();
 
-function partage<T>(cle: string, lire: () => Promise<T>): Promise<T> {
-  const enCours = memoire.get(cle) as Promise<T> | undefined;
-  if (enCours) return enCours;
+export function partage<T>(cle: string, lire: () => Promise<T>, maintenant = Date.now()): Promise<T> {
+  const enCours = memoire.get(cle);
+  if (enCours && maintenant - enCours.depuis < DUREE_PARTAGE_MS) return enCours.promesse as Promise<T>;
   const promesse = secours(cle, lire);
-  memoire.set(cle, promesse);
+  memoire.set(cle, { promesse, depuis: maintenant });
   promesse.catch(() => memoire.delete(cle));
   return promesse;
 }

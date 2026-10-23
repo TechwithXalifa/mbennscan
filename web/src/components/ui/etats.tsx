@@ -121,7 +121,7 @@ export function BandeauMaquette({ className, compact = false }: { className?: st
     <p
       role="note"
       className={cn(
-        "flex items-start gap-2 rounded-md bg-inverse px-3 py-2 text-petit text-inverse-ink shadow-float print:border print:border-ink print:bg-transparent print:text-ink print:shadow-none",
+        "flex items-start gap-2 rounded-md border border-bandeau-line bg-bandeau px-3 py-2 text-petit text-bandeau-ink shadow-float print:border print:border-ink print:bg-transparent print:text-ink print:shadow-none",
         className,
       )}
     >
@@ -137,7 +137,7 @@ export function BandeauMaquette({ className, compact = false }: { className?: st
 }
 
 /** État de la balise, dit en toutes lettres (« En ligne », « Muette ») : pas de pastille de couleur. */
-export function PastilleEtat({ enLigne, children }: { enLigne: boolean; children: React.ReactNode }) {
+export function EtatBalise({ enLigne, children }: { enLigne: boolean; children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center text-petit" data-en-ligne={enLigne}>
       {children}
