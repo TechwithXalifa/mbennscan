@@ -104,6 +104,15 @@ export function contexteDe(chemin: string): Contexte {
   }
 }
 
+/** Largeur de la barre latérale choisie par l'utilisateur (« repliee » ou « ouverte »). */
+export const CLE_BARRE = "mbennscan:barre";
+
+/**
+ * Posé juste après la barre latérale dans le HTML : applique la largeur choisie avant l'affichage,
+ * sans saut visuel quand React prend la main.
+ */
+export const SCRIPT_BARRE = `(function(){try{var l=localStorage.getItem("${CLE_BARRE}");var a=document.currentScript&&document.currentScript.previousElementSibling;if(a&&(l==="repliee"||l==="ouverte"))a.setAttribute("data-largeur",l);}catch(e){}})();`;
+
 /** Événement qui ouvre la palette de recherche, depuis n'importe quel bouton. */
 export const OUVRIR_RECHERCHE = "mbennscan:recherche";
 export function ouvrirRecherche() {

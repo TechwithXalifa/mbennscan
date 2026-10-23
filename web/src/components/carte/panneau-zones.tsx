@@ -80,7 +80,7 @@ export function PanneauZones({ titre, sousTitre, entete, ouvrirSur, children }: 
       style={glisse !== null ? { height: glisse } : undefined}
       className={cn(
         "group verre absolute inset-x-0 bottom-0 z-panneau flex flex-col rounded-t-[20px] border-b-0",
-        glisse === null && "transition-[height] [transition-duration:420ms] ease-ressort",
+        glisse === null && "transition-[height] duration-feuille ease-ressort",
         glisse === null && HAUTEURS[hauteur],
         "lg:sans-verre lg:relative lg:inset-auto lg:!h-auto lg:w-panneau lg:shrink-0 lg:rounded-none lg:border-y-0 lg:border-l lg:border-r-0 lg:border-line",
         "print:static print:h-auto",
@@ -121,6 +121,9 @@ export function PanneauZones({ titre, sousTitre, entete, ouvrirSur, children }: 
         </header>
       )}
       <div
+        tabIndex={0}
+        role="region"
+        aria-label={`${titre} : contenu`}
         className={cn(
           // « relative » : les textes réservés aux lecteurs d'écran restent dans la zone qui défile
           // au lieu d'allonger la page.

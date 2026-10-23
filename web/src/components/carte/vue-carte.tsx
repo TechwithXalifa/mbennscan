@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { EnteteApercu, PERIODE } from "@/components/apercu/entete-apercu";
 import { RangeeIndicateurs, RepartitionsZones } from "@/components/apercu/synthese-apercu";
@@ -18,6 +18,7 @@ import { estMaquette, getEvenements, getZones } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import { syntheseGlobale } from "@/lib/synthese";
 import type { Evenement, Priorite, ZonesGeoJSON } from "@/types/contracts";
+import { ICONE } from "@/lib/design";
 
 // MapLibre est chargé à part pour garder un JavaScript initial léger.
 const CarteZones = dynamic(() => import("@/components/carte/carte-zones"), {
@@ -51,7 +52,9 @@ export function VueCarte() {
   const [masquees, setMasquees] = useState<Priorite[]>([]);
   const zoneAdresse = useSearchParams().get("zone");
   const selectionCourante = useRef(selection);
-  selectionCourante.current = selection;
+  useLayoutEffect(() => {
+    selectionCourante.current = selection;
+  });
 
   // Lien partagé ou recherche (« /?zone=… ») : la zone s'ouvre sur la carte.
   useEffect(() => {
@@ -165,7 +168,7 @@ export function VueCarte() {
                 onClick={() => choisir(null)}
                 className="mx-4 inline-flex min-h-cible items-center gap-2 self-start rounded-sm font-medium text-primary-ink lg:mt-3"
               >
-                <ArrowLeft size={20} strokeWidth={1.75} aria-hidden />
+                <ArrowLeft {...ICONE} aria-hidden />
                 Zones à traiter en premier
               </button>
             )

@@ -66,7 +66,9 @@ export function BarreHaut() {
           >
             <Search {...ICONE_PETITE} aria-hidden />
             <span className="flex-1 text-left">Rechercher une zone…</span>
-            <kbd className="touche">Ctrl K</kbd>
+            <kbd className="touche" aria-hidden>
+              Ctrl K
+            </kbd>
           </button>
           <button
             type="button"

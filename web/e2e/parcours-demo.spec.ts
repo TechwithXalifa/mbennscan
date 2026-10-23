@@ -47,7 +47,7 @@ test("Classement : recherche et tri des zones", async ({ page }) => {
 test("Recherche : une zone choisie s'ouvre sur la carte", async ({ page }) => {
   await page.goto("/");
   await page
-    .getByRole("button", { name: /Rechercher une zone ou une page/ })
+    .getByRole("button", { name: /^Rechercher/ })
     .first()
     .click();
   await page.getByRole("combobox", { name: "Rechercher une zone ou une page" }).fill("malika");

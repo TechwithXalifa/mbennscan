@@ -103,6 +103,7 @@ export function Legende({ variante = "priorite", comptes = {}, masquees = [], on
                     <button
                       type="button"
                       aria-pressed={visible}
+                      aria-label={`${LIBELLE_PRIORITE[p]}${comptes[p] !== undefined ? ` : ${comptes[p]} zone${comptes[p]! > 1 ? "s" : ""}` : ""}`}
                       onClick={() => basculer(p)}
                       className="flex min-h-8 w-full items-center gap-2 rounded-sm px-1.5 text-petit transition-colors hover:bg-surface-3 [@media(pointer:coarse)]:min-h-cible"
                     >
@@ -118,14 +119,11 @@ export function Legende({ variante = "priorite", comptes = {}, masquees = [], on
         ) : (
           <ul className="mt-2 space-y-1.5 text-petit">
             <li className="flex items-center gap-2 px-1.5">
-              <span
-                className="size-4 shrink-0 rounded-[4px] border border-water-line bg-water opacity-eau"
-                aria-hidden
-              />
+              <span className="size-4 shrink-0 rounded-xs border border-water-line bg-water opacity-eau" aria-hidden />
               Eau détectée par le radar
             </li>
             <li className="flex items-center gap-2 px-1.5">
-              <span className="size-4 shrink-0 rounded-[4px] border border-ink-2" aria-hidden />
+              <span className="size-4 shrink-0 rounded-xs border border-ink-2" aria-hidden />
               Contour d&apos;une zone calculée
             </li>
           </ul>
@@ -135,12 +133,12 @@ export function Legende({ variante = "priorite", comptes = {}, masquees = [], on
           <p className="px-1.5 text-mention text-ink-3">Confiance de la mesure</p>
           <ul className="mt-1 space-y-1 text-petit">
             <li className="flex items-center gap-2 px-1.5">
-              <span className="hachures-moyenne size-4 shrink-0 rounded-[4px] border border-ink-2" aria-hidden />
+              <span className="hachures-moyenne size-4 shrink-0 rounded-xs border border-ink-2" aria-hidden />
               Moyenne
             </li>
             <li className="flex items-center gap-2 px-1.5">
               <span
-                className="hachures-faible size-4 shrink-0 rounded-[4px] border border-dashed border-ink"
+                className="hachures-faible size-4 shrink-0 rounded-xs border border-dashed border-ink"
                 aria-hidden
               />
               Faible : à vérifier sur le terrain
