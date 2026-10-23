@@ -69,7 +69,7 @@ export function ControleSegmente<T extends string>({
       {curseur && (
         <span
           aria-hidden
-          className="reflet-liquide absolute inset-y-[3px] left-0 rounded-[9px] bg-surface transition-[transform,width] duration-etat ease-ressort"
+          className="reflet-liquide absolute inset-y-[3px] left-0 rounded-interne bg-surface transition-[transform,width] duration-etat ease-ressort"
           style={{ width: curseur.largeur, transform: `translateX(${curseur.x}px)` }}
         />
       )}
@@ -89,7 +89,7 @@ export function ControleSegmente<T extends string>({
             onClick={() => onChange(s.valeur)}
             onKeyDown={(e) => clavier(e, i)}
             className={cn(
-              "relative flex-1 whitespace-nowrap rounded-[9px] px-2 text-petit font-medium transition-colors duration-etat sm:px-3",
+              "relative flex-1 whitespace-nowrap rounded-interne px-2 text-petit font-medium transition-colors duration-etat sm:px-3",
               compact
                 ? "min-h-9 [@media(pointer:coarse)]:min-h-cible"
                 : "min-h-[38px] [@media(pointer:coarse)]:min-h-cible",

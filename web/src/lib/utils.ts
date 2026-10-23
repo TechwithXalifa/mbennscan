@@ -7,10 +7,29 @@ const fusionner = extendTailwindMerge({
   extend: {
     classGroups: {
       "font-size": [
-        { text: ["mention", "surtitre", "petit", "texte", "titre3", "titre2", "titre1", "chiffre", "display"] },
+        {
+          text: [
+            "mention",
+            "surtitre",
+            "petit",
+            "texte",
+            "titre3",
+            "titre2",
+            "titre1",
+            "chiffre",
+            "display",
+            "intro",
+            "titre-page",
+            "hero",
+            "hero-lg",
+            "geant",
+            "ecran",
+            "ecran-xl",
+          ],
+        },
       ],
       shadow: [{ shadow: ["1", "float", "pop"] }],
-      rounded: [{ rounded: ["pill"] }],
+      rounded: [{ rounded: ["pill", "pixel", "xs", "interne"] }],
     },
   },
 });

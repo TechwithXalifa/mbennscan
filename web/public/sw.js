@@ -1,8 +1,9 @@
 // Service worker de MbënnScan : l'interface et le fond de carte restent consultables hors ligne.
-// Pages : réseau d'abord, cache sinon. Fichiers statiques et tuiles : cache d'abord, mis à jour ensuite.
-// Les données passent par src/lib/data.ts, qui garde sa propre copie hors ligne.
+// Pages et données de démonstration : réseau d'abord, cache sinon. Fichiers statiques et tuiles : cache d'abord,
+// mis à jour ensuite. Les données passent par src/lib/data.ts, qui garde sa propre copie hors ligne.
+// Changer VERSION à chaque changement de ce fichier ou de la liste ACCUEIL : l'ancien cache est alors effacé.
 
-const VERSION = "mbennscan-v1";
+const VERSION = "mbennscan-v2";
 const ACCUEIL = ["/", "/apres", "/methode", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
@@ -36,16 +37,17 @@ self.addEventListener("fetch", (e) => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
 
-  if (request.mode === "navigate") {
+  const mocks = url.origin === self.location.origin && url.pathname.startsWith("/mocks/");
+  if (request.mode === "navigate" || mocks) {
     e.respondWith(
       fetch(request)
         .then((r) => enCache(request, r))
-        .catch(() => caches.match(request).then((r) => r || caches.match("/"))),
+        .catch(() => caches.match(request).then((r) => r || (mocks ? Response.error() : caches.match("/")))),
     );
     return;
   }
 
-  const statique = url.origin === self.location.origin && /^\/(_next\/static|brand|mocks)\//.test(url.pathname);
+  const statique = url.origin === self.location.origin && /^\/(_next\/static|brand)\//.test(url.pathname);
   const fondDeCarte = url.hostname === "tiles.openfreemap.org";
   if (statique || fondDeCarte) {
     e.respondWith(

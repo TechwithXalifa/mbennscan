@@ -307,6 +307,8 @@ Réponses : `201` mesure enregistrée · `400` champ manquant ou valeur hors bor
 
 **Règles** : les couleurs de priorité ne servent qu'à la priorité ; le bleu de l'eau ne sert qu'à l'eau. Le texte posé sur une couleur de priorité est toujours en encre ou en blanc avec un contraste d'au moins 4,5:1. Mode clair uniquement pour le prototype : il se lit mieux en plein soleil.
 
+> Mise à jour du 22 octobre (refonte, `docs/DECISIONS.md`) : thème **sombre par défaut**, clair au choix ; la balise affiche son état en toutes lettres (« En ligne », « Muette ») au lieu d'une pastille ; priorité en ronds de couleur toujours suivis de leur libellé. Les jetons à jour sont dans `web/DESIGN-SYSTEM.md`.
+
 ### Typographie
 
 Police unique : Inter (Google Fonts), qui gère le tréma et les accents. Chiffres tabulaires (`font-variant-numeric: tabular-nums`) partout où des nombres sont comparés.

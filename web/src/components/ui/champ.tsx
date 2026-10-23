@@ -4,7 +4,7 @@ import { ICONE_PETITE } from "@/lib/design";
 import { cn } from "@/lib/utils";
 
 const CHAMP =
-  "min-h-cible w-full rounded-sm border border-line-strong bg-surface text-texte text-ink placeholder:text-ink-3 transition-[border-color,box-shadow] hover:border-ink-2 focus-visible:border-focus sm:min-h-10 sm:text-petit [@media(pointer:coarse)]:min-h-cible";
+  "min-h-cible w-full rounded-sm border border-line-strong bg-surface text-texte text-ink placeholder:text-ink-3 transition-[border-color,box-shadow] hover:border-ink-2 focus-visible:border-focus aria-[invalid=true]:border-danger sm:min-h-10 sm:text-petit [@media(pointer:coarse)]:min-h-cible";
 
 /** Champ de recherche avec loupe et bouton d'effacement. */
 export const ChampRecherche = forwardRef<

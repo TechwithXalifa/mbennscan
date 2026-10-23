@@ -23,6 +23,10 @@
   --ink-3: #5b6b80; /* métadonnées, 5,4:1 */
   --inverse: #101828; /* surfaces inversées : infobulle, bandeau hors ligne */
   --inverse-ink: #ffffff;
+  --bandeau: #101828; /* bandeau « Maquette » : se voit sans écraser la carte */
+  --bandeau-ink: #ffffff;
+  --bandeau-line: transparent;
+  --voile: rgba(8, 14, 24, 0.48); /* derrière les dialogues */
 
   /* Interaction et identité */
   --primary: #0e5a8a; /* remplissage des boutons, barres des graphiques */
@@ -64,6 +68,8 @@
   --picto-sec: #7fa9c6;
 
   /* Formes */
+  --radius-xs: 4px; /* pastilles de légende, touches */
+  --radius-interne: 9px; /* bouton logé dans un conteneur arrondi (segments, barre d'outils) */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -96,7 +102,9 @@
   /* Mouvement (coupé si l'utilisateur réduit les animations) */
   --duree: 150ms; /* retour d'appui, survol */
   --duree-etat: 250ms; /* changement d'état : panneau, curseur, infobulle */
+  --duree-feuille: 420ms; /* feuille du bas qui change de hauteur */
   --duree-chiffre: 600ms; /* chiffre qui défile */
+  --duree-niveau: 700ms; /* eau qui monte dans la jauge de la balise */
   --ease-sortie: cubic-bezier(0.2, 0.8, 0.2, 1);
   /* Ressort amorti, 4 % de dépassement */
   --ease-ressort: linear(
@@ -138,6 +146,10 @@
     --ink-3: #8a97ab; /* 6:1 */
     --inverse: #e8eef6;
     --inverse-ink: #0a111c;
+    --bandeau: #1a283d;
+    --bandeau-ink: #e8eef6;
+    --bandeau-line: rgba(255, 255, 255, 0.14);
+    --voile: rgba(2, 6, 12, 0.6);
 
     --primary: #2471ae; /* blanc dessus : 5,2:1 */
     --primary-strong: #1b5f95;
@@ -217,7 +229,7 @@ body {
 
   /* Bouton posé sur du verre : le survol révèle la surface sans rompre le verre */
   .verre-bouton {
-    @apply inline-flex size-cible items-center justify-center rounded-[9px] text-ink transition-[background-color,transform] [@media(pointer:fine)]:size-9 ease-sortie hover:bg-surface-3 active:scale-[0.94] aria-pressed:bg-primary-soft aria-pressed:text-primary-ink aria-expanded:bg-primary-soft aria-expanded:text-primary-ink;
+    @apply inline-flex size-cible items-center justify-center rounded-interne text-ink transition-[background-color,transform] [@media(pointer:fine)]:size-9 ease-sortie hover:bg-surface-3 active:scale-[0.94] aria-pressed:bg-primary-soft aria-pressed:text-primary-ink aria-expanded:bg-primary-soft aria-expanded:text-primary-ink;
   }
 
   /* Pastille d'information (date, contexte) */
@@ -227,7 +239,7 @@ body {
 
   /* Clavier : touche affichée dans un raccourci */
   .touche {
-    @apply inline-flex h-5 min-w-5 items-center justify-center rounded-[5px] border border-line bg-surface-2 px-1 font-sans text-[11px] font-medium leading-none text-ink-3;
+    @apply inline-flex h-5 min-w-5 items-center justify-center rounded-xs border border-line bg-surface-2 px-1 font-sans text-mention leading-none text-ink-3;
   }
 }
 

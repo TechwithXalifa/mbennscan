@@ -29,7 +29,7 @@ export function Statistique({
 }) {
   return (
     <div className={cn("flex min-w-0 flex-col justify-between gap-1", className)}>
-      <p className="flex items-start gap-1.5 text-petit text-ink-2">
+      <p className="flex items-start gap-1.5 text-petit text-ink-2 lg:min-h-10">
         {Icone && <Icone {...ICONE_PETITE} className="mt-0.5 shrink-0 text-ink-3" aria-hidden />}
         <span className="line-clamp-2 min-w-0">{intitule}</span>
         {info && <Infobulle libelle={`À propos : ${intitule}`}>{info}</Infobulle>}

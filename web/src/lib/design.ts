@@ -2,6 +2,10 @@
 export const ICONE = { size: 20, strokeWidth: 1.75 } as const;
 /** Petite icône des métadonnées et des listes denses. */
 export const ICONE_PETITE = { size: 16, strokeWidth: 1.75 } as const;
+/** Icône dans le texte d'une ligne (type d'eau, action suggérée). */
+export const ICONE_MINI = { size: 14, strokeWidth: 1.75 } as const;
+/** Icône d'en-tête de carte ou d'état mis en avant. */
+export const ICONE_GRANDE = { size: 24, strokeWidth: 1.75 } as const;
 
 /** Lit la valeur d'un jeton CSS (pour MapLibre et Recharts, qui ne lisent pas les variables). */
 export function jeton(variable: `--${string}`): string {

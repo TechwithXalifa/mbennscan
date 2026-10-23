@@ -31,7 +31,7 @@ export function ChoixTheme({ surFonce = false, avecLibelles = false }: { surFonc
             title={`Thème ${libelle.toLowerCase()}`}
             onClick={() => choisir(valeur)}
             className={cn(
-              "inline-flex min-h-8 flex-1 items-center justify-center gap-1.5 rounded-[9px] px-2 text-petit font-medium transition-colors [@media(pointer:coarse)]:min-h-cible",
+              "inline-flex min-h-8 flex-1 items-center justify-center gap-1.5 rounded-interne px-2 text-petit font-medium transition-colors [@media(pointer:coarse)]:min-h-cible",
               surFonce
                 ? coche
                   ? "bg-nuit text-nuit-ink shadow-1"
