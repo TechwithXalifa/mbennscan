@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { STYLE_CARTE } from "@/lib/design";
 import { BarreHaut } from "@/components/barre-haut";
 import { HorsLigne } from "@/components/hors-ligne";
+import { PaletteRecherche } from "@/components/shell/palette-recherche";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <BarreHaut />
         <HorsLigne />
         <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto print:overflow-visible">{children}</div>
+        <PaletteRecherche />
       </body>
     </html>
   );
