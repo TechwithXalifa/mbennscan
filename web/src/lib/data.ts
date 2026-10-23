@@ -33,20 +33,25 @@ export class DataError extends Error {
   }
 }
 
-let client: SupabaseClient | null = null;
+let client: Promise<SupabaseClient> | null = null;
 
 // Chargé à la demande : le mode mocks n'embarque pas le client Supabase.
-async function supabase(): Promise<SupabaseClient> {
+// La promesse est partagée : deux lectures simultanées ne créent pas deux clients.
+function supabase(): Promise<SupabaseClient> {
   if (client) return client;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anonKey) {
-    throw new DataError(
-      "NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY sont requis quand NEXT_PUBLIC_USE_MOCKS n'est pas à true.",
+    return Promise.reject(
+      new DataError(
+        "NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY sont requis quand NEXT_PUBLIC_USE_MOCKS n'est pas à true.",
+      ),
     );
   }
-  const { createClient } = await import("@supabase/supabase-js");
-  client = createClient(url, anonKey, { auth: { persistSession: false } });
+  client = import("@supabase/supabase-js").then(({ createClient }) =>
+    createClient(url, anonKey, { auth: { persistSession: false } }),
+  );
+  client.catch(() => (client = null));
   return client;
 }
 
@@ -256,9 +261,23 @@ async function lireRunMeta(): Promise<RunMeta | null> {
 }
 
 // ── Lectures exportées, avec copie hors ligne ─────────────────────────────────
+// Les résultats du pipeline ne changent pas pendant une visite : une lecture réussie est partagée par
+// tous les écrans (carte, fiche, recherche) au lieu d'être refaite. Un échec est oublié pour que
+// « Réessayer » relance vraiment la lecture.
 
-export const getZones = () => secours("zones", lireZones);
-export const getZoneDetail = (id: string) => secours(`zone:${id}`, () => lireZoneDetail(id));
-export const getEvenements = () => secours("evenements", lireEvenements);
-export const getImpacts = (evenementId: number) => secours(`impacts:${evenementId}`, () => lireImpacts(evenementId));
-export const getRunMeta = () => secours("run_meta", lireRunMeta);
+const memoire = new Map<string, Promise<unknown>>();
+
+function partage<T>(cle: string, lire: () => Promise<T>): Promise<T> {
+  const enCours = memoire.get(cle) as Promise<T> | undefined;
+  if (enCours) return enCours;
+  const promesse = secours(cle, lire);
+  memoire.set(cle, promesse);
+  promesse.catch(() => memoire.delete(cle));
+  return promesse;
+}
+
+export const getZones = () => partage("zones", lireZones);
+export const getZoneDetail = (id: string) => partage(`zone:${id}`, () => lireZoneDetail(id));
+export const getEvenements = () => partage("evenements", lireEvenements);
+export const getImpacts = (evenementId: number) => partage(`impacts:${evenementId}`, () => lireImpacts(evenementId));
+export const getRunMeta = () => partage("run_meta", lireRunMeta);
