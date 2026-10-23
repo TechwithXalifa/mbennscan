@@ -1,8 +1,10 @@
 "use client";
 
-import { CloudRain, Printer, Share2 } from "lucide-react";
+import { Check, CloudRain, Printer, Share2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { styleBouton } from "@/components/ui/bouton";
+import { ICONE_PETITE } from "@/lib/design";
 import { formatDate } from "@/lib/format";
 import type { Evenement } from "@/types/contracts";
 
@@ -15,10 +17,10 @@ type Props = {
   pluie: Evenement | null;
 };
 
-const BOUTON = "inline-flex min-h-cible items-center gap-2 rounded-sm border border-line px-3 text-primary hover:bg-bg";
+const BOUTON = styleBouton({ variante: "secondaire", taille: "compacte" });
 
 export function ActionsFiche({ id, nom, autonome, pluie }: Props) {
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ texte: string; ok: boolean } | null>(null);
   const lien = `${window.location.origin}/zone/${encodeURIComponent(id)}`;
 
   async function partager() {
@@ -28,11 +30,11 @@ export function ActionsFiche({ id, nom, autonome, pluie }: Props) {
         return;
       }
       await navigator.clipboard.writeText(lien);
-      setMessage("Lien copié.");
+      setMessage({ texte: "Lien copié.", ok: true });
     } catch (e) {
       // Partage annulé par l'utilisateur : rien à signaler.
       if (e instanceof DOMException && e.name === "AbortError") return;
-      setMessage(`Copiez ce lien : ${lien}`);
+      setMessage({ texte: `Copiez ce lien : ${lien}`, ok: false });
     }
   }
 
@@ -42,25 +44,26 @@ export function ActionsFiche({ id, nom, autonome, pluie }: Props) {
   }
 
   return (
-    <div className="print:hidden">
+    <div className="border-t border-line pt-5 print:hidden">
       <div className="flex flex-wrap gap-2">
-        <button type="button" onClick={partager} className={BOUTON}>
-          <Share2 size={20} strokeWidth={1.75} aria-hidden />
-          Partager
-        </button>
-        <button type="button" onClick={imprimer} className={BOUTON}>
-          <Printer size={20} strokeWidth={1.75} aria-hidden />
-          Imprimer la fiche
-        </button>
         {pluie && (
-          <Link href={`/apres/${pluie.id}`} className={BOUTON}>
-            <CloudRain size={20} strokeWidth={1.75} aria-hidden />
+          <Link href={`/apres/${pluie.id}`} className={styleBouton({ taille: "compacte" })}>
+            <CloudRain {...ICONE_PETITE} aria-hidden />
             Voir après la pluie du {formatDate(pluie.date_pluie)}
           </Link>
         )}
+        <button type="button" onClick={partager} className={BOUTON}>
+          <Share2 {...ICONE_PETITE} aria-hidden />
+          Partager
+        </button>
+        <button type="button" onClick={imprimer} className={BOUTON}>
+          <Printer {...ICONE_PETITE} aria-hidden />
+          Imprimer la fiche
+        </button>
       </div>
-      <p className="mt-1 text-petit text-ink-2" role="status">
-        {message}
+      <p className="mt-2 flex min-h-5 items-center gap-1.5 break-all text-petit text-ink-2" role="status">
+        {message?.ok && <Check {...ICONE_PETITE} className="text-ok" aria-hidden />}
+        {message?.texte}
       </p>
     </div>
   );
