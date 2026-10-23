@@ -140,7 +140,13 @@ export function VueApres({ evenementId }: { evenementId: number }) {
           <p>Aucune eau visible par le radar dans les zones calculées sur cette image.</p>
         )}
         {evenement && evenement.eau_geojson && (
-          <ListeUrgence impacts={impacts} zones={zonesParId} selection={selection} onSelection={setSelection} />
+          <ListeUrgence
+            impacts={impacts}
+            zones={zonesParId}
+            evenement={evenement}
+            selection={selection}
+            onSelection={setSelection}
+          />
         )}
       </PanneauZones>
     </>
