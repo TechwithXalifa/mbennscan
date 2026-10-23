@@ -401,10 +401,31 @@ html[data-carte-bouge] .verre {
   }
 }
 
-/* Boutons de zoom MapLibre à 44 px ; sélecteur renforcé car leur CSS se charge après celle-ci */
-.maplibregl-ctrl.maplibregl-ctrl-group button {
-  width: 44px;
-  height: 44px;
+/* ── Carte MapLibre ─────────────────────────────────────────────────────────── */
+
+/* Attribution : obligatoire et toujours lisible, mais discrète */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib {
+  margin: 0 8px 8px 0;
+  border-radius: var(--radius-sm);
+  background: var(--glass-solid);
+  color: var(--ink-2);
+  font-size: 11px;
+  line-height: 16px;
+  padding: 2px 8px;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--ink-2) !important;
+}
+
+/* Infobulle de survol des zones, au style du verre */
+.maplibregl-popup.carte-infobulle .maplibregl-popup-content {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: var(--radius-md);
+}
+.maplibregl-popup.carte-infobulle .maplibregl-popup-tip {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

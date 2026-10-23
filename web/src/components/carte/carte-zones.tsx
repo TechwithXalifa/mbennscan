@@ -3,17 +3,28 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   Map as CarteMapLibre,
-  NavigationControl,
   Popup,
   type FilterSpecification,
   type GeoJSONSource,
   type MapGeoJSONFeature,
 } from "maplibre-gl";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChargeurGoutte } from "@/components/ui/chargeur-goutte";
-import { ajouterCouches, ATTRIBUTION, CENTRE, contenuInfobulle, marges } from "@/lib/carte";
-import { STYLE_CARTE } from "@/lib/design";
+import { BarreOutilsCarte } from "@/components/carte/barre-outils-carte";
+import { EtatFondCarte, type EtatFond } from "@/components/carte/etat-fond";
+import {
+  ajouterCouches,
+  ATTRIBUTION,
+  CENTRE,
+  contenuInfobulle,
+  DELAI_FOND_MS,
+  marges,
+  styleVide,
+  themeDuDocument,
+  type Couches,
+} from "@/lib/carte";
+import { STYLE_CARTE, STYLE_CARTE_SOMBRE, jeton } from "@/lib/design";
 import { emprise } from "@/lib/geo";
+import { useTheme, type Theme } from "@/lib/theme";
 import type { EauGeoJSON, Priorite, ZoneSynthese, ZonesGeoJSON } from "@/types/contracts";
 
 type Props = {
@@ -55,14 +66,25 @@ export default function CarteZones({
   const cadrer = useCallback((f: "apercu" | "moitie") => (miniature ? 32 : marges(f)), [miniature]);
   const conteneur = useRef<HTMLDivElement>(null);
   const carte = useRef<CarteMapLibre | null>(null);
+  const { theme } = useTheme();
   const [prete, setPrete] = useState(false);
+  const [etatFond, setEtatFond] = useState<EtatFond>("chargement");
+  const [couches, setCouches] = useState<Couches>({ priorite: true, confiance: true, eau: true });
+  const [sansFond, setSansFond] = useState(false);
   const selPrecedente = useRef<string | null>(null);
   const dejaCadre = useRef<unknown>(null);
   const rappel = useRef(onSelection);
   rappel.current = onSelection;
-  // Ce que la carte doit dessiner au chargement de son style : lu au moment voulu.
-  const etat = useRef({ zones, eau, selection, prioritesMasquees, mode });
-  etat.current = { zones, eau, selection, prioritesMasquees, mode };
+  // Tout ce que la carte doit redessiner quand son style change (thème, fond) : lu au moment voulu.
+  const etat = useRef({ zones, eau, selection, prioritesMasquees, couches, mode, theme: "clair" as Theme, sansFond });
+  etat.current = { ...etat.current, zones, eau, selection, prioritesMasquees, couches, mode, sansFond };
+  const minuteur = useRef<ReturnType<typeof setTimeout>>();
+
+  const surveillerFond = useCallback(() => {
+    clearTimeout(minuteur.current);
+    setEtatFond("chargement");
+    minuteur.current = setTimeout(() => setEtatFond((e) => (e === "pret" ? e : "lent")), DELAI_FOND_MS);
+  }, []);
 
   const appliquerFiltres = useCallback((map: CarteMapLibre) => {
     const { prioritesMasquees: masquees, mode: m } = etat.current;
@@ -83,32 +105,54 @@ export default function CarteZones({
     }
   }, []);
 
+  const appliquerCouches = useCallback((map: CarteMapLibre) => {
+    const { couches: c, mode: m } = etat.current;
+    const visible = (oui: boolean) => (oui ? "visible" : "none");
+    const poser = (id: string, oui: boolean) =>
+      map.getLayer(id) && map.setLayoutProperty(id, "visibility", visible(oui));
+    poser("zones-halo", c.priorite);
+    // Le remplissage reste cliquable même caché : opacité nulle plutôt que couche masquée.
+    if (map.getLayer("zones-fond"))
+      map.setPaintProperty(
+        "zones-fond",
+        "fill-opacity",
+        m === "contour" || !c.priorite ? 0 : Number(jeton("--zone-opacity")) || 0.6,
+      );
+    poser("zones-hachures", c.confiance);
+    poser("zones-contour-faible", c.confiance);
+    poser("eau-fond", c.eau);
+    poser("eau-contour", c.eau);
+  }, []);
+
   /** Sources et couches : à refaire à chaque changement de style (thème, fond). */
   const installer = useCallback(
     (map: CarteMapLibre) => {
-      const { zones: z, eau: e, mode: m, selection: sel } = etat.current;
+      const { zones: z, eau: e, mode: m, selection: sel, sansFond: sans } = etat.current;
       if (!map.getSource("zones")) map.addSource("zones", { type: "geojson", data: z as Donnees, promoteId: "id" });
       if (!map.getSource("eau")) map.addSource("eau", { type: "geojson", data: (e ?? VIDE) as Donnees });
-      ajouterCouches(map, m === "contour", false);
+      ajouterCouches(map, m === "contour", sans);
       appliquerFiltres(map);
+      appliquerCouches(map);
       if (sel) map.setFeatureState({ source: "zones", id: sel }, { selection: true });
     },
-    [appliquerFiltres],
+    [appliquerFiltres, appliquerCouches],
   );
 
   useEffect(() => {
     if (!conteneur.current) return;
+    const themeInitial = themeDuDocument();
+    etat.current.theme = themeInitial;
     const map = new CarteMapLibre({
       container: conteneur.current,
-      style: STYLE_CARTE,
+      style: themeInitial === "sombre" ? STYLE_CARTE_SOMBRE : STYLE_CARTE,
       center: CENTRE,
       zoom: 12,
       // Attribution toujours visible en bas à droite (cahier des charges, section 6).
       attributionControl: { compact: false, customAttribution: ATTRIBUTION },
       cooperativeGestures: miniature,
     });
-    if (!miniature) map.addControl(new NavigationControl({ showCompass: false }), "top-right");
     carte.current = map;
+    surveillerFond();
     // Le verre devient opaque pendant un déplacement : le flou recalculé à chaque image coûte cher sur téléphone.
     const racine = document.documentElement;
     map.on("movestart", () => racine.setAttribute("data-carte-bouge", ""));
@@ -116,8 +160,16 @@ export default function CarteZones({
 
     map.on("style.load", () => {
       installer(map);
+      clearTimeout(minuteur.current);
+      setEtatFond("pret");
       setPrete(true);
     });
+    // Le style sombre d'OpenFreeMap cite des motifs absents de son sprite : une image vide les remplace.
+    map.on("styleimagemissing", (e) => {
+      if (!map.hasImage(e.id)) map.addImage(e.id, { width: 1, height: 1, data: new Uint8Array(4) });
+    });
+    // Avant le premier affichage, une erreur vient du style, du sprite ou des polices : on le dit.
+    map.on("error", () => setEtatFond((e) => (e === "pret" ? e : "erreur")));
 
     const infobulle = new Popup({ closeButton: false, closeOnClick: false, offset: 12, className: "carte-infobulle" });
     let survol: string | number | undefined;
@@ -146,6 +198,7 @@ export default function CarteZones({
     });
 
     return () => {
+      clearTimeout(minuteur.current);
       racine.removeAttribute("data-carte-bouge");
       infobulle.remove();
       map.remove();
@@ -154,6 +207,27 @@ export default function CarteZones({
     // La carte n'est créée qu'une fois ; les changements passent par les effets ci-dessous.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /** Recharge le style (thème, fond de carte ou nouvel essai) puis réinstalle les couches. */
+  const changerStyle = useCallback(
+    (sans: boolean) => {
+      const map = carte.current;
+      if (!map) return;
+      surveillerFond();
+      const t = themeDuDocument();
+      etat.current.theme = t;
+      etat.current.sansFond = sans;
+      map.setStyle(sans ? styleVide() : t === "sombre" ? STYLE_CARTE_SOMBRE : STYLE_CARTE, { diff: false });
+    },
+    [surveillerFond],
+  );
+
+  // Changement de thème : le fond de carte et les couleurs des couches suivent.
+  // Comparé au document (et non à `theme`, qui n'est connu qu'après le premier rendu).
+  useEffect(() => {
+    if (!carte.current || themeDuDocument() === etat.current.theme) return;
+    changerStyle(etat.current.sansFond);
+  }, [theme, changerStyle]);
 
   useEffect(() => {
     if (!prete) return;
@@ -170,6 +244,10 @@ export default function CarteZones({
   useEffect(() => {
     if (prete && carte.current) appliquerFiltres(carte.current);
   }, [prete, cleMasquees, appliquerFiltres]);
+
+  useEffect(() => {
+    if (prete && carte.current) appliquerCouches(carte.current);
+  }, [prete, couches, appliquerCouches]);
 
   /** Cadre l'eau détectée s'il y en a, sinon les zones. */
   const recentrer = useCallback(
@@ -217,18 +295,36 @@ export default function CarteZones({
     return () => cancelAnimationFrame(image);
   }, [prete, selection, zones, cadrer]);
 
+  function choisirFond(sans: boolean) {
+    setSansFond(sans);
+    changerStyle(sans);
+  }
+
   // La feuille de style MapLibre impose position: relative au conteneur, d'où l'enveloppe.
   return (
     <div className="absolute inset-0">
       <div ref={conteneur} className="h-full w-full" role="region" aria-label={libelle} />
-      {!prete && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-surface-3">
-          <ChargeurGoutte libelle="Chargement du fond de carte" />
-          <p className="text-petit text-ink-2" aria-hidden>
-            Chargement du fond de carte…
-          </p>
-        </div>
+      {!miniature && (
+        <BarreOutilsCarte
+          onZoomer={(sens) => (sens > 0 ? carte.current?.zoomIn() : carte.current?.zoomOut())}
+          onRecentrer={() => recentrer(600)}
+          cible={() =>
+            conteneur.current?.closest<HTMLElement>("[data-plein-ecran]") ?? conteneur.current?.parentElement ?? null
+          }
+          contour={mode === "contour"}
+          couches={couches}
+          onCouches={setCouches}
+          eauDisponible={Boolean(eau?.features.length)}
+          sansFond={sansFond}
+          onFond={choisirFond}
+        />
       )}
+      <EtatFondCarte
+        etat={etatFond}
+        prete={prete}
+        onReessayer={() => changerStyle(sansFond)}
+        onSansFond={() => choisirFond(true)}
+      />
     </div>
   );
 }
