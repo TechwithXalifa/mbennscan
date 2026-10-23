@@ -1,143 +1,180 @@
+import { TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { ETAPES, LIMITES, SOMMAIRE, SOURCES } from "@/components/methode/contenu";
 import { ParametresCalcul } from "@/components/methode/parametres-calcul";
 
 export const metadata: Metadata = { title: "Méthode et limites · MbënnScan" };
 
-// E6 · Méthode et limites. Contenu repris du cahier des charges (section 4) ;
-// le texte définitif (issue #20), les règles de confiance et le taux d'accord le remplaceront.
+// E6 · Méthode et limites. Le texte est dans components/methode/contenu.ts.
 
-const ETAPES = [
-  {
-    titre: "1. Repérer les fortes pluies",
-    texte:
-      "Pour chaque hivernage de 2020 à 2026, on retient les jours où il est tombé au moins 30 mm en 24 heures (CHIRPS, GPM IMERG), plus la pluie du 4 octobre 2026.",
-  },
-  {
-    titre: "2. Voir l'eau au radar",
-    texte:
-      "Le radar Sentinel-1 voit à travers les nuages. Un pixel de 10 m est compté en eau si son signal (VV) passe sous un seuil et baisse d'au moins 3 dB par rapport à une image de la saison sèche (février à mai) prise sous le même angle. Les lacs, la mer et les pentes sont exclus.",
-  },
-  {
-    titre: "3. Corriger le rythme des passages",
-    texte:
-      "Le satellite passait tous les 6 ou tous les 12 jours selon les années. La fréquence est donc calculée comme images où la zone est en eau ÷ images exploitables, et non en nombre d'images.",
-  },
-  {
-    titre: "4. Mesurer combien de temps l'eau reste",
-    texte:
-      "Après chaque pluie, on suit les images suivantes. Moins de 6 jours : ruissellement. 6 à 12 jours : intermédiaire. 12 jours ou plus : stagnation durable, souvent liée à la nappe.",
-  },
-  {
-    titre: "5. Compter les habitants et classer les zones",
-    texte:
-      "La population WorldPop est répartie sur les pixels. Habitants × jours d'eau donne les habitants-jours, moyennés par an. Les zones avec de l'eau sont réparties en trois tiers : priorité forte, moyenne, faible. Les bâtiments (Open Buildings), écoles et routes (OpenStreetMap) touchés sont comptés.",
-  },
-];
-
-const LIMITES = [
-  "Une carte d'eau observée n'est pas une prévision de crue : elle dit où l'eau est venue, pas où elle viendra.",
-  "L'exposition (habitants, bâtiments, écoles) ne suffit pas à évaluer tout le risque : la vulnérabilité des ménages n'est pas mesurée.",
-  "En bâti très dense, le radar voit mal l'eau entre les murs : ces zones ont une confiance plus faible et sont hachurées sur la carte.",
-  "La durée de l'eau dépend du rythme des passages du satellite : elle est précise à 3 à 6 jours près.",
-  "« Stagnation durable » signale une remontée de nappe probable, à confirmer avec la DGPRE.",
-  "La population vient de WorldPop, dont la dernière année disponible peut être antérieure à 2026.",
-  "Les résultats sont agrégés par zone d'environ 0,1 km², jamais par ménage.",
-];
-
-const SOURCES: [string, string, string][] = [
-  [
-    "Sentinel-1 et Sentinel-2, Copernicus DEM",
-    "Données Copernicus, libres",
-    "Contient des données Copernicus Sentinel modifiées (2020-2026)",
-  ],
-  ["OpenStreetMap", "ODbL", "© les contributeurs d'OpenStreetMap"],
-  ["WorldPop", "CC BY 4.0", "Population : WorldPop"],
-  ["Google Open Buildings", "CC BY 4.0 et ODbL", "Bâtiments : Google Open Buildings"],
-  ["CHIRPS, GPM IMERG", "Libres, citation demandée", "Pluie journalière"],
-  ["JRC Global Surface Water", "Libre, citation demandée", "Eau permanente"],
-];
+function Titre({ id, children }: { id: string; children: React.ReactNode }) {
+  return (
+    <h2 id={id} className="scroll-mt-6 text-titre2 text-ink">
+      {children}
+    </h2>
+  );
+}
 
 export default function PageMethode() {
   return (
-    <main className="mx-auto max-w-[680px] bg-surface px-4 py-6">
-      <Link href="/" className="inline-flex min-h-cible items-center text-petit text-primary">
-        ← Carte
-      </Link>
-      <h1 className="text-titre1">Méthode et limites</h1>
-      <p className="mt-2">
-        MbënnScan mesure, à partir d&apos;images radar, où l&apos;eau des inondations est réellement restée dans la
-        banlieue de Dakar depuis 2020, combien de temps, et chez combien d&apos;habitants.
-      </p>
+    <main className="flex-1 bg-surface">
+      <div className="halo-entete border-b border-line px-4 py-8 lg:px-8 lg:py-10">
+        <div className="mx-auto max-w-5xl">
+          <p className="text-surtitre uppercase text-ink-3">Référence</p>
+          <h1 className="mt-1 text-titre1 text-ink lg:text-[32px] lg:leading-10">Méthode et limites</h1>
+          <p className="mt-2 max-w-lecture text-ink-2">
+            MbënnScan mesure, à partir d&apos;images radar, où l&apos;eau des inondations est réellement restée dans la
+            banlieue de Dakar depuis 2020, combien de temps, et chez combien d&apos;habitants. C&apos;est la seule page
+            où les termes techniques sont employés, chacun expliqué.
+          </p>
+        </div>
+      </div>
 
-      <section className="mt-8 space-y-4">
-        <h2 className="text-titre2">Les étapes du calcul</h2>
-        {ETAPES.map((e) => (
-          <div key={e.titre} className="rounded-md border border-line p-4">
-            <h3 className="text-titre3">{e.titre}</h3>
-            <p className="mt-1">{e.texte}</p>
+      <div className="mx-auto grid max-w-5xl gap-10 px-4 py-8 lg:grid-cols-[200px_minmax(0,1fr)] lg:px-8">
+        <nav aria-label="Sommaire" className="hidden lg:block">
+          <div className="sticky top-6">
+            <p className="text-surtitre uppercase text-ink-3">Sommaire</p>
+            <ol className="mt-3 space-y-1 border-l border-line">
+              {SOMMAIRE.map(([id, titre]) => (
+                <li key={id}>
+                  <a
+                    href={`#${id}`}
+                    className="-ml-px block border-l-2 border-transparent py-1 pl-3 text-petit text-ink-2 transition-colors hover:border-line-strong hover:text-ink"
+                  >
+                    {titre}
+                  </a>
+                </li>
+              ))}
+            </ol>
           </div>
-        ))}
-      </section>
+        </nav>
 
-      <section className="mt-8">
-        <h2 className="text-titre2">L&apos;indicateur : habitants-jours sous l&apos;eau</h2>
-        <p className="mt-2">
-          C&apos;est le nombre d&apos;habitants touchés multiplié par le nombre de jours où l&apos;eau est restée.
-          Exemple de calcul : 200 habitants pendant 10 jours et 50 habitants pendant 2 jours font 200 × 10 + 50 × 2 = 2
-          100 habitants-jours. Un seul indicateur, sans score composite, pour qu&apos;un maire puisse le refaire.
-        </p>
-      </section>
+        <div className="max-w-lecture space-y-12">
+          <section aria-labelledby="etapes">
+            <Titre id="etapes">Les étapes du calcul</Titre>
+            <ol className="mt-5">
+              {ETAPES.map(({ titre, texte, Icone }, i) => (
+                <li key={titre} className="relative flex gap-4 pb-6 last:pb-0">
+                  {i < ETAPES.length - 1 && (
+                    <span className="absolute bottom-0 left-5 top-11 w-px bg-line" aria-hidden />
+                  )}
+                  <span className="relative inline-flex size-10 shrink-0 items-center justify-center rounded-pill border border-line bg-primary-soft text-primary-ink">
+                    <Icone size={20} strokeWidth={1.75} aria-hidden />
+                  </span>
+                  <div className="pt-1.5">
+                    <h3 className="text-titre3 text-ink">
+                      <span className="mr-1.5 tabular-nums text-ink-3">{i + 1}.</span>
+                      {titre}
+                    </h3>
+                    <p className="mt-1 text-ink-2">{texte}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
 
-      <section className="mt-8">
-        <h2 className="text-titre2">Ce que les chiffres ne disent pas</h2>
-        <ul className="mt-2 list-disc space-y-2 pl-5">
-          {LIMITES.map((l) => (
-            <li key={l}>{l}</li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mt-8">
-        <h2 className="text-titre2">Fiabilité</h2>
-        <p className="mt-2">
-          Chaque zone reçoit une confiance élevée, moyenne ou faible selon la part de bâti, le nombre d&apos;images
-          exploitables et l&apos;accord avec les inondations connues. Les règles exactes et le taux d&apos;accord de la
-          validation seront publiés ici avec les résultats réels.
-        </p>
-      </section>
-
-      <section className="mt-8">
-        <h2 className="text-titre2">Refaire le calcul</h2>
-        <p className="mt-2 mb-3">Paramètres du dernier calcul, tels qu&apos;enregistrés par le pipeline :</p>
-        <ParametresCalcul />
-      </section>
-
-      <section className="mt-8">
-        <h2 className="text-titre2">Sources et licences</h2>
-        <ul className="mt-2 divide-y divide-line">
-          {SOURCES.map(([donnee, licence, mention]) => (
-            <li key={donnee} className="py-2">
-              <p className="font-medium">{donnee}</p>
-              <p className="text-petit text-ink-2">
-                {licence} · {mention}
+          <section aria-labelledby="indicateur">
+            <Titre id="indicateur">L&apos;indicateur : habitants-jours sous l&apos;eau</Titre>
+            <p className="mt-3 text-ink-2">
+              C&apos;est le nombre d&apos;habitants touchés multiplié par le nombre de jours où l&apos;eau est restée.
+              Un seul indicateur, sans score composite, pour qu&apos;un maire puisse le refaire.
+            </p>
+            <div className="mt-4 rounded-lg border border-line bg-surface-2 p-5">
+              <p className="text-surtitre uppercase text-ink-3">Exemple de calcul</p>
+              <p className="mt-2 text-titre3 tabular-nums text-ink">
+                200 habitants × 10 jours + 50 habitants × 2 jours
               </p>
-            </li>
-          ))}
-        </ul>
-      </section>
+              <p className="mt-1 text-chiffre tabular-nums text-ink">= 2 100 habitants-jours</p>
+            </div>
+          </section>
 
-      <section className="mt-8">
-        <h2 className="text-titre2">L&apos;équipe</h2>
-        <ul className="mt-2 space-y-1">
-          <li>Khalifa Babacar DIOUF : traitement satellite et indicateurs</li>
-          <li>Serigne Abdoul Aziz NDIAYE : application et design</li>
-          <li>Seydina Aboubacry KANE : balise et mesures</li>
-        </ul>
-        <p className="mt-2 text-petit text-ink-2">
-          Équipe fflush · hackathon SENSAT-TRL « Du satellite à la solution », octobre 2026.
-        </p>
-      </section>
+          <section aria-labelledby="limites">
+            <Titre id="limites">Ce que les chiffres ne disent pas</Titre>
+            <ul className="mt-4 space-y-3">
+              {LIMITES.map((l) => (
+                <li key={l} className="flex gap-3">
+                  <TriangleAlert size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-ink-3" aria-hidden />
+                  <span className="text-ink-2">{l}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section aria-labelledby="fiabilite">
+            <Titre id="fiabilite">Fiabilité</Titre>
+            <p className="mt-3 text-ink-2">
+              Chaque zone reçoit une confiance élevée, moyenne ou faible selon la part de bâti, le nombre d&apos;images
+              exploitables et l&apos;accord avec les inondations connues. Les règles exactes et le taux d&apos;accord de
+              la validation seront publiés ici avec les résultats réels.
+            </p>
+            <p className="mt-3 text-ink-2">
+              La confiance et la priorité sont deux informations différentes : la priorité dit où agir d&apos;abord, la
+              confiance dit à quel point la mesure est sûre. Sur la carte, la priorité est une couleur, la confiance des
+              hachures.
+            </p>
+          </section>
+
+          <section aria-labelledby="parametres">
+            <Titre id="parametres">Refaire le calcul</Titre>
+            <p className="mb-4 mt-3 text-ink-2">
+              Paramètres du dernier calcul, tels qu&apos;enregistrés par le pipeline :
+            </p>
+            <ParametresCalcul />
+          </section>
+
+          <section aria-labelledby="sources">
+            <Titre id="sources">Sources et licences</Titre>
+            <div className="mt-4 overflow-hidden rounded-lg border border-line">
+              <table className="w-full text-left text-petit">
+                <thead className="bg-surface-2 text-ink-2">
+                  <tr>
+                    <th scope="col" className="px-4 py-2.5 font-medium">
+                      Donnée
+                    </th>
+                    <th scope="col" className="hidden px-4 py-2.5 font-medium sm:table-cell">
+                      Licence
+                    </th>
+                    <th scope="col" className="px-4 py-2.5 font-medium">
+                      Mention
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {SOURCES.map(([donnee, licence, mention]) => (
+                    <tr key={donnee}>
+                      <td className="px-4 py-3 align-top font-medium text-ink">
+                        {donnee}
+                        <span className="block font-normal text-ink-3 sm:hidden">{licence}</span>
+                      </td>
+                      <td className="hidden px-4 py-3 align-top text-ink-2 sm:table-cell">{licence}</td>
+                      <td className="px-4 py-3 align-top text-ink-2">{mention}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section aria-labelledby="equipe">
+            <Titre id="equipe">L&apos;équipe</Titre>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-3">
+              {[
+                ["Khalifa Babacar DIOUF", "Traitement satellite et indicateurs"],
+                ["Serigne Abdoul Aziz NDIAYE", "Application et design"],
+                ["Seydina Aboubacry KANE", "Balise et mesures"],
+              ].map(([nom, role]) => (
+                <li key={nom} className="rounded-lg border border-line p-4">
+                  <p className="font-medium text-ink">{nom}</p>
+                  <p className="text-petit text-ink-2">{role}</p>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-petit text-ink-3">
+              Équipe fflush · hackathon SENSAT-TRL « Du satellite à la solution », octobre 2026.
+            </p>
+          </section>
+        </div>
+      </div>
     </main>
   );
 }
