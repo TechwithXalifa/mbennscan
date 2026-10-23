@@ -7,14 +7,64 @@ import { TYPE_EAU } from "@/components/liste-zones";
 import { AlerteErreur, BandeauMaquette, EtatVide } from "@/components/ui/etats";
 import { Squelette } from "@/components/ui/squelette";
 import { BadgePriorite, IndicateurConfiance } from "@/components/zone/badges";
-import { actifs, FiltresZones, FILTRES_VIDES, filtrer, type Filtres } from "@/components/zones/filtres-zones";
+import { FiltresZones } from "@/components/zones/filtres-zones";
 import { CartesZones } from "@/components/zones/cartes-zones";
-import { comparer, NOM_COLONNE, type Colonne, type Tri } from "@/components/zones/tri-zones";
+import {
+  actifs,
+  comparer,
+  FILTRES_VIDES,
+  filtrer,
+  NOM_COLONNE,
+  type Colonne,
+  type Filtres,
+  type Tri,
+} from "@/lib/zones";
 import { estMaquette, getZones } from "@/lib/data";
-import { ICONE_PETITE } from "@/lib/design";
+import { ICONE_MINI, ICONE_PETITE } from "@/lib/design";
 import { formatDate, formatHabitants, formatNombre } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { ZoneSynthese } from "@/types/contracts";
+
+/**
+ * En-tête de colonne triable. Déclaré hors du tableau : recréé à chaque rendu, il perdait le focus
+ * du bouton au moment du tri.
+ */
+function EnteteTri({
+  tri,
+  onTrier,
+  colonne,
+  children,
+  droite = false,
+}: {
+  tri: Tri;
+  onTrier: (colonne: Colonne) => void;
+  colonne: Colonne;
+  children: React.ReactNode;
+  droite?: boolean;
+}) {
+  const actif = tri.colonne === colonne;
+  const Icone = !actif ? ArrowUpDown : tri.sens === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <th
+      scope="col"
+      aria-sort={actif ? (tri.sens === "asc" ? "ascending" : "descending") : "none"}
+      className={cn("whitespace-nowrap px-3 py-0 font-medium", droite && "text-right")}
+    >
+      <button
+        type="button"
+        onClick={() => onTrier(colonne)}
+        className={cn(
+          "inline-flex min-h-10 items-center gap-1 rounded-sm text-petit transition-colors hover:text-ink",
+          actif ? "text-ink" : "text-ink-2",
+          droite && "flex-row-reverse",
+        )}
+      >
+        {children}
+        <Icone {...ICONE_PETITE} className={cn("shrink-0", actif ? "text-ink" : "text-ink-3")} aria-hidden />
+      </button>
+    </th>
+  );
+}
 
 type Etat = { statut: "chargement" } | { statut: "erreur"; message: string } | { statut: "ok"; zones: ZoneSynthese[] };
 
@@ -53,39 +103,6 @@ export function TableauZones() {
       t.colonne === colonne
         ? { colonne, sens: t.sens === "asc" ? "desc" : "asc" }
         : { colonne, sens: colonne === "habitants_jours_an" || colonne === "population" ? "desc" : "asc" },
-    );
-  }
-
-  function Entete({
-    colonne,
-    children,
-    droite = false,
-  }: {
-    colonne: Colonne;
-    children: React.ReactNode;
-    droite?: boolean;
-  }) {
-    const actif = tri.colonne === colonne;
-    const Icone = !actif ? ArrowUpDown : tri.sens === "asc" ? ArrowUp : ArrowDown;
-    return (
-      <th
-        scope="col"
-        aria-sort={actif ? (tri.sens === "asc" ? "ascending" : "descending") : "none"}
-        className={cn("whitespace-nowrap px-3 py-0 font-medium", droite && "text-right")}
-      >
-        <button
-          type="button"
-          onClick={() => trier(colonne)}
-          className={cn(
-            "inline-flex min-h-10 items-center gap-1 rounded-sm text-petit transition-colors hover:text-ink",
-            actif ? "text-ink" : "text-ink-2",
-            droite && "flex-row-reverse",
-          )}
-        >
-          {children}
-          <Icone {...ICONE_PETITE} className={cn("shrink-0", actif ? "text-ink" : "text-ink-3")} aria-hidden />
-        </button>
-      </th>
     );
   }
 
@@ -158,21 +175,27 @@ export function TableauZones() {
                   </caption>
                   <thead className="border-b border-line bg-surface-2">
                     <tr>
-                      <Entete colonne="rang">Rang</Entete>
-                      <Entete colonne="nom">Zone</Entete>
+                      <EnteteTri tri={tri} onTrier={trier} colonne="rang">
+                        Rang
+                      </EnteteTri>
+                      <EnteteTri tri={tri} onTrier={trier} colonne="nom">
+                        Zone
+                      </EnteteTri>
                       <th scope="col" className="px-3 text-petit font-medium text-ink-2">
                         Priorité
                       </th>
-                      <Entete colonne="habitants_jours_an" droite>
+                      <EnteteTri tri={tri} onTrier={trier} colonne="habitants_jours_an" droite>
                         Habitants-jours / an
-                      </Entete>
+                      </EnteteTri>
                       <th scope="col" className="hidden px-3 text-petit font-medium text-ink-2 xl:table-cell">
                         Type d&apos;eau
                       </th>
-                      <Entete colonne="confiance">Confiance</Entete>
-                      <Entete colonne="population" droite>
+                      <EnteteTri tri={tri} onTrier={trier} colonne="confiance">
+                        Confiance
+                      </EnteteTri>
+                      <EnteteTri tri={tri} onTrier={trier} colonne="population" droite>
                         Habitants
-                      </Entete>
+                      </EnteteTri>
                       <th scope="col" className="px-3">
                         <span className="sr-only">Actions</span>
                       </th>
@@ -189,7 +212,7 @@ export function TableauZones() {
                           <td className="max-w-[320px] px-3 py-3 align-top">
                             <Link
                               href={`/zone/${encodeURIComponent(z.id)}`}
-                              className="font-medium text-ink underline-offset-4 hover:text-primary-ink hover:underline"
+                              className="font-medium text-ink underline-offset-4 hover:text-primary-ink hover:underline [@media(pointer:coarse)]:inline-flex [@media(pointer:coarse)]:min-h-cible [@media(pointer:coarse)]:items-center"
                             >
                               {z.nom}
                             </Link>
@@ -215,7 +238,7 @@ export function TableauZones() {
                           <td className="hidden px-3 py-3 align-top text-petit text-ink-2 xl:table-cell">
                             {eau ? (
                               <span className="inline-flex items-center gap-1.5">
-                                <eau.Icone size={14} strokeWidth={1.75} aria-hidden />
+                                <eau.Icone {...ICONE_MINI} aria-hidden />
                                 {eau.libelle}
                               </span>
                             ) : (

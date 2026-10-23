@@ -9,17 +9,9 @@ import { getZones } from "@/lib/data";
 import { ICONE, ICONE_PETITE } from "@/lib/design";
 import { LIENS, OUVRIR_RECHERCHE } from "@/lib/navigation";
 import { LIBELLE_PRIORITE } from "@/lib/priorite";
+import { normaliser } from "@/lib/zones";
 import { cn } from "@/lib/utils";
 import type { ZoneSynthese } from "@/types/contracts";
-
-/** Sans accents ni majuscules, sans la marque [FICTIF] : « medina » trouve « Médina Gounass ». */
-function normaliser(texte: string): string {
-  return texte
-    .replace(/^\[FICTIF\]\s*/, "")
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase();
-}
 
 type Resultat =
   | { type: "page"; cle: string; libelle: string; detail: string; href: string; Icone: (typeof LIENS)[number]["Icone"] }
