@@ -9,18 +9,22 @@ export type Segment<T extends string> = { valeur: T; libelle: string };
  * Contrôle segmenté (sélecteur de mode, bascule de graphique).
  * Groupe de boutons radio : flèches gauche / droite pour changer de segment.
  * Un curseur glisse sous le segment choisi, avec un reflet qui suit le doigt.
+ * `valeur` vaut null quand aucun segment ne correspond à la page (page Méthode).
  */
 export function ControleSegmente<T extends string>({
   segments,
   valeur,
   onChange,
   libelle,
+  compact = false,
   className,
 }: {
   segments: Segment<T>[];
-  valeur: T;
+  valeur: T | null;
   onChange: (valeur: T) => void;
   libelle: string;
+  /** 36 px de haut à la souris (bascule d'un graphique), 44 px au doigt */
+  compact?: boolean;
   className?: string;
 }) {
   const groupe = useRef<HTMLDivElement>(null);
@@ -31,7 +35,7 @@ export function ControleSegmente<T extends string>({
   useLayoutEffect(() => {
     const placer = () => {
       const b = refs.current[actif];
-      if (b) setCurseur({ x: b.offsetLeft, largeur: b.offsetWidth });
+      setCurseur(b ? { x: b.offsetLeft, largeur: b.offsetWidth } : null);
     };
     placer();
     const observateur = new ResizeObserver(placer);
@@ -60,12 +64,12 @@ export function ControleSegmente<T extends string>({
       role="radiogroup"
       aria-label={libelle}
       onPointerMove={reflet}
-      className={cn("relative flex rounded-sm bg-bg p-0.5", className)}
+      className={cn("relative flex rounded-md bg-surface-3 p-[3px]", className)}
     >
       {curseur && (
         <span
           aria-hidden
-          className="reflet-liquide absolute inset-y-0.5 left-0 rounded-sm bg-surface shadow-float transition-[transform,width] duration-etat ease-ressort"
+          className="reflet-liquide absolute inset-y-[3px] left-0 rounded-[9px] bg-surface transition-[transform,width] duration-etat ease-ressort"
           style={{ width: curseur.largeur, transform: `translateX(${curseur.x}px)` }}
         />
       )}
@@ -80,14 +84,18 @@ export function ControleSegmente<T extends string>({
             type="button"
             role="radio"
             aria-checked={coche}
-            tabIndex={coche ? 0 : -1}
+            // Sans segment choisi, le premier reste atteignable au clavier.
+            tabIndex={coche || (actif === -1 && i === 0) ? 0 : -1}
             onClick={() => onChange(s.valeur)}
             onKeyDown={(e) => clavier(e, i)}
             className={cn(
-              "relative min-h-cible flex-1 whitespace-nowrap rounded-sm px-2 text-petit font-medium transition-colors duration-etat sm:px-3",
+              "relative flex-1 whitespace-nowrap rounded-[9px] px-2 text-petit font-medium transition-colors duration-etat sm:px-3",
+              compact
+                ? "min-h-9 [@media(pointer:coarse)]:min-h-cible"
+                : "min-h-[38px] [@media(pointer:coarse)]:min-h-cible",
               coche ? "text-ink" : "text-ink-2 hover:text-ink",
               // Avant la première mesure (rendu serveur), le segment choisi porte lui-même le fond.
-              coche && !curseur && "bg-surface shadow-float",
+              coche && !curseur && "bg-surface shadow-1",
             )}
           >
             {s.libelle}

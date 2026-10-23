@@ -2,13 +2,23 @@
 
 import { Info } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
-import { ICONE } from "@/lib/design";
+import { ICONE_PETITE } from "@/lib/design";
+import { cn } from "@/lib/utils";
 
 /**
  * Bouton « i » qui ouvre une explication courte.
  * S'ouvre au clic ou au toucher (le survol n'existe pas sur téléphone), se ferme avec Échap ou un clic ailleurs.
+ * `cote` : bord de l'écran duquel l'infobulle s'éloigne (« fin » l'aligne à droite du bouton).
  */
-export function Infobulle({ libelle, children }: { libelle: string; children: React.ReactNode }) {
+export function Infobulle({
+  libelle,
+  children,
+  cote = "fin",
+}: {
+  libelle: string;
+  children: React.ReactNode;
+  cote?: "debut" | "fin";
+}) {
   const [ouverte, setOuverte] = useState(false);
   const id = useId();
   const racine = useRef<HTMLSpanElement>(null);
@@ -29,22 +39,25 @@ export function Infobulle({ libelle, children }: { libelle: string; children: Re
   }, [ouverte]);
 
   return (
-    <span ref={racine} className="relative inline-flex">
+    <span ref={racine} className="relative inline-flex align-middle">
       <button
         type="button"
         aria-label={libelle}
         aria-expanded={ouverte}
         aria-controls={id}
         onClick={() => setOuverte((o) => !o)}
-        className="-m-3 inline-flex size-cible items-center justify-center text-ink-2 hover:text-ink"
+        className="-m-3 inline-flex size-cible items-center justify-center rounded-pill text-ink-3 transition-colors hover:text-ink aria-expanded:text-primary-ink"
       >
-        <Info {...ICONE} aria-hidden />
+        <Info {...ICONE_PETITE} aria-hidden />
       </button>
       {ouverte && (
         <span
           id={id}
           role="note"
-          className="apparition absolute right-0 top-full z-infobulle mt-2 w-64 origin-top-right rounded-sm bg-ink p-3 text-petit text-on-color shadow-float"
+          className={cn(
+            "apparition absolute top-full z-infobulle mt-3 w-64 rounded-md bg-inverse p-3 text-left text-petit font-normal normal-case tracking-normal text-inverse-ink shadow-pop",
+            cote === "fin" ? "right-0 origin-top-right" : "left-0 origin-top-left",
+          )}
         >
           {children}
         </span>
