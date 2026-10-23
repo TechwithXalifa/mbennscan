@@ -104,7 +104,7 @@ export default function HistogrammeSaisons({ saisons }: { saisons: IndicateurSai
       </div>
       <div className="mt-3 h-56 rounded-lg border border-line bg-surface px-2 pt-2" aria-hidden>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={donnees} margin={{ top: 22, right: 8, bottom: 4, left: 0 }}>
+          <BarChart data={donnees} margin={{ top: 22, right: 8, bottom: 4, left: 0 }} accessibilityLayer={false}>
             <defs>
               <pattern
                 id="hachures-saison"

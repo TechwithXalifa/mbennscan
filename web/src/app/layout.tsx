@@ -5,6 +5,7 @@ import { BarreLaterale } from "@/components/shell/barre-laterale";
 import { PaletteRecherche } from "@/components/shell/palette-recherche";
 import { HorsLigne } from "@/components/hors-ligne";
 import { STYLE_CARTE, STYLE_CARTE_SOMBRE } from "@/lib/design";
+import { SCRIPT_BARRE } from "@/lib/navigation";
 import { SCRIPT_THEME } from "@/lib/theme";
 import "./globals.css";
 
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           Aller au contenu
         </a>
         <BarreLaterale />
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_BARRE }} />
         <div className="flex h-dvh min-w-0 flex-1 flex-col print:block print:h-auto">
           <BarreHaut />
           <HorsLigne />

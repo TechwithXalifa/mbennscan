@@ -31,6 +31,8 @@ export function Popover({
 
   useEffect(() => {
     if (!ouvert) return;
+    // Le focus entre dans le panneau, sur son premier contrôle.
+    document.getElementById(id)?.querySelector<HTMLElement>("button, a[href], input, select, [tabindex='0']")?.focus();
     const clavier = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       setOuvert(false);
@@ -45,7 +47,7 @@ export function Popover({
       document.removeEventListener("keydown", clavier);
       document.removeEventListener("pointerdown", pointeur);
     };
-  }, [ouvert]);
+  }, [ouvert, id]);
 
   const fermer = () => setOuvert(false);
 

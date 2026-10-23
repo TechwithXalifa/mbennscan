@@ -1,6 +1,7 @@
 import { ShieldCheck, Target, TriangleAlert } from "lucide-react";
 import { Bande } from "@/components/methode/bande";
 import { ETAPES, LIMITES } from "@/components/methode/contenu";
+import { ICONE, ICONE_GRANDE } from "@/lib/design";
 
 /** Les cinq étapes du calcul, de la pluie au classement. */
 export function SectionEtapes() {
@@ -17,7 +18,7 @@ export function SectionEtapes() {
           <li key={titre} className="flex flex-col rounded-lg border border-line bg-bg p-6">
             <div className="flex items-center justify-between">
               <span className="inline-flex size-11 items-center justify-center rounded-md bg-primary-soft text-primary-ink">
-                <Icone size={22} strokeWidth={1.75} aria-hidden />
+                <Icone {...ICONE_GRANDE} aria-hidden />
               </span>
               <span className="text-chiffre tabular-nums text-line-strong" aria-hidden>
                 {String(i + 1).padStart(2, "0")}
@@ -54,9 +55,7 @@ export function SectionIndicateur() {
           <p className="text-surtitre uppercase text-ink-3">Exemple de calcul</p>
           <p className="mt-4 text-titre3 tabular-nums text-ink">200 habitants × 10 jours</p>
           <p className="text-titre3 tabular-nums text-ink">+ 50 habitants × 2 jours</p>
-          <p className="mt-4 border-t border-line pt-4 text-[40px] font-semibold leading-tight tabular-nums text-vif">
-            2 100
-          </p>
+          <p className="mt-4 border-t border-line pt-4 text-display tabular-nums text-vif">2 100</p>
           <p className="text-petit text-ink-2">habitants-jours</p>
         </div>
       </div>
@@ -77,7 +76,7 @@ export function SectionLimites() {
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {LIMITES.map((l) => (
           <li key={l} className="flex gap-3 rounded-lg border border-line bg-bg p-5">
-            <TriangleAlert size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-ink-3" aria-hidden />
+            <TriangleAlert {...ICONE} className="mt-0.5 shrink-0 text-ink-3" aria-hidden />
             <span className="text-petit text-ink-2">{l}</span>
           </li>
         ))}
@@ -92,7 +91,7 @@ export function SectionFiabilite() {
     <Bande id="fiabilite" surtitre="Fiabilité" titre="Où agir, et à quel point c'est sûr">
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-lg border border-line bg-surface p-6">
-          <Target size={22} strokeWidth={1.75} className="text-ink-3" aria-hidden />
+          <Target {...ICONE_GRANDE} className="text-ink-3" aria-hidden />
           <h3 className="mt-4 text-titre3 text-ink">La priorité dit où agir d&apos;abord</h3>
           <p className="mt-2 text-petit text-ink-2">
             Forte, moyenne ou faible selon les habitants-jours sous l&apos;eau. Sur la carte, c&apos;est la couleur de
@@ -100,7 +99,7 @@ export function SectionFiabilite() {
           </p>
         </div>
         <div className="rounded-lg border border-line bg-surface p-6">
-          <ShieldCheck size={22} strokeWidth={1.75} className="text-ink-3" aria-hidden />
+          <ShieldCheck {...ICONE_GRANDE} className="text-ink-3" aria-hidden />
           <h3 className="mt-4 text-titre3 text-ink">La confiance dit à quel point la mesure est sûre</h3>
           <p className="mt-2 text-petit text-ink-2">
             Élevée, moyenne ou faible selon la part de bâti, le nombre d&apos;images exploitables et l&apos;accord avec

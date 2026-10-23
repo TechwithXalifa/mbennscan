@@ -8,6 +8,7 @@ import { BadgePriorite } from "@/components/zone/badges";
 import { formatNombre } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { ClasseEau, Priorite, ZoneSynthese } from "@/types/contracts";
+import { ICONE_MINI } from "@/lib/design";
 
 export const TYPE_EAU: Record<ClasseEau, { libelle: string; Icone: LucideIcon }> = {
   ruissellement: { libelle: "Ruissellement", Icone: Waves },
@@ -104,10 +105,7 @@ export function ListeZones({
                   className="group/ligne grid min-h-cible w-full grid-cols-[28px_minmax(0,1fr)_auto] items-start gap-x-3 rounded-md px-2 py-3 text-left transition-[background-color,transform] ease-sortie hover:bg-surface-2 active:scale-[0.99] aria-[current]:bg-primary-soft"
                 >
                   <span
-                    className={cn(
-                      "mt-0.5 inline-flex size-7 items-center justify-center rounded-pill border border-line bg-surface text-petit font-semibold tabular-nums text-ink-2",
-                      z.rang === 1 && "border-transparent bg-inverse text-inverse-ink",
-                    )}
+                    className={cn("pt-0.5 text-right text-titre3 tabular-nums text-ink-3", z.rang === 1 && "text-vif")}
                   >
                     {z.rang}
                   </span>
@@ -117,7 +115,7 @@ export function ListeZones({
                       <span>{z.commune}</span>
                       {eau && (
                         <span className="inline-flex items-center gap-1">
-                          <eau.Icone size={14} strokeWidth={1.75} aria-hidden />
+                          <eau.Icone {...ICONE_MINI} aria-hidden />
                           {eau.libelle}
                         </span>
                       )}

@@ -8,10 +8,9 @@ import { ChoixTheme } from "@/components/shell/choix-theme";
 import { Logo } from "@/components/shell/marque";
 import { StatutDonnees } from "@/components/shell/statut-donnees";
 import { ICONE } from "@/lib/design";
-import { GROUPES, ouvrirRecherche } from "@/lib/navigation";
+import { CLE_BARRE, GROUPES, ouvrirRecherche } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
-const CLE = "mbennscan:barre";
 type Largeur = "auto" | "repliee" | "ouverte";
 
 /**
@@ -25,7 +24,7 @@ export function BarreLaterale() {
 
   useEffect(() => {
     try {
-      const l = localStorage.getItem(CLE);
+      const l = localStorage.getItem(CLE_BARRE);
       if (l === "repliee" || l === "ouverte") setLargeur(l);
     } catch {
       // Stockage interdit : largeur automatique.
@@ -37,7 +36,7 @@ export function BarreLaterale() {
     const suivante: Largeur = repliee ? "ouverte" : "repliee";
     setLargeur(suivante);
     try {
-      localStorage.setItem(CLE, suivante);
+      localStorage.setItem(CLE_BARRE, suivante);
     } catch {
       // Le choix vaut pour cette page seulement.
     }
@@ -51,6 +50,8 @@ export function BarreLaterale() {
   return (
     <aside
       data-largeur={largeur}
+      // La largeur choisie est posée avant l'affichage par SCRIPT_BARRE (layout) : l'attribut peut différer du rendu serveur.
+      suppressHydrationWarning
       className="group sticky top-0 z-barre hidden h-dvh shrink-0 flex-col border-r border-nuit-line bg-nuit text-nuit-ink transition-[width] duration-etat ease-sortie print:hidden lg:flex lg:w-rail xl:w-barre data-[largeur=ouverte]:w-barre data-[largeur=repliee]:w-rail"
     >
       <div className="flex h-topbar shrink-0 items-center px-[22px] group-data-[largeur=ouverte]:px-5 xl:px-5 xl:group-data-[largeur=repliee]:px-[22px]">
@@ -69,12 +70,14 @@ export function BarreLaterale() {
           type="button"
           onClick={ouvrirRecherche}
           className="flex min-h-10 w-full items-center gap-3 rounded-md border border-nuit-line bg-nuit-2 px-[11px] text-petit text-nuit-ink-2 transition-colors hover:text-nuit-ink"
-          aria-label="Rechercher une zone ou une page"
           title="Rechercher (Ctrl K)"
         >
           <Search {...ICONE} className="shrink-0" aria-hidden />
           <span className={cn("flex-1 text-left", masque)}>Rechercher</span>
-          <kbd className={cn("rounded-[5px] border border-nuit-line px-1.5 text-[11px] text-nuit-ink-3", masque)}>
+          <kbd
+            aria-hidden
+            className={cn("rounded-xs border border-nuit-line px-1.5 text-mention text-nuit-ink-3", masque)}
+          >
             Ctrl K
           </kbd>
         </button>

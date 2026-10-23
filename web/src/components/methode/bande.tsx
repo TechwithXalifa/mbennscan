@@ -24,7 +24,7 @@ export function Bande({
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <p className="text-surtitre uppercase text-vif">{surtitre}</p>
-          <h2 id={id} className="mt-2 text-titre1 text-ink lg:text-[30px] lg:leading-10">
+          <h2 id={id} className="mt-2 text-titre1 text-ink lg:text-titre-page">
             {titre}
           </h2>
           {intro && <p className="mt-3 text-ink-2">{intro}</p>}

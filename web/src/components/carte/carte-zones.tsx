@@ -8,7 +8,7 @@ import {
   type GeoJSONSource,
   type MapGeoJSONFeature,
 } from "maplibre-gl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BarreOutilsCarte } from "@/components/carte/barre-outils-carte";
 import { EtatFondCarte, type EtatFond } from "@/components/carte/etat-fond";
 import {
@@ -74,10 +74,13 @@ export default function CarteZones({
   const selPrecedente = useRef<string | null>(null);
   const dejaCadre = useRef<unknown>(null);
   const rappel = useRef(onSelection);
-  rappel.current = onSelection;
   // Tout ce que la carte doit redessiner quand son style change (thème, fond) : lu au moment voulu.
   const etat = useRef({ zones, eau, selection, prioritesMasquees, couches, mode, theme: "clair" as Theme, sansFond });
-  etat.current = { ...etat.current, zones, eau, selection, prioritesMasquees, couches, mode, sansFond };
+  // Mis à jour après chaque rendu validé, jamais pendant le rendu, et avant les effets qui les lisent.
+  useLayoutEffect(() => {
+    rappel.current = onSelection;
+    etat.current = { ...etat.current, zones, eau, selection, prioritesMasquees, couches, mode, sansFond };
+  });
   const minuteur = useRef<ReturnType<typeof setTimeout>>();
 
   const surveillerFond = useCallback(() => {
@@ -169,7 +172,11 @@ export default function CarteZones({
       if (!map.hasImage(e.id)) map.addImage(e.id, { width: 1, height: 1, data: new Uint8Array(4) });
     });
     // Avant le premier affichage, une erreur vient du style, du sprite ou des polices : on le dit.
-    map.on("error", () => setEtatFond((e) => (e === "pret" ? e : "erreur")));
+    // Une tuile manquante (erreur liée à une source) n'empêche pas la carte de s'afficher : on l'ignore ici.
+    map.on("error", (e) => {
+      if ((e as { sourceId?: string }).sourceId) return;
+      setEtatFond((etatPrecedent) => (etatPrecedent === "pret" ? etatPrecedent : "erreur"));
+    });
 
     const infobulle = new Popup({ closeButton: false, closeOnClick: false, offset: 12, className: "carte-infobulle" });
     let survol: string | number | undefined;
@@ -303,7 +310,6 @@ export default function CarteZones({
   // La feuille de style MapLibre impose position: relative au conteneur, d'où l'enveloppe.
   return (
     <div className="absolute inset-0">
-      <div ref={conteneur} className="h-full w-full" role="region" aria-label={libelle} />
       {!miniature && (
         <BarreOutilsCarte
           onZoomer={(sens) => (sens > 0 ? carte.current?.zoomIn() : carte.current?.zoomOut())}
@@ -319,6 +325,8 @@ export default function CarteZones({
           onFond={choisirFond}
         />
       )}
+      {/* Après la barre d'outils dans le DOM : le clavier atteint les commandes avant l'attribution de la carte. */}
+      <div ref={conteneur} className="h-full w-full" role="region" aria-label={libelle} />
       <EtatFondCarte
         etat={etatFond}
         prete={prete}

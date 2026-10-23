@@ -1,7 +1,7 @@
 import { ArrowLeft, ArrowUpRight, Building2, Droplets, School, Search, Users, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { IndicateurConfiance } from "@/components/zone/badges";
-import { ICONE, ICONE_PETITE } from "@/lib/design";
+import { ICONE, ICONE_MINI, ICONE_PETITE } from "@/lib/design";
 import { formatDate, formatHabitants, formatNombre } from "@/lib/format";
 import { LIBELLE_EAU } from "@/lib/synthese";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,7 @@ export function BadgeAction({ action, className }: { action: ActionSuggeree; cla
         className,
       )}
     >
-      <Icone size={14} strokeWidth={1.75} aria-hidden />
+      <Icone {...ICONE_MINI} aria-hidden />
       {libelle}
     </span>
   );

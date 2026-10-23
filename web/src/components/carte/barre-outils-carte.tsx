@@ -52,7 +52,8 @@ export function BarreOutilsCarte({
 
   return (
     <div className="absolute right-3 top-3 z-controle flex flex-col gap-2 print:hidden">
-      <div className="verre flex flex-col rounded-[13px] p-1">
+      {/* Au doigt, on zoome en pinçant : les boutons + et − ne servent qu'à la souris et au clavier. */}
+      <div className="verre flex flex-col rounded-md p-1 [@media(pointer:coarse)]:hidden">
         <button type="button" className="verre-bouton" onClick={() => onZoomer(1)} aria-label="Zoomer" title="Zoomer">
           <Plus {...ICONE_PETITE} aria-hidden />
         </button>
@@ -67,7 +68,7 @@ export function BarreOutilsCarte({
           <Minus {...ICONE_PETITE} aria-hidden />
         </button>
       </div>
-      <div className="verre flex flex-col gap-0.5 rounded-[13px] p-1">
+      <div className="verre flex flex-col gap-0.5 rounded-md p-1">
         <button
           type="button"
           className="verre-bouton"

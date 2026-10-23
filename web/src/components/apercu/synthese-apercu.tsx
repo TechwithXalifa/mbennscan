@@ -10,6 +10,7 @@ import { CONFIANCES } from "@/lib/priorite";
 import type { SyntheseGlobale } from "@/lib/synthese";
 import { cn } from "@/lib/utils";
 import type { ClasseEau, Evenement } from "@/types/contracts";
+import { ICONE_MINI } from "@/lib/design";
 
 const TYPES: ClasseEau[] = ["stagnation", "intermediaire", "ruissellement"];
 
@@ -98,7 +99,7 @@ export function RepartitionsZones({ synthese: s, className }: { synthese: Synthe
             cle: t,
             libelle: (
               <>
-                <Icone size={14} strokeWidth={1.75} aria-hidden />
+                <Icone {...ICONE_MINI} aria-hidden />
                 {libelle}
               </>
             ),

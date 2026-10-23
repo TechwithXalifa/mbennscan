@@ -1,5 +1,6 @@
 import { ArrowDown, Layers, Radar, Users } from "lucide-react";
 import { SOMMAIRE } from "@/components/methode/contenu";
+import { ICONE, ICONE_PETITE } from "@/lib/design";
 
 const FAITS = [
   { Icone: Radar, valeur: "10 m", libelle: "Radar Sentinel-1, qui voit à travers les nuages" },
@@ -13,10 +14,8 @@ export function Accroche() {
     <header className="halo-entete px-4 pb-14 pt-12 lg:px-8 lg:pb-20 lg:pt-20">
       <div className="mx-auto max-w-6xl">
         <p className="text-surtitre uppercase text-vif">Référence</p>
-        <h1 className="mt-3 max-w-3xl text-[34px] font-semibold leading-[42px] tracking-tight text-ink lg:text-[48px] lg:leading-[56px]">
-          Méthode et limites
-        </h1>
-        <p className="mt-4 max-w-2xl text-[18px] leading-8 text-ink-2">
+        <h1 className="mt-3 max-w-3xl text-hero text-ink lg:text-hero-lg">Méthode et limites</h1>
+        <p className="mt-4 max-w-2xl text-intro text-ink-2">
           MbënnScan mesure, à partir d&apos;images radar, où l&apos;eau des inondations est réellement restée dans la
           banlieue de Dakar depuis 2020, combien de temps, et chez combien d&apos;habitants. C&apos;est la seule page où
           les termes techniques sont employés, chacun expliqué.
@@ -27,7 +26,7 @@ export function Accroche() {
             className="inline-flex min-h-cible items-center gap-2 rounded-sm bg-primary px-5 font-medium text-on-color shadow-1 transition-colors hover:bg-primary-strong"
           >
             Voir les étapes du calcul
-            <ArrowDown size={16} strokeWidth={1.75} aria-hidden />
+            <ArrowDown {...ICONE_PETITE} aria-hidden />
           </a>
           <a
             href="#limites"
@@ -39,7 +38,7 @@ export function Accroche() {
         <dl className="mt-12 grid gap-4 sm:grid-cols-3">
           {FAITS.map(({ Icone, valeur, libelle }) => (
             <div key={libelle} className="rounded-lg border border-line bg-surface p-5 shadow-1">
-              <Icone size={20} strokeWidth={1.75} className="text-ink-3" aria-hidden />
+              <Icone {...ICONE} className="text-ink-3" aria-hidden />
               <dt className="sr-only">{libelle}</dt>
               <dd className="mt-3 text-titre1 tabular-nums text-vif">{valeur}</dd>
               <dd className="mt-1 text-petit text-ink-2">{libelle}</dd>
