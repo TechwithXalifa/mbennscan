@@ -12,8 +12,10 @@ export function Pastille({
       type="button"
       aria-pressed={active}
       className={cn(
-        "group inline-flex min-h-cible items-center rounded-pill border px-4 text-petit transition-[color,background-color,border-color,transform] duration-etat ease-sortie active:scale-[0.97]",
-        active ? "border-primary bg-primary text-on-color" : "border-line bg-surface text-ink hover:border-ink-2",
+        "group inline-flex min-h-9 shrink-0 items-center rounded-pill border px-3 text-petit font-medium transition-[color,background-color,border-color,transform] duration-etat ease-sortie active:scale-[0.97] [@media(pointer:coarse)]:min-h-cible",
+        active
+          ? "border-primary bg-primary text-on-color"
+          : "border-line bg-surface text-ink-2 hover:border-line-strong hover:text-ink",
         className,
       )}
       {...props}
