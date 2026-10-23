@@ -22,7 +22,7 @@ Un outil d'aide à la décision, sobre et institutionnel, pas un tableau d'admin
 
 ## Thèmes
 
-Thème **clair par défaut** (lisible en plein soleil). Le thème sombre et « Système » se choisissent dans la barre latérale, le menu mobile ou l'en-tête ; le choix est gardé sur l'appareil (`mbennscan:theme`) et posé avant l'affichage par `SCRIPT_THEME` (`src/lib/theme.ts`), sans flash. `useTheme()` donne le thème affiché. L'impression utilise toujours le thème clair.
+Thème **sombre par défaut**. Le thème clair (plus lisible en plein soleil) se choisit dans la barre latérale, le menu mobile ou l'en-tête ; le choix est gardé sur l'appareil (`mbennscan:theme`) et posé avant l'affichage par `SCRIPT_THEME` (`src/lib/theme.ts`), sans flash. `useTheme()` donne le thème affiché. L'impression utilise toujours le thème clair.
 
 La carte suit le thème : fond Positron en clair, fond Dark d'OpenFreeMap recoloré en bleu nuit en sombre ; les couleurs des couches sont relues à chaque changement.
 
@@ -30,31 +30,33 @@ La carte suit le thème : fond Positron en clair, fond Dark d'OpenFreeMap recolo
 
 Valeurs claires (les valeurs sombres sont dans `globals.css`). Contrastes mesurés sur la surface.
 
-| Jeton                                     | Classe                        | Clair                                         | Usage                                                       |
-| ----------------------------------------- | ----------------------------- | --------------------------------------------- | ----------------------------------------------------------- |
-| `--ink`                                   | `text-ink`                    | `#101828`                                     | Texte principal                                             |
-| `--ink-2`                                 | `text-ink-2`                  | `#475467` (7,7:1)                             | Textes d'appoint                                            |
-| `--ink-3`                                 | `text-ink-3`                  | `#5B6B80` (5,4:1)                             | Métadonnées, surtitres                                      |
-| `--bg`                                    | `bg-bg`                       | `#F4F6F9`                                     | Fond des pages                                              |
-| `--surface` · `-2` · `-3`                 | `bg-surface`…                 | `#FFFFFF` · `#F8FAFC` · `#EEF2F6`             | Panneaux · en-têtes de tableau, survol · pistes, squelettes |
-| `--line`                                  | `border-line`                 | `#E4E7EC`                                     | Séparateurs                                                 |
-| `--line-strong`                           | `border-line-strong`          | `#7D8A9E` (3,5:1)                             | Bord des champs et contrôles                                |
-| `--inverse` / `--inverse-ink`             | `bg-inverse text-inverse-ink` | encre / blanc                                 | Infobulles, bandeau Maquette, hors ligne                    |
-| `--primary` · `--primary-strong`          | `bg-primary`                  | `#0E5A8A` · `#0A4670`                         | Boutons, barres des graphiques                              |
-| `--primary-ink`                           | `text-primary-ink`            | `#0E5A8A`                                     | Liens et libellés actifs (plus clair en sombre)             |
-| `--primary-soft`                          | `bg-primary-soft`             | `#E8F1F8`                                     | Ligne choisie, icône des chiffres clés                      |
-| `--focus`                                 | `outline`                     | `#0E5A8A`                                     | Anneau de focus                                             |
-| `--nuit`…                                 | `bg-nuit text-nuit-ink`       | `#0B1A2B`                                     | Barre latérale (bleu nuit, deux thèmes)                     |
-| `--accent`                                | `bg-accent`                   | `#2ED3B7`                                     | Repère de la page active, **uniquement** dans la navigation |
-| `--water` · `--water-line`                | `bg-water`                    | `#2E90FA` à 55 % · `#175CD3`                  | Eau, sur la carte et dans la jauge uniquement               |
-| `--prio-high` · `-mid` · `-low` · `-none` | `bg-prio-high`…               | `#D92D20` · `#F79009` · `#3BA55C` · `#D0D5DD` | Priorité uniquement                                         |
-| `--ok` · `--off`                          | `bg-ok`                       | `#12B76A` · `#98A2B3`                         | Balise en ligne / muette                                    |
-| `--danger` · `--danger-soft`              | `text-danger`                 | `#B42318` · `#FEF3F2`                         | Erreurs et seuil dépassé, jamais la priorité                |
+| Jeton                                     | Classe                        | Clair                                         | Usage                                                             |
+| ----------------------------------------- | ----------------------------- | --------------------------------------------- | ----------------------------------------------------------------- |
+| `--ink`                                   | `text-ink`                    | `#101828`                                     | Texte principal                                                   |
+| `--ink-2`                                 | `text-ink-2`                  | `#475467` (7,7:1)                             | Textes d'appoint                                                  |
+| `--ink-3`                                 | `text-ink-3`                  | `#5B6B80` (5,4:1)                             | Métadonnées, surtitres                                            |
+| `--bg`                                    | `bg-bg`                       | `#F4F6F9`                                     | Fond des pages                                                    |
+| `--surface` · `-2` · `-3`                 | `bg-surface`…                 | `#FFFFFF` · `#F8FAFC` · `#EEF2F6`             | Panneaux · en-têtes de tableau, survol · pistes, squelettes       |
+| `--line`                                  | `border-line`                 | `#E4E7EC`                                     | Séparateurs                                                       |
+| `--line-strong`                           | `border-line-strong`          | `#7D8A9E` (3,5:1)                             | Bord des champs et contrôles                                      |
+| `--inverse` / `--inverse-ink`             | `bg-inverse text-inverse-ink` | encre / blanc                                 | Infobulles, bandeau Maquette, hors ligne                          |
+| `--primary` · `--primary-strong`          | `bg-primary`                  | `#0E5A8A` · `#0A4670`                         | Boutons, barres des graphiques                                    |
+| `--primary-ink`                           | `text-primary-ink`            | `#0E5A8A`                                     | Liens et libellés actifs (plus clair en sombre)                   |
+| `--primary-soft`                          | `bg-primary-soft`             | `#E8F1F8`                                     | Ligne choisie, icône des chiffres clés                            |
+| `--focus`                                 | `outline`                     | `#0E5A8A`                                     | Anneau de focus                                                   |
+| `--nuit`…                                 | `bg-nuit text-nuit-ink`       | `#0B1A2B`                                     | Barre latérale (bleu nuit, deux thèmes)                           |
+| `--accent`                                | `bg-accent`                   | `#2ED3B7`                                     | Repère de la page active, **uniquement** dans la navigation       |
+| `--vif`                                   | `text-vif`                    | `#0F766E` (5,5:1), sombre `#2ED3B7`           | Chiffres clés et surtitres de la page Méthode, pour attirer l'œil |
+| `--water` · `--water-line`                | `bg-water`                    | `#2E90FA` à 55 % · `#175CD3`                  | Eau, sur la carte et dans la jauge uniquement                     |
+| `--prio-high` · `-mid` · `-low` · `-none` | `bg-prio-high`…               | `#D92D20` · `#F79009` · `#3BA55C` · `#D0D5DD` | Priorité uniquement                                               |
+| `--ok` · `--off`                          | `bg-ok`                       | `#12B76A` · `#98A2B3`                         | Balise en ligne / muette                                          |
+| `--danger` · `--danger-soft`              | `text-danger`                 | `#B42318` · `#FEF3F2`                         | Erreurs et seuil dépassé, jamais la priorité                      |
 
 Règles :
 
 - Les couleurs de priorité ne servent qu'à la priorité, le bleu de l'eau qu'à l'eau, l'accent qu'à la navigation.
-- **Priorité et confiance sont deux dimensions** : la priorité est une couleur et une forme (`SymbolePriorite` : triangle forte, losange moyenne, rond faible, cercle vide sans eau), la confiance trois points et des hachures, toujours en encre.
+- **Priorité et confiance sont deux dimensions** : la priorité est un rond de couleur (`SymbolePriorite`, cercle vide sans eau) toujours suivi de son libellé, la confiance un mot (« Confiance moyenne ») et des hachures sur la carte, jamais une couleur ni un rond.
+- Pas de pastille décorative devant un texte : l'état de la balise s'écrit en toutes lettres (« En ligne », « Muette »).
 - Une couleur de priorité ne sert pas de couleur de texte : pastille ou symbole à côté d'un texte en encre.
 - Une donnée ancienne se signale par une horloge et du texte (`Bandeau ancien`), pas par une couleur d'alerte.
 
@@ -119,7 +121,7 @@ Les boutons s'enfoncent de 3 % à l'appui. La carte ne bouge pas quand un filtre
 | Priorité et confiance | `SymbolePriorite`, `BadgePriorite`, `IndicateurConfiance`                                                                                                   | `components/zone/badges.tsx`                           |
 | Zones                 | `ListeZones` (top 10), `TableauZones` (classement complet), `FicheZone`, `HistogrammeSaisons`                                                               | `components/`, `components/zones/`, `components/zone/` |
 | Après une pluie       | `ListeUrgence`, `FicheUrgence`, `BadgeAction`                                                                                                               | `components/apres/`                                    |
-| Balise                | `Jauge`, `CourbeNiveau`, `VueBalise`                                                                                                                        | `components/balise/`                                   |
+| Balise                | `Jauge` (maison et adulte de 1,75 m, l'eau à l'échelle réelle), `CourbeNiveau`, `VueBalise`                                                                 | `components/balise/`                                   |
 | États                 | `AlerteErreur`, `EtatVide`, `Bandeau` (fraîcheur, ancien, hors ligne), `BandeauMaquette`, `Squelette`, `SqueletteListe`, `SqueletteFiche`, `ChargeurGoutte` | `components/ui/`                                       |
 | Contrôles             | `Bouton`, `ControleSegmente`, `Pastille`, `Interrupteur`, `Popover`, `Dialogue`, `ChampRecherche`, `Selection`, `Infobulle`                                 | `components/ui/`                                       |
 
