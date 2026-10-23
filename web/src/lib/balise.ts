@@ -5,13 +5,24 @@ export function niveauValide(cm: number | null): cm is number {
   return cm !== null && Number.isFinite(cm) && cm >= 0;
 }
 
-/** Jusqu'où l'eau monterait sur un adulte de 1,75 m, en français courant. */
-export function reperesCorps(cm: number): string {
-  if (cm <= 0) return "Pas d'eau mesurée";
-  if (cm < 15) return "L'eau arriverait aux chevilles d'un adulte";
-  if (cm < 55) return "L'eau arriverait aux genoux d'un adulte";
-  if (cm < 105) return "L'eau arriverait à la taille d'un adulte";
-  if (cm < 140) return "L'eau arriverait à la poitrine d'un adulte";
-  if (cm < 175) return "L'eau arriverait aux épaules d'un adulte";
-  return "Un adulte serait entièrement submergé";
+// Hauteurs approchées sur un adulte de 1,75 m, du bas vers le haut.
+const REPERES: [number, string][] = [
+  [8, "sous la cheville d'un adulte"],
+  [20, "à peu près la hauteur d'une cheville d'adulte"],
+  [40, "entre la cheville et le genou d'un adulte"],
+  [60, "à peu près la hauteur d'un genou d'adulte"],
+  [85, "entre le genou et la hanche d'un adulte"],
+  [105, "à peu près la hauteur d'une hanche d'adulte"],
+  [135, "entre la hanche et l'épaule d'un adulte"],
+  [155, "à peu près la hauteur d'une épaule d'adulte"],
+  [175, "entre l'épaule et le haut de la tête d'un adulte"],
+];
+
+/**
+ * Le niveau comparé à un adulte de 1,75 m, pour se représenter le chiffre : une comparaison de hauteur,
+ * pas l'eau d'une rue (la balise mesure un bac). Rien à comparer sans eau.
+ */
+export function repereHumain(cm: number): string | null {
+  if (cm <= 0) return null;
+  return REPERES.find(([sous]) => cm < sous)?.[1] ?? "plus haut qu'un adulte de 1,75 m";
 }
