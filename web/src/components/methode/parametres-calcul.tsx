@@ -1,26 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { FileQuestion } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { AlerteErreur, EtatVide } from "@/components/ui/etats";
+import { Squelette } from "@/components/ui/squelette";
 import { getRunMeta, USE_MOCKS } from "@/lib/data";
 import { formatDate, formatNombre, formatPourcent } from "@/lib/format";
 import type { RunMeta } from "@/types/contracts";
 
-type Etat = { statut: "chargement" } | { statut: "absent" } | { statut: "erreur" } | { statut: "ok"; meta: RunMeta };
+type Etat =
+  | { statut: "chargement" }
+  | { statut: "absent" }
+  | { statut: "erreur"; message: string }
+  | { statut: "ok"; meta: RunMeta };
 
 /** Paramètres du dernier calcul, lus dans run_meta.json, pour refaire le calcul à l'identique. */
 export function ParametresCalcul() {
   const [etat, setEtat] = useState<Etat>({ statut: "chargement" });
 
-  useEffect(() => {
+  const charger = useCallback(() => {
+    setEtat({ statut: "chargement" });
     getRunMeta()
       .then((meta) => setEtat(meta ? { statut: "ok", meta } : { statut: "absent" }))
-      .catch(() => setEtat({ statut: "erreur" }));
+      .catch((e: unknown) => setEtat({ statut: "erreur", message: e instanceof Error ? e.message : String(e) }));
   }, []);
 
-  if (etat.statut === "chargement") return <div className="h-48 animate-pulse rounded-sm bg-line" aria-busy="true" />;
+  useEffect(charger, [charger]);
+
+  if (etat.statut === "chargement")
+    return (
+      <div role="status" aria-busy="true" className="space-y-2">
+        <span className="sr-only">Chargement des paramètres du calcul</span>
+        {[0, 1, 2, 3, 4].map((i) => (
+          <Squelette key={i} className="h-9" />
+        ))}
+      </div>
+    );
   if (etat.statut === "absent")
-    return <p>Les paramètres du calcul seront publiés avec les premiers résultats réels.</p>;
-  if (etat.statut === "erreur") return <p role="alert">Impossible de charger les paramètres du calcul.</p>;
+    return (
+      <EtatVide titre="Paramètres pas encore publiés" icone={FileQuestion}>
+        Les paramètres du calcul seront publiés avec les premiers résultats réels.
+      </EtatVide>
+    );
+  if (etat.statut === "erreur")
+    return (
+      <AlerteErreur
+        titre="Les paramètres du calcul n'ont pas pu être chargés"
+        message={etat.message}
+        onReessayer={charger}
+      />
+    );
 
   const { meta } = etat;
   const p = meta.parametres;
@@ -52,15 +81,18 @@ export function ParametresCalcul() {
 
   return (
     <div>
-      <dl className="divide-y divide-line rounded-md border border-line">
-        {lignes.map(([cle, valeur]) => (
-          <div key={cle} className="grid gap-1 p-3 sm:grid-cols-2">
+      <dl className="divide-y divide-line overflow-hidden rounded-lg border border-line">
+        {lignes.map(([cle, valeur], i) => (
+          <div
+            key={cle}
+            className={`grid gap-1 px-4 py-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] sm:gap-4 ${i % 2 ? "bg-surface-2" : "bg-surface"}`}
+          >
             <dt className="text-petit text-ink-2">{cle}</dt>
-            <dd className="tabular-nums">{valeur}</dd>
+            <dd className="tabular-nums text-ink">{valeur}</dd>
           </div>
         ))}
       </dl>
-      {USE_MOCKS && <p className="mt-2 text-mention text-ink-2">Paramètres du jeu de données factice [FICTIF].</p>}
+      {USE_MOCKS && <p className="mt-2 text-mention text-ink-3">Paramètres du jeu de données factice [FICTIF].</p>}
     </div>
   );
 }
