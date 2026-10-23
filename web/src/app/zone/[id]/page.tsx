@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { FicheZone } from "@/components/zone/fiche-zone";
+import { ICONE_PETITE } from "@/lib/design";
 
 // E2 · Fiche zone, en page partageable et imprimable sur une page A4.
 export default function PageZone({
@@ -13,13 +14,13 @@ export default function PageZone({
   const id = decodeURIComponent(params.id);
   return (
     <main className="halo-entete flex-1 px-4 py-6 lg:px-8 lg:py-8 print:p-0">
-      <div className="mx-auto max-w-3xl print:max-w-none">
+      <div className="mx-auto max-w-3xl xl:max-w-6xl print:max-w-none">
         <nav aria-label="Retour" className="mb-4 flex flex-wrap gap-x-4 print:hidden">
           <Link
             href={`/?zone=${encodeURIComponent(id)}`}
             className="inline-flex min-h-cible items-center gap-1.5 text-petit font-medium text-primary-ink"
           >
-            <ArrowLeft size={16} strokeWidth={1.75} aria-hidden />
+            <ArrowLeft {...ICONE_PETITE} aria-hidden />
             Carte
           </Link>
           <Link href="/zones" className="inline-flex min-h-cible items-center text-petit font-medium text-primary-ink">
