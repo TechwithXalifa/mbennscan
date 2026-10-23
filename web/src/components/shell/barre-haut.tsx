@@ -31,7 +31,7 @@ export function BarreHaut() {
   return (
     <header className="sticky top-0 z-barre shrink-0 border-b border-line bg-surface print:hidden">
       <div className="flex h-topbar items-center gap-2 px-4 lg:gap-4 lg:px-6">
-        <Link href="/" className="flex min-h-cible items-center" aria-label="MbënnScan, vue générale">
+        <Link href="/" className="flex min-h-cible items-center lg:hidden" aria-label="MbënnScan, vue générale">
           <Logo />
         </Link>
 
@@ -84,14 +84,14 @@ export function BarreHaut() {
             onClick={() => setMenu(true)}
             aria-label="Ouvrir le menu"
             aria-expanded={menu}
-            className="inline-flex size-cible items-center justify-center rounded-sm text-ink-2 hover:bg-surface-3 hover:text-ink"
+            className="inline-flex size-cible items-center justify-center rounded-sm text-ink-2 hover:bg-surface-3 hover:text-ink lg:hidden"
           >
             <Menu {...ICONE} aria-hidden />
           </button>
         </div>
       </div>
-      {/* Le sélecteur de mode passe sous la barre, en pleine largeur (sur ordinateur, la barre latérale le remplacera). */}
-      <div className="px-4 pb-2">
+      {/* Sur téléphone et tablette, le sélecteur de mode passe sous la barre, en pleine largeur. */}
+      <div className="px-4 pb-2 lg:hidden">
         <ControleSegmente
           libelle="Mode"
           segments={SEGMENTS}
