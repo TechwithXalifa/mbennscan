@@ -40,6 +40,22 @@ test("Fond de carte injoignable : la carte continue sans fond", async ({ page })
   await expect(page.getByText(/Le fond de carte (n'a pas pu être chargé|tarde à venir)/)).toBeHidden();
 });
 
+test("Balise mal étalonnée : « Mesure invalide », pas « 0 cm »", async ({ page }) => {
+  const ts = new Date().toISOString();
+  await page.route("**/mocks/mesures.json", (route) =>
+    route.fulfill({
+      json: [
+        { id: 1, balise_id: "bal-01", ts, recu_le: ts, distance_cm: 83, niveau_cm: -3, batterie_v: 4.1, rssi: -60 },
+      ],
+    }),
+  );
+  await page.goto("/balise/bal-01");
+  await expect(page.getByText("Mesure invalide", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Le capteur lit plus loin que le fond du bac/)).toBeVisible();
+  await expect(page.getByText(/Sous le seuil|d'eau dans le bac/)).toHaveCount(0);
+  await expect(page.getByRole("meter")).not.toHaveAttribute("aria-valuenow");
+});
+
 test("Thème : sombre par défaut, le clair est gardé après rechargement", async ({ page }) => {
   await page.goto("/methode");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "sombre");

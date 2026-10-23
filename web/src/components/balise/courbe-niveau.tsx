@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ControleSegmente } from "@/components/ui/controle-segmente";
 import { EtatVide } from "@/components/ui/etats";
+import { niveauValide } from "@/lib/balise";
 import { ICONE_PETITE } from "@/lib/design";
 import { formatNombre } from "@/lib/format";
 import type { Mesure } from "@/types/contracts";
@@ -23,7 +24,8 @@ const dateHeure = new Intl.DateTimeFormat("fr-FR", {
 function points(mesures: Mesure[], debut: number) {
   return (
     mesures
-      .map((m) => ({ t: Date.parse(m.ts), niveau: m.niveau_cm === null ? null : Math.max(0, m.niveau_cm) }))
+      // Une mesure invalide (niveau négatif) fait un trou dans la courbe, pas un point à 0.
+      .map((m) => ({ t: Date.parse(m.ts), niveau: niveauValide(m.niveau_cm) ? m.niveau_cm : null }))
       .filter((p) => p.t >= debut)
       .sort((a, b) => a.t - b.t)
       // Balise muette plus de 2 minutes : la courbe s'interrompt au lieu de relier les deux mesures.
@@ -146,7 +148,11 @@ export default function CourbeNiveau({
       {/* Alternative lisible à la courbe */}
       <p className="sr-only">
         {serie.length} mesures sur la période
-        {derniere?.niveau_cm != null && `, dernière à ${formatNombre(Math.round(Math.max(0, derniere.niveau_cm)))} cm`}.
+        {derniere?.niveau_cm != null &&
+          (niveauValide(derniere.niveau_cm)
+            ? `, dernière à ${formatNombre(Math.round(derniere.niveau_cm))} cm`
+            : ", dernière mesure invalide")}
+        .
       </p>
     </figure>
   );

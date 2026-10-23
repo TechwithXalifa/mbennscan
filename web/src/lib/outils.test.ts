@@ -1,6 +1,6 @@
 // Formats, géométrie, repères de la balise et navigation.
 import { describe, expect, it } from "vitest";
-import { reperesCorps } from "@/lib/balise";
+import { niveauValide, repereHumain } from "@/lib/balise";
 import { formatDepuis, formatHabitants, formatPourcent } from "@/lib/format";
 import { emprise, surfaceHectares } from "@/lib/geo";
 import { contexteDe, modeDe } from "@/lib/navigation";
@@ -56,16 +56,29 @@ describe("géométrie", () => {
 });
 
 describe("repères de la balise", () => {
+  it("rien à comparer sans eau", () => {
+    expect(repereHumain(0)).toBeNull();
+  });
+
   it.each([
-    [0, "Pas d'eau mesurée"],
-    [14, "chevilles"],
-    [15, "genoux"],
-    [54, "genoux"],
-    [55, "taille"],
-    [140, "épaules"],
-    [175, "submergé"],
+    [5, "sous la cheville"],
+    [12, "hauteur d'une cheville"],
+    [38, "entre la cheville et le genou"],
+    [48, "hauteur d'un genou"],
+    [70, "entre le genou et la hanche"],
+    [175, "plus haut qu'un adulte"],
   ])("%s cm → %s", (cm, attendu) => {
-    expect(reperesCorps(cm)).toContain(attendu);
+    expect(repereHumain(cm)).toContain(attendu);
+  });
+
+  it.each([
+    [0, true],
+    [12.5, true],
+    [-0.5, false],
+    [null, false],
+    [Number.NaN, false],
+  ])("niveau %s valide : %s", (cm, attendu) => {
+    expect(niveauValide(cm)).toBe(attendu);
   });
 });
 

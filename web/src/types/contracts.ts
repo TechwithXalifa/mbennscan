@@ -119,7 +119,7 @@ export interface Mesure {
   /** Heure de réception par le serveur (ISO 8601) ; ts = recu_le - age_s */
   recu_le: string;
   distance_cm: number;
-  /** Peut être négatif si la balise est mal étalonnée : afficher 0 et signaler */
+  /** Négatif si la balise est mal étalonnée : mesure invalide, ni 0 ni comparaison au seuil, et signaler */
   niveau_cm: number | null;
   batterie_v: number | null;
   rssi: number | null;

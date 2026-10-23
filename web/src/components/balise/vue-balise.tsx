@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Jauge } from "@/components/balise/jauge";
-import { reperesCorps } from "@/lib/balise";
+import { niveauValide, repereHumain } from "@/lib/balise";
 import { Bouton } from "@/components/ui/bouton";
 import { AlerteErreur, Bandeau, EtatVide, EtatBalise } from "@/components/ui/etats";
 import { Squelette } from "@/components/ui/squelette";
@@ -136,7 +136,18 @@ export function VueBalise({ id }: { id: string }) {
   const ecartS = derniere ? Math.max(0, (maintenant - Date.parse(derniere.ts)) / 1000) : null;
   const enLigne = ecartS !== null && ecartS <= MUETTE_APRES_S;
   const brut = derniere?.niveau_cm ?? null;
-  const niveau = brut === null ? null : Math.max(0, brut);
+  // Un niveau négatif est une mesure fausse (capteur mal étalonné) : ni « 0 cm », ni comparaison au seuil.
+  const niveau = niveauValide(brut) ? brut : null;
+  const invalide = brut !== null && niveau === null;
+  const repere = niveau !== null ? repereHumain(niveau) : null;
+  const jauge = (
+    <Jauge
+      niveauCm={niveau}
+      hauteurCm={balise.hauteur_capteur_cm}
+      seuilCm={balise.seuil_alerte_cm}
+      sansNiveau={invalide ? "mesure invalide" : "aucune mesure"}
+    />
+  );
   const depasse = niveau !== null && balise.seuil_alerte_cm !== null && niveau >= balise.seuil_alerte_cm;
   const etatTexte =
     ecartS === null
@@ -158,20 +169,16 @@ export function VueBalise({ id }: { id: string }) {
           <X {...ICONE} aria-hidden />
         </button>
         <div className="flex flex-col items-center gap-10 sm:flex-row sm:items-end">
-          <div className="origin-bottom sm:scale-150">
-            <Jauge
-              niveauCm={niveau ?? 0}
-              hauteurCm={balise.hauteur_capteur_cm}
-              seuilCm={balise.seuil_alerte_cm}
-              sansMesure={niveau === null}
-            />
-          </div>
-          <p className="text-ecran tabular-nums text-vif sm:text-ecran-xl">
-            {niveau === null ? "–" : formatNombre(Math.round(niveau))}
-            <span className="text-titre1 tracking-normal text-ink-2"> cm</span>
-          </p>
+          <div className="origin-bottom sm:scale-150">{jauge}</div>
+          {!invalide && (
+            <p className={cn("text-ecran tabular-nums sm:text-ecran-xl", niveau === null ? "text-ink-3" : "text-vif")}>
+              {niveau === null ? "–" : formatNombre(Math.round(niveau))}
+              {niveau !== null && <span className="text-titre1 tracking-normal text-ink-2"> cm</span>}
+            </p>
+          )}
         </div>
-        {niveau !== null && <p className="text-titre2 text-ink">{reperesCorps(niveau)}.</p>}
+        {invalide && <p className="text-titre2 text-ink">Mesure invalide : la balise est à réétalonner.</p>}
+        {repere && <p className="text-titre2 text-ink-2">Repère : {repere}.</p>}
         {depasse && (
           <p className="flex items-center gap-2 text-titre1 text-danger">
             <AlertTriangle {...ICONE_GRANDE} aria-hidden />
@@ -219,22 +226,26 @@ export function VueBalise({ id }: { id: string }) {
       <div className="grid gap-4 lg:grid-cols-12">
         <Carte titre="Niveau d'eau" className="lg:col-span-5">
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:justify-center sm:gap-8">
-            <Jauge
-              niveauCm={niveau ?? 0}
-              hauteurCm={balise.hauteur_capteur_cm}
-              seuilCm={balise.seuil_alerte_cm}
-              sansMesure={niveau === null}
-            />
+            {jauge}
             <div className="text-center sm:pb-1 sm:text-left">
-              <p className="whitespace-nowrap text-geant tabular-nums text-vif">
-                {niveau === null ? "–" : formatNombre(Math.round(niveau))}
-                <span className="text-titre2 tracking-normal text-ink-2"> cm</span>
-              </p>
-              <p className="mt-1 text-petit text-ink-2">d&apos;eau dans le bac</p>
-              {niveau !== null && (
-                <p className="mx-auto mt-2 max-w-56 text-petit font-medium text-ink sm:mx-0 sm:max-w-48">
-                  {reperesCorps(niveau)}.
-                </p>
+              {invalide ? (
+                <p className="text-titre2 text-ink">Mesure invalide</p>
+              ) : (
+                <>
+                  <p
+                    className={cn(
+                      "whitespace-nowrap text-geant tabular-nums",
+                      niveau === null ? "text-ink-3" : "text-vif",
+                    )}
+                  >
+                    {niveau === null ? "–" : formatNombre(Math.round(niveau))}
+                    {niveau !== null && <span className="text-titre2 tracking-normal text-ink-2"> cm</span>}
+                  </p>
+                  <p className="mt-1 text-petit text-ink-2">d&apos;eau dans le bac</p>
+                </>
+              )}
+              {repere && (
+                <p className="mx-auto mt-2 max-w-56 text-petit text-ink-2 sm:mx-0 sm:max-w-52">Repère : {repere}.</p>
               )}
               {balise.seuil_alerte_cm !== null && niveau !== null && (
                 <p
@@ -250,12 +261,12 @@ export function VueBalise({ id }: { id: string }) {
             </div>
           </div>
           <p className="mt-3 text-mention font-normal text-ink-3">
-            Repère : un adulte de 1,75 m devant une maison de plain-pied. Le niveau dessiné est celui mesuré dans le
-            bac, à la même échelle.
+            Le bac est dessiné à l&apos;échelle, du fond (0) au capteur ({formatNombre(balise.hauteur_capteur_cm)} cm).
           </p>
-          {brut !== null && brut < 0 && (
+          {invalide && derniere && (
             <Bandeau className="mt-4" icone={AlertTriangle}>
-              Mesure anormale : la balise est à réétalonner (niveau affiché à 0).
+              Le capteur lit plus loin que le fond du bac ({formatNombre(derniere.distance_cm)} cm) : la mesure est
+              fausse et le niveau n&apos;est pas affiché. La balise est à réétalonner.
             </Bandeau>
           )}
         </Carte>

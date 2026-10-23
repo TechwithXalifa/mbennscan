@@ -10,5 +10,6 @@ Ordinateur en 1440 × 900, téléphone en Pixel 7, animations réduites (chiffre
 | `ordinateur-sombre-zones-prioritaires.jpg`, `telephone-clair-zones-prioritaires.jpg` | Classement complet, recherche et tri |
 | `ordinateur-sombre-fiche-zone.jpg` | Fiche zone sur deux colonnes |
 | `ordinateur-sombre-apres-une-pluie.jpg`, `telephone-sombre-apres-une-pluie.jpg` | Après une pluie, fiche d'urgence |
-| `ordinateur-sombre-balise.jpg`, `telephone-sombre-balise.jpg` | Balise : jauge à échelle humaine |
+| `ordinateur-sombre-balise.jpg`, `telephone-sombre-balise.jpg` | Balise : le bac à l'échelle, repère humain en une ligne |
+| `ordinateur-sombre-balise-mesure-invalide.jpg`, `telephone-sombre-balise-mesure-invalide.jpg` | Balise mal étalonnée : « Mesure invalide », pas de niveau inventé |
 | `ordinateur-sombre-methode.jpg` | Méthode et limites |
