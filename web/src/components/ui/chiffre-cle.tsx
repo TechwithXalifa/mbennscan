@@ -51,7 +51,7 @@ export function ChiffreCle({
       </div>
       <p
         className={cn(
-          "mt-3 tabular-nums text-ink",
+          "mt-3 tabular-nums text-vif",
           indisponible ? "text-titre3 text-ink-3" : mot ? "text-titre2" : misEnAvant ? "text-display" : "text-chiffre",
         )}
       >

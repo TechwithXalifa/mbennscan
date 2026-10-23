@@ -2,69 +2,39 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-// Thème de l'interface. Clair par défaut (lisible en plein soleil, cahier des charges section 6) ;
-// le sombre est un choix de l'utilisateur, gardé sur l'appareil.
+// Thème de l'interface. Sombre par défaut ; le clair reste au choix (plus lisible en plein soleil).
+// Le choix est gardé sur l'appareil.
 
 export type Theme = "clair" | "sombre";
-export type PreferenceTheme = Theme | "systeme";
 
 export const CLE_THEME = "mbennscan:theme";
 
 /** Script exécuté avant l'affichage pour éviter un flash du mauvais thème. */
-export const SCRIPT_THEME = `(function(){try{var p=localStorage.getItem("${CLE_THEME}")||"clair";var s=p==="systeme"?(matchMedia("(prefers-color-scheme: dark)").matches?"sombre":"clair"):p;document.documentElement.dataset.theme=s==="sombre"?"sombre":"clair";}catch(e){document.documentElement.dataset.theme="clair";}})();`;
-
-function lirePreference(): PreferenceTheme {
-  try {
-    const p = localStorage.getItem(CLE_THEME);
-    return p === "sombre" || p === "systeme" ? p : "clair";
-  } catch {
-    return "clair";
-  }
-}
-
-function resoudre(p: PreferenceTheme): Theme {
-  if (p !== "systeme") return p;
-  return matchMedia("(prefers-color-scheme: dark)").matches ? "sombre" : "clair";
-}
+export const SCRIPT_THEME = `(function(){try{document.documentElement.dataset.theme=localStorage.getItem("${CLE_THEME}")==="clair"?"clair":"sombre";}catch(e){document.documentElement.dataset.theme="sombre";}})();`;
 
 function themeActuel(): Theme {
-  return typeof document !== "undefined" && document.documentElement.dataset.theme === "sombre" ? "sombre" : "clair";
+  return typeof document !== "undefined" && document.documentElement.dataset.theme === "clair" ? "clair" : "sombre";
 }
 
-/** Thème affiché (suit les changements faits ailleurs dans la page) et préférence de l'utilisateur. */
+/** Thème affiché (suit les changements faits ailleurs dans la page) et moyen d'en changer. */
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>("clair");
-  const [preference, setPreference] = useState<PreferenceTheme>("clair");
+  const [theme, setTheme] = useState<Theme>("sombre");
 
   useEffect(() => {
     setTheme(themeActuel());
-    setPreference(lirePreference());
-    const observateur = new MutationObserver(() => {
-      setTheme(themeActuel());
-      setPreference(lirePreference());
-    });
+    const observateur = new MutationObserver(() => setTheme(themeActuel()));
     observateur.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     return () => observateur.disconnect();
   }, []);
 
-  // « Système » : suivre le réglage de l'appareil tant que cette préférence est choisie.
-  useEffect(() => {
-    if (preference !== "systeme") return;
-    const media = matchMedia("(prefers-color-scheme: dark)");
-    const suivre = () => (document.documentElement.dataset.theme = resoudre("systeme"));
-    media.addEventListener("change", suivre);
-    return () => media.removeEventListener("change", suivre);
-  }, [preference]);
-
-  const choisir = useCallback((p: PreferenceTheme) => {
+  const choisir = useCallback((t: Theme) => {
     try {
-      localStorage.setItem(CLE_THEME, p);
+      localStorage.setItem(CLE_THEME, t);
     } catch {
       // Stockage interdit : le choix vaut pour cette page seulement.
     }
-    setPreference(p);
-    document.documentElement.dataset.theme = resoudre(p);
+    document.documentElement.dataset.theme = t;
   }, []);
 
-  return { theme, preference, choisir };
+  return { theme, choisir };
 }

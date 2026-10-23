@@ -54,7 +54,7 @@ export function styleVide(): StyleSpecification {
 }
 
 export function themeDuDocument(): Theme {
-  return document.documentElement.dataset.theme === "sombre" ? "sombre" : "clair";
+  return document.documentElement.dataset.theme === "clair" ? "clair" : "sombre";
 }
 
 /** Contenu de l'infobulle de survol, aux couleurs des jetons (le texte est construit sans HTML). */

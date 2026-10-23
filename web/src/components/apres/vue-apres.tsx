@@ -60,7 +60,7 @@ function ageImage(e: Evenement): number | null {
 function Chiffre({ valeur, intitule }: { valeur: string; intitule: string }) {
   return (
     <div className="rounded-lg border border-line bg-surface p-3">
-      <p className="text-titre1 tabular-nums text-ink">{valeur}</p>
+      <p className="text-titre1 tabular-nums text-vif">{valeur}</p>
       <p className="text-petit leading-tight text-ink-2">{intitule}</p>
     </div>
   );

@@ -34,7 +34,7 @@ export function Statistique({
         <span className="line-clamp-2 min-w-0">{intitule}</span>
         {info && <Infobulle libelle={`À propos : ${intitule}`}>{info}</Infobulle>}
       </p>
-      <p className={cn("tabular-nums leading-none text-ink", principal ? "text-chiffre" : "text-titre1")}>
+      <p className={cn("tabular-nums leading-none text-vif", principal ? "text-chiffre" : "text-titre1")}>
         {valeur === null ? <span className="text-titre3 text-ink-3">Non disponible</span> : valeur}
         {valeur !== null && unite && <span className="ml-1 text-petit font-medium text-ink-2">{unite}</span>}
       </p>

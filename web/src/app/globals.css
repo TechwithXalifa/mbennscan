@@ -40,6 +40,7 @@
   --nuit-ink-2: #9fb1c7;
   --nuit-ink-3: #8597ae;
   --accent: #2ed3b7; /* repère de la page active, uniquement dans la navigation */
+  --vif: #0f766e; /* chiffres clés, pour attirer l'œil (5,5:1) */
 
   /* Eau : réservée à l'eau */
   --water: #2e90fa;
@@ -144,6 +145,7 @@
     --primary-soft: #12304a;
     --focus: #7cc4fa;
 
+    --vif: #2ed3b7; /* 9,4:1 */
     --nuit: #0c1624;
     --nuit-2: #142338;
 

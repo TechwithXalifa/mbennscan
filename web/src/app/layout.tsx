@@ -26,7 +26,7 @@ const origines = Array.from(new Set([STYLE_CARTE, STYLE_CARTE_SOMBRE].map((u) =>
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     // data-theme est posé avant l'affichage par SCRIPT_THEME : le rendu serveur ne le connaît pas.
-    <html lang="fr" className={inter.variable} data-theme="clair" suppressHydrationWarning>
+    <html lang="fr" className={inter.variable} data-theme="sombre" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_THEME }} />
         {/* Le fond de carte est le plus long à venir : ouvrir la connexion dès le HTML. */}

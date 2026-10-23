@@ -10,30 +10,17 @@ import { cn } from "@/lib/utils";
 import type { Confiance, Priorite } from "@/types/contracts";
 
 /**
- * Symbole de priorité : une forme par niveau (triangle, losange, rond, cercle vide),
- * pour que la priorité se lise sans la couleur.
+ * Symbole de priorité : un rond plein de la couleur du niveau, un cercle vide sans eau visible.
+ * Le libellé écrit à côté reste obligatoire : la couleur n'est jamais seule.
  */
-export function SymbolePriorite({
-  priorite,
-  surCouleur = false,
-  className,
-}: {
-  priorite: Priorite;
-  /** Dessiné à la couleur de la surface, sur une pastille déjà colorée (légende) */
-  surCouleur?: boolean;
-  className?: string;
-}) {
-  const trait = surCouleur
-    ? priorite === "nulle"
-      ? "fill-none stroke-surface"
-      : "fill-surface stroke-surface"
-    : TRAIT_PRIORITE[priorite];
+export function SymbolePriorite({ priorite, className }: { priorite: Priorite; className?: string }) {
   return (
-    <svg viewBox="0 0 12 12" aria-hidden className={cn("size-3 shrink-0", className)}>
-      {priorite === "forte" && <path d="M6 1.2 11 10.4H1z" className={trait} strokeLinejoin="round" />}
-      {priorite === "moyenne" && <path d="M6 .9 11.1 6 6 11.1.9 6z" className={trait} strokeLinejoin="round" />}
-      {priorite === "faible" && <circle cx="6" cy="6" r="4.6" className={trait} />}
-      {priorite === "nulle" && <circle cx="6" cy="6" r="4.2" strokeWidth="1.6" className={trait} />}
+    <svg viewBox="0 0 12 12" aria-hidden className={cn("size-2.5 shrink-0", className)}>
+      {priorite === "nulle" ? (
+        <circle cx="6" cy="6" r="4.4" strokeWidth="1.6" className={TRAIT_PRIORITE[priorite]} />
+      ) : (
+        <circle cx="6" cy="6" r="5" className={TRAIT_PRIORITE[priorite]} />
+      )}
     </svg>
   );
 }
@@ -68,9 +55,7 @@ export function BadgePriorite({
   );
 }
 
-const POINTS: Record<Confiance, number> = { elevee: 3, moyenne: 2, faible: 1 };
-
-/** Trois points remplis selon le niveau, plus le mot. Une autre dimension que la priorité : jamais de couleur. */
+/** Confiance de la mesure, en toutes lettres. Une autre dimension que la priorité : jamais de couleur ni de rond. */
 export function IndicateurConfiance({
   confiance,
   court = false,
@@ -84,17 +69,6 @@ export function IndicateurConfiance({
 }) {
   return (
     <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-petit text-ink">
-      <span className="inline-flex gap-[3px]" aria-hidden>
-        {[1, 2, 3].map((i) => (
-          <span
-            key={i}
-            className={cn(
-              "size-[7px] rounded-pill border border-ink-2",
-              i <= POINTS[confiance] ? "bg-ink-2" : "bg-transparent",
-            )}
-          />
-        ))}
-      </span>
       {court ? LIBELLE_CONFIANCE[confiance] : `Confiance ${LIBELLE_CONFIANCE[confiance].toLowerCase()}`}
       {explique && (
         <Infobulle libelle={`Pourquoi une confiance ${LIBELLE_CONFIANCE[confiance].toLowerCase()} ?`}>
