@@ -30,27 +30,29 @@ La carte suit le thème : fond Positron en clair, fond Dark d'OpenFreeMap recolo
 
 Valeurs claires (les valeurs sombres sont dans `globals.css`). Contrastes mesurés sur la surface.
 
-| Jeton                                     | Classe                        | Clair                                         | Usage                                                             |
-| ----------------------------------------- | ----------------------------- | --------------------------------------------- | ----------------------------------------------------------------- |
-| `--ink`                                   | `text-ink`                    | `#101828`                                     | Texte principal                                                   |
-| `--ink-2`                                 | `text-ink-2`                  | `#475467` (7,7:1)                             | Textes d'appoint                                                  |
-| `--ink-3`                                 | `text-ink-3`                  | `#5B6B80` (5,4:1)                             | Métadonnées, surtitres                                            |
-| `--bg`                                    | `bg-bg`                       | `#F4F6F9`                                     | Fond des pages                                                    |
-| `--surface` · `-2` · `-3`                 | `bg-surface`…                 | `#FFFFFF` · `#F8FAFC` · `#EEF2F6`             | Panneaux · en-têtes de tableau, survol · pistes, squelettes       |
-| `--line`                                  | `border-line`                 | `#E4E7EC`                                     | Séparateurs                                                       |
-| `--line-strong`                           | `border-line-strong`          | `#7D8A9E` (3,5:1)                             | Bord des champs et contrôles                                      |
-| `--inverse` / `--inverse-ink`             | `bg-inverse text-inverse-ink` | encre / blanc                                 | Infobulles, bandeau Maquette, hors ligne                          |
-| `--primary` · `--primary-strong`          | `bg-primary`                  | `#0E5A8A` · `#0A4670`                         | Boutons, barres des graphiques                                    |
-| `--primary-ink`                           | `text-primary-ink`            | `#0E5A8A`                                     | Liens et libellés actifs (plus clair en sombre)                   |
-| `--primary-soft`                          | `bg-primary-soft`             | `#E8F1F8`                                     | Ligne choisie, icône des chiffres clés                            |
-| `--focus`                                 | `outline`                     | `#0E5A8A`                                     | Anneau de focus                                                   |
-| `--nuit`…                                 | `bg-nuit text-nuit-ink`       | `#0B1A2B`                                     | Barre latérale (bleu nuit, deux thèmes)                           |
-| `--accent`                                | `bg-accent`                   | `#2ED3B7`                                     | Repère de la page active, **uniquement** dans la navigation       |
-| `--vif`                                   | `text-vif`                    | `#0F766E` (5,5:1), sombre `#2ED3B7`           | Chiffres clés et surtitres de la page Méthode, pour attirer l'œil |
-| `--water` · `--water-line`                | `bg-water`                    | `#2E90FA` à 55 % · `#175CD3`                  | Eau, sur la carte et dans la jauge uniquement                     |
-| `--prio-high` · `-mid` · `-low` · `-none` | `bg-prio-high`…               | `#D92D20` · `#F79009` · `#3BA55C` · `#D0D5DD` | Priorité uniquement                                               |
-| `--ok` · `--off`                          | `bg-ok`                       | `#12B76A` · `#98A2B3`                         | Balise en ligne / muette                                          |
-| `--danger` · `--danger-soft`              | `text-danger`                 | `#B42318` · `#FEF3F2`                         | Erreurs et seuil dépassé, jamais la priorité                      |
+| Jeton                                     | Classe                        | Clair                                         | Usage                                                                                                                                     |
+| ----------------------------------------- | ----------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `--ink`                                   | `text-ink`                    | `#101828`                                     | Texte principal                                                                                                                           |
+| `--ink-2`                                 | `text-ink-2`                  | `#475467` (7,7:1)                             | Textes d'appoint                                                                                                                          |
+| `--ink-3`                                 | `text-ink-3`                  | `#5B6B80` (5,4:1)                             | Métadonnées, surtitres                                                                                                                    |
+| `--bg`                                    | `bg-bg`                       | `#F4F6F9`                                     | Fond des pages                                                                                                                            |
+| `--surface` · `-2` · `-3`                 | `bg-surface`…                 | `#FFFFFF` · `#F8FAFC` · `#EEF2F6`             | Panneaux · en-têtes de tableau, survol · pistes, squelettes                                                                               |
+| `--line`                                  | `border-line`                 | `#E4E7EC`                                     | Séparateurs                                                                                                                               |
+| `--line-strong`                           | `border-line-strong`          | `#7D8A9E` (3,5:1)                             | Bord des champs et contrôles                                                                                                              |
+| `--inverse` / `--inverse-ink`             | `bg-inverse text-inverse-ink` | encre / blanc                                 | Infobulles, bandeau hors ligne                                                                                                            |
+| `--bandeau` · `-ink` · `-line`            | `bg-bandeau text-bandeau-ink` | encre / blanc ; sombre `#1A283D` bordé        | Bandeau « Maquette » : visible sans écraser la carte                                                                                      |
+| `--voile`                                 | `bg-voile`                    | encre à 48 %                                  | Fond derrière les dialogues                                                                                                               |
+| `--primary` · `--primary-strong`          | `bg-primary`                  | `#0E5A8A` · `#0A4670`                         | Boutons, barres des graphiques                                                                                                            |
+| `--primary-ink`                           | `text-primary-ink`            | `#0E5A8A`                                     | Liens et libellés actifs (plus clair en sombre)                                                                                           |
+| `--primary-soft`                          | `bg-primary-soft`             | `#E8F1F8`                                     | Ligne choisie, icône des chiffres clés                                                                                                    |
+| `--focus`                                 | `outline`                     | `#0E5A8A`                                     | Anneau de focus                                                                                                                           |
+| `--nuit`…                                 | `bg-nuit text-nuit-ink`       | `#0B1A2B`                                     | Barre latérale (bleu nuit, deux thèmes)                                                                                                   |
+| `--accent`                                | `bg-accent`                   | `#2ED3B7`                                     | Repère de la page active, **uniquement** dans la navigation                                                                               |
+| `--vif`                                   | `text-vif`                    | `#0F766E` (5,5:1), sombre `#2ED3B7`           | Chiffres clés et surtitres de la page Méthode, pour attirer l'œil                                                                         |
+| `--water` · `--water-line`                | `bg-water`                    | `#2E90FA` à 55 % · `#175CD3`                  | Eau, sur la carte et dans la jauge uniquement                                                                                             |
+| `--prio-high` · `-mid` · `-low` · `-none` | `bg-prio-high`…               | `#D92D20` · `#F79009` · `#3BA55C` · `#D0D5DD` | Priorité uniquement                                                                                                                       |
+| `--ok` · `--off`                          | `text-ok` · `var(--off)`      | `#12B76A` · `#98A2B3`                         | Réussite d'une action (coche « Lien copié ») · années sans donnée hachurées. L'état de la balise s'écrit en toutes lettres, sans pastille |
+| `--danger` · `--danger-soft`              | `text-danger`                 | `#B42318` · `#FEF3F2`                         | Erreurs et seuil dépassé, jamais la priorité                                                                                              |
 
 Règles :
 
@@ -64,24 +66,29 @@ Règles :
 
 Police unique Inter (`font-sans`). Chiffres comparés en `tabular-nums`.
 
-| Classe                    | Taille / interligne | Graisse   | Usage                                     |
-| ------------------------- | ------------------- | --------- | ----------------------------------------- |
-| `text-display`            | 40 / 44             | 600       | Indicateur principal d'une fiche          |
-| `text-chiffre`            | 32 / 40             | 600       | Valeur principale                         |
-| `text-titre1`             | 24 / 32             | 600       | Nom de la zone, titre de page             |
-| `text-titre2`             | 20 / 28             | 600       | Sections                                  |
-| `text-titre3`             | 16 / 24             | 600       | Intitulés de blocs                        |
-| `text-texte`              | 16 / 24             | 400       | Corps (jamais moins de 16 sur mobile)     |
-| `text-petit`              | 14 / 20             | 400       | Légendes, dates d'image                   |
-| `text-mention`            | 12 / 16             | 500       | Sources, attribution                      |
-| `text-surtitre uppercase` | 12 / 16             | 600, +6 % | Surtitre de section (« AVANT LA SAISON ») |
+| Classe                         | Taille / interligne | Graisse   | Usage                                                                    |
+| ------------------------------ | ------------------- | --------- | ------------------------------------------------------------------------ |
+| `text-display`                 | 40 / 44             | 600       | Indicateur principal d'une fiche                                         |
+| `text-intro`                   | 18 / 32             | 400       | Texte d'accroche (page Méthode)                                          |
+| `text-titre-page`              | 30 / 40             | 600       | Titre de section d'une page de présentation, nom de zone sur grand écran |
+| `text-hero` · `text-hero-lg`   | 34 / 42 · 48 / 56   | 600       | Titre d'accroche                                                         |
+| `text-geant`                   | 64 / 64             | 600       | Niveau de la balise                                                      |
+| `text-ecran` · `text-ecran-xl` | 120 · 200           | 600       | Mode présentation de la balise                                           |
+| `text-chiffre`                 | 32 / 40             | 600       | Valeur principale                                                        |
+| `text-titre1`                  | 24 / 32             | 600       | Nom de la zone, titre de page                                            |
+| `text-titre2`                  | 20 / 28             | 600       | Sections                                                                 |
+| `text-titre3`                  | 16 / 24             | 600       | Intitulés de blocs                                                       |
+| `text-texte`                   | 16 / 24             | 400       | Corps (jamais moins de 16 sur mobile)                                    |
+| `text-petit`                   | 14 / 20             | 400       | Légendes, dates d'image                                                  |
+| `text-mention`                 | 12 / 16             | 500       | Sources, attribution                                                     |
+| `text-surtitre uppercase`      | 12 / 16             | 600, +6 % | Surtitre de section (« AVANT LA SAISON »)                                |
 
 `cn()` (`src/lib/utils.ts`) connaît ces tailles : sans cela, tailwind-merge prendrait `text-petit` pour une couleur et le supprimerait.
 
 ## Espacements, formes, profondeur
 
 - Grille de 4 px ; espacements usuels `2` (8), `3` (12), `4` (16), `6` (24), `8` (32).
-- Rayons : `rounded-sm` 8 px (boutons, champs), `rounded-md` 12 px, `rounded-lg` 16 px (cartes, panneaux), `rounded-pill`.
+- Rayons : `rounded-pixel` 2 px (chargeur), `rounded-xs` 4 px (pastilles de légende, touches), `rounded-interne` 9 px (bouton logé dans un conteneur arrondi), `rounded-sm` 8 px (boutons, champs), `rounded-md` 12 px, `rounded-lg` 16 px (cartes, panneaux), `rounded-pill`.
 - Élévation : `shadow-1` (carte posée sur la page), `shadow-float` (au-dessus de la carte), `shadow-pop` (menus, infobulles, dialogues).
 - Superposition : `z-controle` < `z-panneau` < `z-barre` < `z-infobulle` < `z-dialogue`.
 - Mise en page : barre du haut `h-topbar` (56 px), barre latérale `w-barre` (248 px) ou rail `w-rail` (72 px, de 1024 à 1279 px), panneau `w-panneau` (400 px), aperçu de la feuille du bas `h-apercu` (140 px), page de lecture `max-w-lecture` (680 px).
@@ -105,7 +112,9 @@ Une animation dit toujours ce qui change. On n'anime que `transform` et `opacity
 | ----------------- | ------------------ | ---------------------------------- | ------------------------------------------------------------------ |
 | `--duree`         | `transition`       | 150 ms                             | Retour d'appui, survol                                             |
 | `--duree-etat`    | `duration-etat`    | 250 ms                             | Panneau, curseur, infobulle, menus (`entree-bas`, `entree-gauche`) |
+| `--duree-feuille` | `duration-feuille` | 420 ms                             | Feuille du bas qui change de hauteur                               |
 | `--duree-chiffre` | `duration-chiffre` | 600 ms                             | Chiffre qui défile, une seule fois                                 |
+| `--duree-niveau`  | `duration-niveau`  | 700 ms                             | Eau qui monte dans la jauge de la balise                           |
 | `--ease-sortie`   | `ease-sortie`      | `cubic-bezier(0.2, 0.8, 0.2, 1)`   | Ce qui apparaît                                                    |
 | `--ease-ressort`  | `ease-ressort`     | ressort amorti, 4 % de dépassement | Ce qui se déplace : feuille du bas, curseur                        |
 
@@ -113,23 +122,23 @@ Les boutons s'enfoncent de 3 % à l'appui. La carte ne bouge pas quand un filtre
 
 ## Composants
 
-| Rôle                  | Composant                                                                                                                                                   | Fichier                                                |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Navigation            | `BarreLaterale`, `BarreHaut`, `MenuMobile`, `PaletteRecherche` (Ctrl K)                                                                                     | `components/shell/`                                    |
-| Carte                 | `CarteZones` (barre d'outils, couches, plein écran, repli sans fond), `Legende` (sert aussi de filtre), `PanneauZones` (colonne ou feuille à tirer)         | `components/carte/`                                    |
-| Indicateurs           | `ChiffreCle` (carte), `Statistique` (rangée), `Repartition`, `RangeeIndicateurs`                                                                            | `components/ui/`, `components/apercu/`                 |
-| Priorité et confiance | `SymbolePriorite`, `BadgePriorite`, `IndicateurConfiance`                                                                                                   | `components/zone/badges.tsx`                           |
-| Zones                 | `ListeZones` (top 10), `TableauZones` (classement complet), `FicheZone`, `HistogrammeSaisons`                                                               | `components/`, `components/zones/`, `components/zone/` |
-| Après une pluie       | `ListeUrgence`, `FicheUrgence`, `BadgeAction`                                                                                                               | `components/apres/`                                    |
-| Balise                | `Jauge` (maison et adulte de 1,75 m, l'eau à l'échelle réelle), `CourbeNiveau`, `VueBalise`                                                                 | `components/balise/`                                   |
-| États                 | `AlerteErreur`, `EtatVide`, `Bandeau` (fraîcheur, ancien, hors ligne), `BandeauMaquette`, `Squelette`, `SqueletteListe`, `SqueletteFiche`, `ChargeurGoutte` | `components/ui/`                                       |
-| Contrôles             | `Bouton`, `ControleSegmente`, `Pastille`, `Interrupteur`, `Popover`, `Dialogue`, `ChampRecherche`, `Selection`, `Infobulle`                                 | `components/ui/`                                       |
+| Rôle                  | Composant                                                                                                                                                                 | Fichier                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Navigation            | `BarreLaterale`, `BarreHaut`, `MenuMobile`, `PaletteRecherche` (Ctrl K)                                                                                                   | `components/shell/`                                    |
+| Carte                 | `CarteZones` (barre d'outils, couches, plein écran, repli sans fond), `Legende` (sert aussi de filtre), `PanneauZones` (colonne ou feuille à tirer)                       | `components/carte/`                                    |
+| Indicateurs           | `ChiffreCle` (carte), `Statistique` (rangée), `Repartition`, `RangeeIndicateurs`                                                                                          | `components/ui/`, `components/apercu/`                 |
+| Priorité et confiance | `SymbolePriorite`, `BadgePriorite`, `IndicateurConfiance`                                                                                                                 | `components/zone/badges.tsx`                           |
+| Zones                 | `ListeZones` (top 10), `TableauZones` (classement complet), `FicheZone`, `HistogrammeSaisons`                                                                             | `components/`, `components/zones/`, `components/zone/` |
+| Après une pluie       | `ListeUrgence`, `FicheUrgence`, `BadgeAction`                                                                                                                             | `components/apres/`                                    |
+| Balise                | `Jauge` (maison et adulte de 1,75 m, l'eau à l'échelle réelle), `CourbeNiveau`, `VueBalise`                                                                               | `components/balise/`                                   |
+| États                 | `AlerteErreur`, `EtatVide`, `Bandeau` (fraîcheur, ancien, hors ligne), `BandeauMaquette`, `EtatBalise`, `Squelette`, `SqueletteListe`, `SqueletteFiche`, `ChargeurGoutte` | `components/ui/`                                       |
+| Contrôles             | `Bouton`, `ControleSegmente`, `Pastille`, `Interrupteur`, `Popover`, `Dialogue`, `ChampRecherche`, `Selection`, `Infobulle`                                               | `components/ui/`                                       |
 
 Chaque écran gère le chargement (squelette à la forme du contenu), l'erreur (message, raison, « Réessayer »), le vide (une phrase qui dit pourquoi) et la donnée indisponible.
 
 ## Icônes
 
-Lucide, 20 px (`ICONE`) ou 16 px dans les listes denses (`ICONE_PETITE`), trait de 1,75. Un bouton qui n'a qu'une icône porte un `aria-label`.
+Lucide, trait de 1,75 : `ICONE_GRANDE` 24 px (en-têtes de carte, états mis en avant), `ICONE` 20 px (par défaut), `ICONE_PETITE` 16 px (listes denses), `ICONE_MINI` 14 px (dans une ligne de texte). Jamais de taille en dur. Un bouton qui n'a qu'une icône porte un `aria-label`.
 
 ## Carte et graphiques
 
