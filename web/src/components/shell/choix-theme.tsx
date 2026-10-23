@@ -1,19 +1,18 @@
 "use client";
 
-import { Monitor, Moon, Sun, type LucideIcon } from "lucide-react";
+import { Moon, Sun, type LucideIcon } from "lucide-react";
 import { ICONE_PETITE } from "@/lib/design";
-import { useTheme, type PreferenceTheme } from "@/lib/theme";
+import { useTheme, type Theme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
-const OPTIONS: { valeur: PreferenceTheme; libelle: string; Icone: LucideIcon }[] = [
-  { valeur: "clair", libelle: "Clair", Icone: Sun },
+const OPTIONS: { valeur: Theme; libelle: string; Icone: LucideIcon }[] = [
   { valeur: "sombre", libelle: "Sombre", Icone: Moon },
-  { valeur: "systeme", libelle: "Système", Icone: Monitor },
+  { valeur: "clair", libelle: "Clair", Icone: Sun },
 ];
 
-/** Choix du thème : clair (par défaut, lisible en plein soleil), sombre ou celui de l'appareil. */
+/** Choix du thème : sombre (par défaut) ou clair (plus lisible en plein soleil). */
 export function ChoixTheme({ surFonce = false, avecLibelles = false }: { surFonce?: boolean; avecLibelles?: boolean }) {
-  const { preference, choisir } = useTheme();
+  const { theme, choisir } = useTheme();
   return (
     <div
       role="radiogroup"
@@ -21,7 +20,7 @@ export function ChoixTheme({ surFonce = false, avecLibelles = false }: { surFonc
       className={cn("flex rounded-md p-[3px]", surFonce ? "bg-nuit-2" : "bg-surface-3")}
     >
       {OPTIONS.map(({ valeur, libelle, Icone }) => {
-        const coche = preference === valeur;
+        const coche = theme === valeur;
         return (
           <button
             key={valeur}

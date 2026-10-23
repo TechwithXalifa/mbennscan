@@ -25,7 +25,7 @@ export function Compteur({ valeur, format }: { valeur: number; format: (n: numbe
   return (
     <>
       <span aria-hidden>{format(affiche)}</span>
-      <span className="sr-only">{format(valeur)}</span>
+      <span className="sr-only select-none">{format(valeur)}</span>
     </>
   );
 }

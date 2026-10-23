@@ -127,7 +127,7 @@ export function BarreLaterale() {
       <div className="space-y-2 border-t border-nuit-line p-3">
         <div className={cn("flex-col gap-2", masque)}>
           <StatutDonnees surFonce />
-          <ChoixTheme surFonce />
+          <ChoixTheme surFonce avecLibelles />
         </div>
         <button
           type="button"

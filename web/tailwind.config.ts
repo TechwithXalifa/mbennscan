@@ -36,6 +36,7 @@ const config: Config = {
           "ink-3": "var(--nuit-ink-3)",
         },
         accent: "var(--accent)",
+        vif: "var(--vif)",
         water: { DEFAULT: "var(--water)", line: "var(--water-line)" },
         prio: {
           high: "var(--prio-high)",

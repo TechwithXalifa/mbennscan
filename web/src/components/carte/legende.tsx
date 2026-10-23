@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { SymbolePriorite } from "@/components/zone/badges";
 import { ICONE_PETITE } from "@/lib/design";
 import { formatNombre } from "@/lib/format";
-import { FOND_PRIORITE, LIBELLE_PRIORITE, PRIORITES } from "@/lib/priorite";
+import { LIBELLE_PRIORITE, PRIORITES } from "@/lib/priorite";
 import { cn } from "@/lib/utils";
 import type { Priorite } from "@/types/contracts";
 
@@ -85,16 +85,7 @@ export function Legende({ variante = "priorite", comptes = {}, masquees = [], on
               const visible = !masquees.includes(p);
               const contenu = (
                 <>
-                  <span
-                    className={cn(
-                      "inline-flex size-5 shrink-0 items-center justify-center rounded-[5px]",
-                      FOND_PRIORITE[p],
-                      visible ? "opacity-100" : "opacity-30",
-                    )}
-                    aria-hidden
-                  >
-                    <SymbolePriorite priorite={p} surCouleur className="size-2.5" />
-                  </span>
+                  <SymbolePriorite priorite={p} className={cn("mx-1 size-3", visible ? "opacity-100" : "opacity-30")} />
                   <span className={cn("flex-1 text-left", !visible && "text-ink-3 line-through")}>
                     {LIBELLE_PRIORITE[p]}
                   </span>
