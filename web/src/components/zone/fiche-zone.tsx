@@ -97,130 +97,144 @@ export function FicheZone({ id, autonome = false, imprimerAuChargement = false }
   const total = etat.zones.features.length;
 
   return (
-    <article className={cn("space-y-7", autonome && "lg:space-y-8")}>
+    // Sur grand écran, la page de la fiche passe sur deux colonnes : l'analyse à gauche, la situation, la fiabilité
+    // et les actions à droite. Ailleurs, une seule colonne dans l'ordre de lecture (classes « order-* »).
+    <article
+      className={cn(
+        "flex flex-col gap-7",
+        autonome && "lg:gap-8 xl:grid xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start xl:gap-x-10",
+      )}
+    >
       {/* Dans le panneau de la carte, le bandeau de la carte suffit ; en page seule ou imprimée, il est ici. */}
-      {maquette && autonome && <BandeauMaquette />}
+      {maquette && autonome && <BandeauMaquette className="xl:col-span-2" />}
 
-      {/* 1-2 · Identification, priorité et confiance */}
-      <header>
-        <p className="text-surtitre uppercase text-ink-3">Fiche zone · {zone.commune}</p>
-        <Titre className={cn("mt-1 text-ink", autonome ? "text-titre1 lg:text-[28px] lg:leading-9" : "text-titre1")}>
-          {zone.nom}
-        </Titre>
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <BadgePriorite priorite={zone.priorite} />
-          {zone.rang !== null && (
-            <span className="inline-flex min-h-6 items-center rounded-pill bg-surface-3 px-2 text-petit tabular-nums text-ink">
-              {ordinal(zone.rang)} sur {formatNombre(total)} zones
-            </span>
+      <div className={cn("contents", autonome && "xl:flex xl:flex-col xl:gap-8")}>
+        {/* 1-2 · Identification, priorité et confiance */}
+        <header className="order-1">
+          <p className="text-surtitre uppercase text-ink-3">Fiche zone · {zone.commune}</p>
+          <Titre className={cn("mt-1 text-ink", autonome ? "text-titre1 lg:text-titre-page" : "text-titre1")}>
+            {zone.nom}
+          </Titre>
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <BadgePriorite priorite={zone.priorite} />
+            {zone.rang !== null && (
+              <span className="inline-flex min-h-6 items-center rounded-pill bg-surface-3 px-2 text-petit tabular-nums text-ink">
+                {ordinal(zone.rang)} sur {formatNombre(total)} zones
+              </span>
+            )}
+            <IndicateurConfiance confiance={zone.confiance} explique />
+          </div>
+          <p className="mt-2 text-petit text-ink-2">{EXPLICATION_PRIORITE[zone.priorite]}</p>
+        </header>
+
+        <p className="order-2 rounded-lg border-l-[3px] border-primary bg-primary-soft px-4 py-3 text-ink">
+          {phraseSynthese(zone, h)}
+        </p>
+
+        {/* 4 · Eau observée */}
+        <Bloc className="order-4" titre="Ce que le satellite a vu" icone={Waves}>
+          <EauObservee zone={zone} h={h} />
+        </Bloc>
+
+        {/* 5 · Exposition */}
+        <Bloc className="order-5" titre="Ce qui est touché" icone={Building2}>
+          <Exposition zone={zone} />
+        </Bloc>
+
+        {/* 6 · Historique */}
+        <div className="order-6">
+          {indicateurs_saison.length > 0 ? (
+            <HistogrammeSaisons saisons={indicateurs_saison} />
+          ) : (
+            <Bloc titre="Hivernages 2020-2026" icone={CalendarClock}>
+              <EtatVide icone={CalendarClock}>
+                L&apos;historique par hivernage n&apos;est pas encore publié pour cette zone. Les chiffres ci-dessus
+                sont la synthèse 2020-2026.
+              </EtatVide>
+            </Bloc>
           )}
-          <IndicateurConfiance confiance={zone.confiance} explique />
         </div>
-        <p className="mt-2 text-petit text-ink-2">{EXPLICATION_PRIORITE[zone.priorite]}</p>
-      </header>
 
-      <p className="rounded-lg border-l-[3px] border-primary bg-primary-soft px-4 py-3 text-ink">
-        {phraseSynthese(zone, h)}
-      </p>
-
-      {/* 3 · Situation géographique */}
-      <Bloc titre="Situation" icone={IconeCarte}>
-        {autonome && (
-          <div className="relative mb-3 h-56 overflow-hidden rounded-lg border border-line print:hidden">
-            <CarteZones
-              zones={etat.zones}
-              selection={zone.id}
-              miniature
-              libelle={`Situation de ${zone.nom} sur la carte`}
-            />
-            <Link
-              href={`/?zone=${encodeURIComponent(zone.id)}`}
-              className="verre absolute left-3 top-3 z-controle inline-flex min-h-9 items-center gap-1.5 rounded-pill px-3 text-petit font-medium text-ink [@media(pointer:coarse)]:min-h-cible"
-            >
-              Ouvrir sur la carte
-              <ArrowUpRight {...ICONE_PETITE} aria-hidden />
-            </Link>
-          </div>
+        {/* 7 · Ce que ça suggère */}
+        {zone.classe_eau && (
+          <Bloc className="order-7" titre="Ce que ça suggère" icone={Lightbulb}>
+            <div className="rounded-lg border border-line bg-surface-2 p-4">
+              <p className="text-ink">{SUGGESTION_EAU[zone.classe_eau]}</p>
+              <p className="mt-2 text-petit text-ink-2">
+                Une aide à la décision tirée des images satellite, à confirmer sur le terrain : ce n&apos;est pas une
+                consigne.
+              </p>
+            </div>
+          </Bloc>
         )}
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-petit sm:grid-cols-3">
-          <div>
-            <dt className="text-ink-3">Commune</dt>
-            <dd className="font-medium text-ink">{zone.commune}</dd>
-          </div>
-          <div>
-            <dt className="text-ink-3">Habitants</dt>
-            <dd className="font-medium tabular-nums text-ink">
-              {zone.population != null ? `environ ${formatHabitants(zone.population)}` : "non disponible"}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-ink-3">Part de bâti</dt>
-            <dd className="font-medium tabular-nums text-ink">
-              {zone.part_bati != null ? formatPourcent(zone.part_bati) : "non disponible"}
-            </dd>
-          </div>
-        </dl>
-      </Bloc>
+      </div>
 
-      {/* 4 · Eau observée */}
-      <Bloc titre="Ce que le satellite a vu" icone={Waves}>
-        <EauObservee zone={zone} h={h} />
-      </Bloc>
-
-      {/* 5 · Exposition */}
-      <Bloc titre="Ce qui est touché" icone={Building2}>
-        <Exposition zone={zone} />
-      </Bloc>
-
-      {/* 6 · Historique */}
-      {indicateurs_saison.length > 0 ? (
-        <HistogrammeSaisons saisons={indicateurs_saison} />
-      ) : (
-        <Bloc titre="Hivernages 2020-2026" icone={CalendarClock}>
-          <EtatVide icone={CalendarClock}>
-            L&apos;historique par hivernage n&apos;est pas encore publié pour cette zone. Les chiffres ci-dessus sont la
-            synthèse 2020-2026.
-          </EtatVide>
-        </Bloc>
-      )}
-
-      {/* 7 · Ce que ça suggère */}
-      {zone.classe_eau && (
-        <Bloc titre="Ce que ça suggère" icone={Lightbulb}>
-          <div className="rounded-lg border border-line bg-surface-2 p-4">
-            <p className="text-ink">{SUGGESTION_EAU[zone.classe_eau]}</p>
-            <p className="mt-2 text-petit text-ink-2">
-              Une aide à la décision tirée des images satellite, à confirmer sur le terrain : ce n&apos;est pas une
-              consigne.
-            </p>
-          </div>
-        </Bloc>
-      )}
-
-      {/* 8 · Fiabilité et méthode */}
-      <Bloc titre="Fiabilité" icone={BookOpen}>
-        <ul className="space-y-1.5 text-petit text-ink-2">
-          <li>
-            {h
-              ? `${formatNombre(h.imagesValides)} images radar exploitables sur 2020-2026, dont ${formatNombre(h.imagesInondees)} avec de l'eau.`
-              : "Historique par hivernage non disponible."}
-          </li>
-          <li>Calcul du {formatDate(zone.maj)}.</li>
-          {zone.confiance === "faible" && (
-            <li className="text-ink">Mesure moins fiable : à vérifier sur le terrain.</li>
+      <div className={cn("contents", autonome && "xl:sticky xl:top-6 xl:flex xl:flex-col xl:gap-8")}>
+        {/* 3 · Situation géographique */}
+        <Bloc className="order-3" titre="Situation" icone={IconeCarte}>
+          {autonome && (
+            <div className="relative mb-3 h-56 overflow-hidden rounded-lg border border-line print:hidden">
+              <CarteZones
+                zones={etat.zones}
+                selection={zone.id}
+                miniature
+                libelle={`Situation de ${zone.nom} sur la carte`}
+              />
+              <Link
+                href={`/?zone=${encodeURIComponent(zone.id)}`}
+                className="verre absolute left-3 top-3 z-controle inline-flex min-h-9 items-center gap-1.5 rounded-pill px-3 text-petit font-medium text-ink [@media(pointer:coarse)]:min-h-cible"
+              >
+                Ouvrir sur la carte
+                <ArrowUpRight {...ICONE_PETITE} aria-hidden />
+              </Link>
+            </div>
           )}
-          {maquette && <li>Données fictives [FICTIF] : maquette de l&apos;outil.</li>}
-        </ul>
-        <Link
-          href="/methode"
-          className="mt-2 inline-flex min-h-cible items-center gap-1 text-petit font-medium text-primary-ink underline-offset-4 hover:underline"
-        >
-          Comment ces chiffres sont calculés
-          <ArrowUpRight {...ICONE_PETITE} aria-hidden />
-        </Link>
-      </Bloc>
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-petit sm:grid-cols-3">
+            <div>
+              <dt className="text-ink-3">Commune</dt>
+              <dd className="font-medium text-ink">{zone.commune}</dd>
+            </div>
+            <div>
+              <dt className="text-ink-3">Habitants</dt>
+              <dd className="font-medium tabular-nums text-ink">
+                {zone.population != null ? `environ ${formatHabitants(zone.population)}` : "non disponible"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-ink-3">Part de bâti</dt>
+              <dd className="font-medium tabular-nums text-ink">
+                {zone.part_bati != null ? formatPourcent(zone.part_bati) : "non disponible"}
+              </dd>
+            </div>
+          </dl>
+        </Bloc>
 
-      <ActionsFiche id={zone.id} nom={zone.nom} autonome={autonome} pluie={etat.pluie} />
+        {/* 8 · Fiabilité et méthode */}
+        <Bloc className="order-8" titre="Fiabilité" icone={BookOpen}>
+          <ul className="space-y-1.5 text-petit text-ink-2">
+            <li>
+              {h
+                ? `${formatNombre(h.imagesValides)} images radar exploitables sur 2020-2026, dont ${formatNombre(h.imagesInondees)} avec de l'eau.`
+                : "Historique par hivernage non disponible."}
+            </li>
+            <li>Calcul du {formatDate(zone.maj)}.</li>
+            {zone.confiance === "faible" && (
+              <li className="text-ink">Mesure moins fiable : à vérifier sur le terrain.</li>
+            )}
+          </ul>
+          <Link
+            href="/methode"
+            className="mt-2 inline-flex min-h-cible items-center gap-1 text-petit font-medium text-primary-ink underline-offset-4 hover:underline"
+          >
+            Comment ces chiffres sont calculés
+            <ArrowUpRight {...ICONE_PETITE} aria-hidden />
+          </Link>
+        </Bloc>
+
+        <div className="order-9">
+          <ActionsFiche id={zone.id} nom={zone.nom} autonome={autonome} pluie={etat.pluie} />
+        </div>
+      </div>
     </article>
   );
 }
