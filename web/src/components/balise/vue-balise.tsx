@@ -4,7 +4,7 @@ import { AlertTriangle, ArrowUpRight, Cpu, Maximize2, Radio, X } from "lucide-re
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { Jauge } from "@/components/balise/jauge";
+import { Jauge, reperesCorps } from "@/components/balise/jauge";
 import { Bouton } from "@/components/ui/bouton";
 import { AlerteErreur, Bandeau, EtatVide, PastilleEtat } from "@/components/ui/etats";
 import { Squelette } from "@/components/ui/squelette";
@@ -165,11 +165,12 @@ export function VueBalise({ id }: { id: string }) {
               sansMesure={niveau === null}
             />
           </div>
-          <p className="text-[120px] font-semibold leading-none tracking-tight tabular-nums text-ink sm:text-[200px]">
+          <p className="text-[120px] font-semibold leading-none tracking-tight tabular-nums text-vif sm:text-[200px]">
             {niveau === null ? "–" : formatNombre(Math.round(niveau))}
             <span className="text-titre1 tracking-normal text-ink-2"> cm</span>
           </p>
         </div>
+        {niveau !== null && <p className="text-titre2 text-ink">{reperesCorps(niveau)}.</p>}
         {depasse && (
           <p className="flex items-center gap-2 text-titre1 text-danger">
             <AlertTriangle size={28} strokeWidth={1.75} aria-hidden />
@@ -224,11 +225,14 @@ export function VueBalise({ id }: { id: string }) {
               sansMesure={niveau === null}
             />
             <div className="pb-1">
-              <p className="text-[64px] font-semibold leading-none tracking-tight tabular-nums text-ink">
+              <p className="text-[64px] font-semibold leading-none tracking-tight tabular-nums text-vif">
                 {niveau === null ? "–" : formatNombre(Math.round(niveau))}
                 <span className="text-titre2 tracking-normal text-ink-2"> cm</span>
               </p>
               <p className="mt-1 text-petit text-ink-2">d&apos;eau dans le bac</p>
+              {niveau !== null && (
+                <p className="mt-2 max-w-48 text-petit font-medium text-ink">{reperesCorps(niveau)}.</p>
+              )}
               {balise.seuil_alerte_cm !== null && niveau !== null && (
                 <p
                   className={cn(
@@ -242,6 +246,10 @@ export function VueBalise({ id }: { id: string }) {
               )}
             </div>
           </div>
+          <p className="mt-3 text-mention font-normal text-ink-3">
+            Repère : un adulte de 1,75 m devant une maison de plain-pied. Le niveau dessiné est celui mesuré dans le
+            bac, à la même échelle.
+          </p>
           {brut !== null && brut < 0 && (
             <Bandeau className="mt-4" icone={AlertTriangle}>
               Mesure anormale : la balise est à réétalonner (niveau affiché à 0).
