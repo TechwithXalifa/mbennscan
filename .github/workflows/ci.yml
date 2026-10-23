@@ -58,6 +58,8 @@ jobs:
       - if: hashFiles('web/package.json') != ''
         run: npm run typecheck --if-present
       - if: hashFiles('web/package.json') != ''
+        run: npm test --if-present
+      - if: hashFiles('web/package.json') != ''
         run: npm run build
       - if: hashFiles('web/package.json') == ''
         working-directory: .
