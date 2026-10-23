@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { BarreHaut } from "@/components/shell/barre-haut";
 import { STYLE_CARTE } from "@/lib/design";
-import { BarreHaut } from "@/components/barre-haut";
+import { SCRIPT_THEME } from "@/lib/theme";
 import { HorsLigne } from "@/components/hors-ligne";
 import { PaletteRecherche } from "@/components/shell/palette-recherche";
 import "./globals.css";
@@ -21,8 +22,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={inter.variable}>
+    // data-theme est posé avant l'affichage par SCRIPT_THEME : le rendu serveur ne le connaît pas.
+    <html lang="fr" className={inter.variable} data-theme="clair" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_THEME }} />
         {/* Le fond de carte est le plus long à venir : ouvrir la connexion dès le HTML. */}
         <link rel="preconnect" href={new URL(STYLE_CARTE).origin} crossOrigin="" />
       </head>
