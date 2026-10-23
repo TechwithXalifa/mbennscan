@@ -6,31 +6,8 @@ import { Pastille } from "@/components/ui/pastille";
 import { SymbolePriorite } from "@/components/zone/badges";
 import { ICONE_PETITE } from "@/lib/design";
 import { CONFIANCES, LIBELLE_CONFIANCE, LIBELLE_PRIORITE_COURT, PRIORITES } from "@/lib/priorite";
-import type { Confiance, Priorite, ZoneSynthese } from "@/types/contracts";
-
-export type Filtres = { recherche: string; priorites: Priorite[]; commune: string; confiance: Confiance | "" };
-export const FILTRES_VIDES: Filtres = { recherche: "", priorites: [], commune: "", confiance: "" };
-
-/** Sans accents ni majuscules, sans la marque [FICTIF] : « medina » trouve « Médina Gounass ». */
-export function normaliser(t: string): string {
-  return t
-    .replace(/^\[FICTIF\]\s*/, "")
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase();
-}
-
-export const actifs = (f: Filtres) => Boolean(f.recherche || f.priorites.length || f.commune || f.confiance);
-
-/** Zones qui passent tous les filtres. */
-export function filtrer(zones: ZoneSynthese[], f: Filtres): ZoneSynthese[] {
-  const q = normaliser(f.recherche.trim());
-  return zones
-    .filter((z) => !q || normaliser(z.nom).includes(q) || normaliser(z.commune).includes(q))
-    .filter((z) => f.priorites.length === 0 || f.priorites.includes(z.priorite))
-    .filter((z) => !f.commune || z.commune === f.commune)
-    .filter((z) => !f.confiance || z.confiance === f.confiance);
-}
+import { actifs, FILTRES_VIDES, type Filtres } from "@/lib/zones";
+import type { Confiance } from "@/types/contracts";
 
 /** Recherche, commune, confiance et priorité, avec « Réinitialiser » dès qu'un filtre est actif. */
 export function FiltresZones({
