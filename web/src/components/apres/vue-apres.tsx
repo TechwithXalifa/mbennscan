@@ -8,14 +8,14 @@ import { ListeUrgence } from "@/components/apres/liste-urgence";
 import { Legende } from "@/components/carte/legende";
 import { PanneauZones } from "@/components/carte/panneau-zones";
 import { ChargeurGoutte } from "@/components/ui/chargeur-goutte";
+import { Bouton } from "@/components/ui/bouton";
 import { Selection } from "@/components/ui/champ";
 import { AlerteErreur, Bandeau, BandeauMaquette, EtatVide } from "@/components/ui/etats";
 import { Squelette, SqueletteListe } from "@/components/ui/squelette";
-import { IndicateurConfiance } from "@/components/zone/badges";
 import { estMaquette, getEvenements, getImpacts, getZones } from "@/lib/data";
 import { formatDate, formatNombre } from "@/lib/format";
 import { surfaceHectares } from "@/lib/geo";
-import { CONFIANCES } from "@/lib/priorite";
+import { CONFIANCES, LIBELLE_CONFIANCE } from "@/lib/priorite";
 import type { Confiance, Evenement, ImpactEvenement, ZonesGeoJSON } from "@/types/contracts";
 
 const CarteZones = dynamic(() => import("@/components/carte/carte-zones"), {
@@ -72,6 +72,7 @@ export function VueApres({ evenementId }: { evenementId: number }) {
   const [etat, setEtat] = useState<Etat>({ statut: "chargement" });
   const [selection, setSelection] = useState<string | null>(null);
   const [age, setAge] = useState<number | null>(null);
+  const [choix, setChoix] = useState(evenementId);
 
   const charger = useCallback(() => {
     setEtat({ statut: "chargement" });
@@ -152,20 +153,31 @@ export function VueApres({ evenementId }: { evenementId: number }) {
               </h2>
             </div>
             {etat.statut === "ok" && etat.d.evenements.length > 0 && (
-              <Selection
-                aria-label="Épisode de pluie"
-                value={evenementId}
-                onChange={(e) => {
+              // Le changement d'épisode attend « Afficher » : une flèche dans la liste ne change pas de page.
+              <form
+                className="flex gap-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
                   setSelection(null);
-                  router.push(`/apres/${e.target.value}`);
+                  router.push(`/apres/${choix}`);
                 }}
               >
-                {etat.d.evenements.map((e) => (
-                  <option key={e.id} value={e.id}>
-                    {libelleEpisode(e)}
-                  </option>
-                ))}
-              </Selection>
+                <Selection
+                  aria-label="Épisode de pluie"
+                  value={choix}
+                  onChange={(e) => setChoix(Number(e.target.value))}
+                  className="min-w-0 flex-1"
+                >
+                  {etat.d.evenements.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {libelleEpisode(e)}
+                    </option>
+                  ))}
+                </Selection>
+                <Bouton type="submit" taille="compacte" variante="secondaire" disabled={choix === evenementId}>
+                  Afficher
+                </Bouton>
+              </form>
             )}
             {etat.statut === "chargement" && <Squelette className="h-11" />}
           </header>
@@ -192,10 +204,7 @@ export function VueApres({ evenementId }: { evenementId: number }) {
 
           {evenement && (
             <div className="space-y-2">
-              <Bandeau icone={avecEau ? Satellite : CloudOff}>
-                {fraicheur(evenement)}
-                {maquette && " Données fictives [FICTIF]."}
-              </Bandeau>
+              <Bandeau icone={avecEau ? Satellite : CloudOff}>{fraicheur(evenement)}</Bandeau>
               {age !== null && age > IMAGE_ANCIENNE_J && (
                 <Bandeau ancien>
                   Image vieille de {jours(age)} : elle décrit la situation d&apos;alors, pas celle
@@ -216,15 +225,14 @@ export function VueApres({ evenementId }: { evenementId: number }) {
                 <Chiffre valeur={formatNombre(ecoles)} intitule={ecoles > 1 ? "écoles touchées" : "école touchée"} />
               </div>
               {impacts.length > 0 && (
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-petit text-ink-2">
-                  <span>Confiance des zones touchées :</span>
-                  {CONFIANCES.filter((c) => confiances[c] > 0).map((c) => (
-                    <span key={c} className="inline-flex items-center gap-1.5">
-                      <IndicateurConfiance confiance={c} court />
-                      <span className="tabular-nums">({formatNombre(confiances[c])})</span>
-                    </span>
-                  ))}
-                </div>
+                <p className="text-petit text-ink-2">
+                  Confiance des zones touchées :{" "}
+                  <span className="font-medium tabular-nums text-ink">
+                    {CONFIANCES.filter((c) => confiances[c] > 0)
+                      .map((c) => `${formatNombre(confiances[c])} ${LIBELLE_CONFIANCE[c].toLowerCase()}`)
+                      .join(" · ")}
+                  </span>
+                </p>
               )}
             </>
           )}

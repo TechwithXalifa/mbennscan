@@ -102,7 +102,7 @@ export default function CourbeNiveau({
       ) : (
         <div className="mt-4 h-56 min-h-56 flex-1" aria-hidden>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={serie} margin={{ top: 8, right: 12, bottom: 0, left: -12 }}>
+            <LineChart data={serie} margin={{ top: 8, right: 12, bottom: 0, left: -12 }} accessibilityLayer={false}>
               <CartesianGrid stroke="var(--line)" vertical={false} />
               <XAxis
                 dataKey="t"
