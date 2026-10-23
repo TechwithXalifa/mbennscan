@@ -24,7 +24,7 @@ export function ChargeurGoutte({ libelle = "Chargement" }: { libelle?: string })
           <span
             key={`${r}-${i}`}
             aria-hidden
-            className={c === "." ? "size-2" : "pixel-goutte size-2 rounded-[2px]"}
+            className={c === "." ? "size-2" : "pixel-goutte size-2 rounded-pixel"}
             style={
               c === "."
                 ? undefined

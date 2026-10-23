@@ -25,14 +25,6 @@ export const EXPLICATION_PRIORITE: Record<Priorite, string> = {
   nulle: "Le satellite n'a pas vu d'étendue d'eau persistante dans cette zone.",
 };
 
-/** Classe Tailwind de la pastille de couleur. */
-export const FOND_PRIORITE: Record<Priorite, string> = {
-  forte: "bg-prio-high",
-  moyenne: "bg-prio-mid",
-  faible: "bg-prio-low",
-  nulle: "bg-prio-none",
-};
-
 /** Classe Tailwind du tracé du symbole (SVG). */
 export const TRAIT_PRIORITE: Record<Priorite, string> = {
   forte: "fill-prio-high stroke-prio-high",

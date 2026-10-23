@@ -71,7 +71,7 @@ export function Dialogue({
 
   return (
     <div className="fixed inset-0 z-dialogue print:hidden">
-      <div className="entree-fondu absolute inset-0 bg-[rgba(8,14,24,0.48)]" aria-hidden onClick={onFermer} />
+      <div className="entree-fondu absolute inset-0 bg-voile" aria-hidden onClick={onFermer} />
       <div
         ref={panneau}
         role="dialog"
