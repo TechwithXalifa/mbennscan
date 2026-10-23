@@ -34,3 +34,24 @@ test("E6 : la méthode affiche les paramètres du calcul", async ({ page }) => {
   await page.goto("/methode");
   await expect(page.getByText("H3, résolution 9")).toBeVisible();
 });
+
+test("Classement : recherche et tri des zones", async ({ page }) => {
+  await page.goto("/zones");
+  await expect(page.getByRole("heading", { name: "Zones prioritaires" })).toBeVisible();
+  await page.getByRole("searchbox", { name: /Rechercher une zone/ }).fill("malika");
+  await expect(page.getByText("1 zone sur 6")).toBeVisible();
+  await page.getByRole("searchbox", { name: /Rechercher une zone/ }).fill("introuvable");
+  await expect(page.getByText("Aucune zone ne correspond")).toBeVisible();
+});
+
+test("Recherche : une zone choisie s'ouvre sur la carte", async ({ page }) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: /Rechercher une zone ou une page/ })
+    .first()
+    .click();
+  await page.getByRole("combobox", { name: "Rechercher une zone ou une page" }).fill("malika");
+  await page.getByRole("option", { name: /Malika, maille 4/ }).click();
+  await expect(page).toHaveURL(/zone=mock-04/);
+  await expect(page.getByRole("heading", { name: /Malika, maille 4/ })).toBeVisible();
+});

@@ -13,13 +13,13 @@ npm run dev                  # http://localhost:3000
 
 `predev` et `prebuild` copient `contracts/mocks/*.json` dans `public/mocks/` (`npm run mocks`, script Node qui marche aussi sous Windows). Ce dossier n'est pas versionné.
 
-| Commande | Rôle |
-| --- | --- |
-| `npm run lint` | ESLint (lancé en CI) |
-| `npm run typecheck` | `tsc --noEmit` (lancé en CI) |
-| `npm run build` | build de production (lancé en CI avec les mocks) |
-| `npm run format` | Prettier |
-| `npm run e2e` | parcours de démo joué par Playwright sur les mocks, téléphone et ordinateur (lancé en CI) |
+| Commande            | Rôle                                                                                      |
+| ------------------- | ----------------------------------------------------------------------------------------- |
+| `npm run lint`      | ESLint (lancé en CI)                                                                      |
+| `npm run typecheck` | `tsc --noEmit` (lancé en CI)                                                              |
+| `npm run build`     | build de production (lancé en CI avec les mocks)                                          |
+| `npm run format`    | Prettier                                                                                  |
+| `npm run e2e`       | parcours de démo joué par Playwright sur les mocks, téléphone et ordinateur (lancé en CI) |
 
 Composants shadcn/ui : `npx shadcn@latest add <composant>` (configuration dans `components.json`).
 
@@ -27,8 +27,10 @@ Composants shadcn/ui : `npx shadcn@latest add <composant>` (configuration dans `
 
 ```
 src/
-  app/               # routes (E1 /, E2 /zone/[id], E3 /apres/[evenement], E4 /avant-apres, E5 /balise/[id], E6 /methode)
-  components/        # composants d'interface (ui/ pour shadcn)
+  app/               # routes (E1 /, classement /zones, E2 /zone/[id], E3 /apres/[evenement], E5 /balise/[id], E6 /methode)
+  components/        # shell/ (navigation, en-tête, recherche), ui/ (composants de base), carte/, zone/, apres/, balise/
+  lib/navigation.ts  # pages, groupes de la barre latérale et contexte de l'en-tête
+  lib/theme.ts       # thème clair (par défaut) ou sombre
   lib/data.ts        # seule couche d'accès aux données
   lib/format.ts      # nombres, dates et habitants au format français
   types/contracts.ts # types écrits d'après contracts/schemas/
@@ -45,4 +47,4 @@ src/
 
 ## Vercel
 
-Projet avec *Root Directory* = `web` (les fichiers hors de `web/` restent accessibles, ce qui permet de copier `contracts/mocks`). Variables : `NEXT_PUBLIC_USE_MOCKS`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_MAP_STYLE_URL`, `NEXT_PUBLIC_DEFAULT_BALISE_ID`.
+Projet avec _Root Directory_ = `web` (les fichiers hors de `web/` restent accessibles, ce qui permet de copier `contracts/mocks`). Variables : `NEXT_PUBLIC_USE_MOCKS`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_MAP_STYLE_URL`, `NEXT_PUBLIC_MAP_STYLE_URL_SOMBRE` (facultative), `NEXT_PUBLIC_DEFAULT_BALISE_ID`.
