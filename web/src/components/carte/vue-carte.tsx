@@ -93,6 +93,7 @@ export function VueCarte() {
         )}
       </div>
       <PanneauZones
+        titre="Zones à traiter en premier"
         sousTitre="Keur Massar · hivernages 2020-2026"
         ouvrirSur={selection}
         entete={
