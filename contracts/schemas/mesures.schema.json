@@ -14,7 +14,7 @@
       "ts": { "type": "string", "format": "date-time" },
       "recu_le": { "type": "string", "format": "date-time", "description": "Heure de réception par le serveur ; ts = recu_le - age_s" },
       "distance_cm": { "type": "number", "minimum": 20, "maximum": 600 },
-      "niveau_cm": { "type": ["number", "null"], "description": "Peut être négatif si la balise est mal étalonnée : l'afficher à 0 et signaler l'anomalie" },
+      "niveau_cm": { "type": ["number", "null"], "description": "Peut être négatif si la balise est mal étalonnée (le capteur lit plus loin que le fond) : c'est une mesure invalide, à ne pas afficher comme un niveau (ni 0, ni comparaison au seuil) ; signaler l'anomalie" },
       "batterie_v": { "type": ["number", "null"] },
       "rssi": { "type": ["integer", "null"] }
     }

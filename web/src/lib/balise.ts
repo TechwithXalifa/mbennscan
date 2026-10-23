@@ -1,5 +1,10 @@
 // Repères de la balise, sans interface.
 
+/** Niveau négatif : le capteur lit plus loin que le fond du bac. La mesure est fausse, ce n'est pas « 0 cm ». */
+export function niveauValide(cm: number | null): cm is number {
+  return cm !== null && Number.isFinite(cm) && cm >= 0;
+}
+
 /** Jusqu'où l'eau monterait sur un adulte de 1,75 m, en français courant. */
 export function reperesCorps(cm: number): string {
   if (cm <= 0) return "Pas d'eau mesurée";

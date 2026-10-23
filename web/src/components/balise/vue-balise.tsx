@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Jauge } from "@/components/balise/jauge";
-import { reperesCorps } from "@/lib/balise";
+import { niveauValide, reperesCorps } from "@/lib/balise";
 import { Bouton } from "@/components/ui/bouton";
 import { AlerteErreur, Bandeau, EtatVide, EtatBalise } from "@/components/ui/etats";
 import { Squelette } from "@/components/ui/squelette";
@@ -136,7 +136,9 @@ export function VueBalise({ id }: { id: string }) {
   const ecartS = derniere ? Math.max(0, (maintenant - Date.parse(derniere.ts)) / 1000) : null;
   const enLigne = ecartS !== null && ecartS <= MUETTE_APRES_S;
   const brut = derniere?.niveau_cm ?? null;
-  const niveau = brut === null ? null : Math.max(0, brut);
+  // Un niveau négatif est une mesure fausse (capteur mal étalonné) : ni « 0 cm », ni comparaison au seuil.
+  const niveau = niveauValide(brut) ? brut : null;
+  const invalide = brut !== null && niveau === null;
   const depasse = niveau !== null && balise.seuil_alerte_cm !== null && niveau >= balise.seuil_alerte_cm;
   const etatTexte =
     ecartS === null
@@ -166,11 +168,14 @@ export function VueBalise({ id }: { id: string }) {
               sansMesure={niveau === null}
             />
           </div>
-          <p className="text-ecran tabular-nums text-vif sm:text-ecran-xl">
-            {niveau === null ? "–" : formatNombre(Math.round(niveau))}
-            <span className="text-titre1 tracking-normal text-ink-2"> cm</span>
-          </p>
+          {!invalide && (
+            <p className={cn("text-ecran tabular-nums sm:text-ecran-xl", niveau === null ? "text-ink-3" : "text-vif")}>
+              {niveau === null ? "–" : formatNombre(Math.round(niveau))}
+              {niveau !== null && <span className="text-titre1 tracking-normal text-ink-2"> cm</span>}
+            </p>
+          )}
         </div>
+        {invalide && <p className="text-titre2 text-ink">Mesure invalide : la balise est à réétalonner.</p>}
         {niveau !== null && <p className="text-titre2 text-ink">{reperesCorps(niveau)}.</p>}
         {depasse && (
           <p className="flex items-center gap-2 text-titre1 text-danger">
@@ -226,11 +231,22 @@ export function VueBalise({ id }: { id: string }) {
               sansMesure={niveau === null}
             />
             <div className="text-center sm:pb-1 sm:text-left">
-              <p className="whitespace-nowrap text-geant tabular-nums text-vif">
-                {niveau === null ? "–" : formatNombre(Math.round(niveau))}
-                <span className="text-titre2 tracking-normal text-ink-2"> cm</span>
-              </p>
-              <p className="mt-1 text-petit text-ink-2">d&apos;eau dans le bac</p>
+              {invalide ? (
+                <p className="text-titre2 text-ink">Mesure invalide</p>
+              ) : (
+                <>
+                  <p
+                    className={cn(
+                      "whitespace-nowrap text-geant tabular-nums",
+                      niveau === null ? "text-ink-3" : "text-vif",
+                    )}
+                  >
+                    {niveau === null ? "–" : formatNombre(Math.round(niveau))}
+                    {niveau !== null && <span className="text-titre2 tracking-normal text-ink-2"> cm</span>}
+                  </p>
+                  <p className="mt-1 text-petit text-ink-2">d&apos;eau dans le bac</p>
+                </>
+              )}
               {niveau !== null && (
                 <p className="mx-auto mt-2 max-w-56 text-petit font-medium text-ink sm:mx-0 sm:max-w-48">
                   {reperesCorps(niveau)}.
@@ -253,9 +269,10 @@ export function VueBalise({ id }: { id: string }) {
             Repère : un adulte de 1,75 m devant une maison de plain-pied. Le niveau dessiné est celui mesuré dans le
             bac, à la même échelle.
           </p>
-          {brut !== null && brut < 0 && (
+          {invalide && derniere && (
             <Bandeau className="mt-4" icone={AlertTriangle}>
-              Mesure anormale : la balise est à réétalonner (niveau affiché à 0).
+              Le capteur lit plus loin que le fond du bac ({formatNombre(derniere.distance_cm)} cm) : la mesure est
+              fausse et le niveau n&apos;est pas affiché. La balise est à réétalonner.
             </Bandeau>
           )}
         </Carte>

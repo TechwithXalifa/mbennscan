@@ -1,6 +1,6 @@
 // Formats, géométrie, repères de la balise et navigation.
 import { describe, expect, it } from "vitest";
-import { reperesCorps } from "@/lib/balise";
+import { niveauValide, reperesCorps } from "@/lib/balise";
 import { formatDepuis, formatHabitants, formatPourcent } from "@/lib/format";
 import { emprise, surfaceHectares } from "@/lib/geo";
 import { contexteDe, modeDe } from "@/lib/navigation";
@@ -66,6 +66,16 @@ describe("repères de la balise", () => {
     [175, "submergé"],
   ])("%s cm → %s", (cm, attendu) => {
     expect(reperesCorps(cm)).toContain(attendu);
+  });
+
+  it.each([
+    [0, true],
+    [12.5, true],
+    [-0.5, false],
+    [null, false],
+    [Number.NaN, false],
+  ])("niveau %s valide : %s", (cm, attendu) => {
+    expect(niveauValide(cm)).toBe(attendu);
   });
 });
 
