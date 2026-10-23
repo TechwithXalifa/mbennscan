@@ -10,18 +10,31 @@ import { Encart } from "@/components/ui/encart";
 import { AlerteErreur, Bandeau, BandeauMaquette, EtatVide, PastilleEtat } from "@/components/ui/etats";
 import { Infobulle } from "@/components/ui/infobulle";
 import { Pastille } from "@/components/ui/pastille";
-import { Squelette } from "@/components/ui/squelette";
+import { ChoixTheme } from "@/components/shell/choix-theme";
+import { Interrupteur } from "@/components/ui/interrupteur";
+import { Repartition } from "@/components/ui/repartition";
+import { Squelette, SqueletteListe } from "@/components/ui/squelette";
+import { Statistique } from "@/components/ui/statistique";
 import { BadgePriorite, IndicateurConfiance } from "@/components/zone/badges";
 import { ICONE } from "@/lib/design";
 
 const COULEURS = [
   ["--ink", "Encre"],
   ["--ink-2", "Encre secondaire"],
+  ["--ink-3", "Métadonnées"],
   ["--bg", "Fond"],
   ["--surface", "Surface"],
+  ["--surface-2", "Surface 2"],
+  ["--surface-3", "Surface 3"],
   ["--line", "Bordure"],
+  ["--line-strong", "Bord des champs"],
   ["--primary", "Primaire"],
   ["--primary-strong", "Primaire survol"],
+  ["--primary-ink", "Lien"],
+  ["--primary-soft", "Primaire léger"],
+  ["--nuit", "Navigation (bleu nuit)"],
+  ["--accent", "Repère de page active"],
+  ["--danger", "Erreur, seuil dépassé"],
   ["--water", "Eau détectée"],
   ["--water-line", "Contour de l'eau"],
   ["--prio-high", "Priorité forte"],
@@ -33,6 +46,7 @@ const COULEURS = [
 ] as const;
 
 const TYPO = [
+  ["text-display", "Indicateur principal · 40/44"],
   ["text-chiffre", "Chiffre clé · 32/40"],
   ["text-titre1", "Titre 1 · 24/32"],
   ["text-titre2", "Titre 2 · 20/28"],
@@ -40,6 +54,7 @@ const TYPO = [
   ["text-texte", "Texte · 16/24"],
   ["text-petit", "Petit · 14/20"],
   ["text-mention", "Mention · 12/16"],
+  ["text-surtitre uppercase", "Surtitre · 12/16"],
 ] as const;
 
 const MODES = [
@@ -61,6 +76,7 @@ function Section({ titre, children }: { titre: string; children: React.ReactNode
 export function Catalogue() {
   const [mode, setMode] = useState("avant");
   const [commune, setCommune] = useState("Keur Massar Nord");
+  const [couche, setCouche] = useState(true);
 
   return (
     <main className="mx-auto max-w-lecture space-y-10 px-4 py-8">
@@ -70,6 +86,13 @@ export function Catalogue() {
         </p>
         <h1 className="text-ink-2">Design system : jetons et composants</h1>
       </header>
+
+      <Section titre="Thème">
+        <p className="text-petit text-ink-2">
+          Clair par défaut ; toutes les couleurs ci-dessous suivent le thème choisi.
+        </p>
+        <ChoixTheme avecLibelles />
+      </Section>
 
       <Section titre="Couleurs">
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -99,7 +122,9 @@ export function Catalogue() {
           <span className="size-16 rounded-sm border border-line bg-surface" title="8 px" />
           <span className="size-16 rounded-md border border-line bg-surface" title="12 px" />
           <span className="size-16 rounded-pill border border-line bg-surface" title="999 px" />
+          <span className="size-16 rounded-lg bg-surface shadow-1" title="Élévation 1" />
           <span className="size-16 rounded-md bg-surface shadow-float" title="Ombre flottante" />
+          <span className="size-16 rounded-lg bg-surface shadow-pop" title="Menus et dialogues" />
           <span className="hachures-moyenne size-16 rounded-sm border border-ink-2" title="Confiance moyenne" />
           <span
             className="hachures-faible size-16 rounded-sm border border-dashed border-ink"
@@ -116,6 +141,10 @@ export function Catalogue() {
           <Bouton variante="icone" aria-label="Rechercher">
             <Search {...ICONE} aria-hidden />
           </Bouton>
+          <Bouton variante="danger">Supprimer le filtre</Bouton>
+          <Bouton taille="compacte" variante="secondaire">
+            Compact
+          </Bouton>
           <Bouton disabled>Indisponible</Bouton>
         </div>
       </Section>
@@ -128,6 +157,17 @@ export function Catalogue() {
               {c}
             </Pastille>
           ))}
+        </div>
+      </Section>
+
+      <Section titre="Interrupteur">
+        <div className="max-w-xs">
+          <Interrupteur
+            actif={couche}
+            onChange={setCouche}
+            libelle="Confiance de la mesure"
+            detail="Hachures sur la carte"
+          />
         </div>
       </Section>
 
@@ -163,6 +203,24 @@ export function Catalogue() {
           Habitants-jours par an
           <Infobulle libelle="À propos des habitants-jours">Habitants touchés × jours d&apos;eau.</Infobulle>
         </p>
+        <div className="grid grid-cols-2 gap-6 rounded-lg border border-line p-4">
+          <Statistique
+            principal
+            intitule="Habitants-jours sous l'eau par an"
+            valeur="12 480"
+            detail="Exemple, valeur inventée"
+          />
+          <Statistique intitule="Dernière image après pluie" valeur={null} detail="Aucun épisode exploitable" />
+        </div>
+        <Repartition
+          titre="Fiabilité des mesures"
+          unite="zones"
+          lignes={[
+            { cle: "a", libelle: <IndicateurConfiance confiance="elevee" court />, valeur: 4 },
+            { cle: "b", libelle: <IndicateurConfiance confiance="moyenne" court />, valeur: 2 },
+            { cle: "c", libelle: <IndicateurConfiance confiance="faible" court />, valeur: 1 },
+          ]}
+        />
         <Encart>Encart avec bordure, sur fond de page.</Encart>
         <Encart flottant>Encart flottant, au-dessus de la carte.</Encart>
       </Section>
@@ -172,6 +230,7 @@ export function Catalogue() {
           <Squelette className="h-8 w-2/3" />
           <Squelette className="h-20" />
         </div>
+        <SqueletteListe lignes={2} />
         <EtatVide>Aucune eau visible par le radar dans cette zone sur cette image.</EtatVide>
         <AlerteErreur message="Impossible de charger les zones." onReessayer={() => undefined} />
         <Bandeau>Image radar Sentinel-1 du 6 octobre 2026, deux jours après la pluie.</Bandeau>
