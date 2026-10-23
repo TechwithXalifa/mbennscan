@@ -1,21 +1,35 @@
 "use client";
 
-import { Maximize2, X } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, Cpu, Maximize2, Radio, X } from "lucide-react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Jauge } from "@/components/balise/jauge";
+import { Bouton } from "@/components/ui/bouton";
+import { AlerteErreur, Bandeau, EtatVide, PastilleEtat } from "@/components/ui/etats";
+import { Squelette } from "@/components/ui/squelette";
 import { abonnerMesures, getBalise, getMesures, USE_MOCKS } from "@/lib/data";
+import { ICONE, ICONE_PETITE } from "@/lib/design";
 import { formatDepuis, formatNombre } from "@/lib/format";
-import { ICONE } from "@/lib/design";
+import { BALISE_PAR_DEFAUT } from "@/lib/navigation";
+import { cn } from "@/lib/utils";
 import type { Balise, Mesure } from "@/types/contracts";
 
 const CourbeNiveau = dynamic(() => import("@/components/balise/courbe-niveau"), {
   ssr: false,
-  loading: () => <div className="mt-6 h-52 animate-pulse rounded-sm bg-line" />,
+  loading: () => <Squelette className="h-64 rounded-lg" />,
 });
 
 // Balise muette au-delà de 2 minutes (cahier des charges, section 6).
 const MUETTE_APRES_S = 120;
+const dateHeure = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+});
 
 type Etat =
   | { statut: "chargement" }
@@ -23,6 +37,16 @@ type Etat =
   | { statut: "inconnue" }
   | { statut: "ok"; balise: Balise };
 
+function Carte({ titre, children, className }: { titre?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <section className={cn("rounded-lg border border-line bg-surface p-5 shadow-1", className)}>
+      {titre && <h2 className="mb-4 text-titre3 text-ink">{titre}</h2>}
+      {children}
+    </section>
+  );
+}
+
+/** E5 · Balise : niveau d'un bassin mesuré au sol, en direct. Seules les mesures reçues sont affichées. */
 export function VueBalise({ id }: { id: string }) {
   const [etat, setEtat] = useState<Etat>({ statut: "chargement" });
   // Mesures de la plus récente à la plus ancienne (500 au plus, environ 40 min à 1 mesure / 5 s).
@@ -67,23 +91,44 @@ export function VueBalise({ id }: { id: string }) {
   }, []);
 
   if (etat.statut === "chargement") {
-    return <div className="mx-auto h-80 w-full max-w-sm animate-pulse rounded-md bg-line" aria-busy="true" />;
-  }
-  if (etat.statut === "erreur") {
     return (
-      <div role="alert" className="rounded-md bg-surface p-4">
-        <p>Impossible de charger la balise : {etat.message}</p>
-        <button
-          type="button"
-          onClick={charger}
-          className="mt-2 min-h-cible rounded-sm bg-primary px-4 text-surface hover:bg-primary-strong"
-        >
-          Réessayer
-        </button>
+      <div role="status" aria-busy="true" className="space-y-6">
+        <span className="sr-only">Chargement de la balise</span>
+        <div className="space-y-2">
+          <Squelette className="h-4 w-40" />
+          <Squelette className="h-8 w-72" />
+          <Squelette className="h-5 w-56" />
+        </div>
+        <div className="grid gap-4 lg:grid-cols-12">
+          <Squelette className="h-80 rounded-lg lg:col-span-5" />
+          <Squelette className="h-80 rounded-lg lg:col-span-7" />
+        </div>
       </div>
     );
   }
-  if (etat.statut === "inconnue") return <p className="rounded-md bg-surface p-4">Balise « {id} » introuvable.</p>;
+  if (etat.statut === "erreur") {
+    return <AlerteErreur titre="La balise n'a pas pu être chargée" message={etat.message} onReessayer={charger} />;
+  }
+  if (etat.statut === "inconnue") {
+    return (
+      <EtatVide
+        titre="Balise introuvable"
+        icone={Radio}
+        action={
+          id !== BALISE_PAR_DEFAUT && (
+            <Link
+              href={`/balise/${BALISE_PAR_DEFAUT}`}
+              className="min-h-cible text-petit font-medium text-primary-ink underline-offset-4 hover:underline"
+            >
+              Ouvrir la balise de démonstration
+            </Link>
+          )
+        }
+      >
+        Aucune balise enregistrée ne porte l&apos;identifiant « {id} ».
+      </EtatVide>
+    );
+  }
 
   const { balise } = etat;
   const derniere = mesures[0] ?? null;
@@ -92,96 +137,178 @@ export function VueBalise({ id }: { id: string }) {
   const brut = derniere?.niveau_cm ?? null;
   const niveau = brut === null ? null : Math.max(0, brut);
   const depasse = niveau !== null && balise.seuil_alerte_cm !== null && niveau >= balise.seuil_alerte_cm;
+  const etatTexte =
+    ecartS === null
+      ? "Aucune mesure reçue"
+      : enLigne
+        ? `En ligne · mis à jour ${formatDepuis(ecartS)}`
+        : `Muette · dernière mesure ${formatDepuis(ecartS)}`;
 
   if (pleinEcran) {
     // Mode présentation pour la démo : la jauge et le chiffre en très grand.
     return (
-      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-surface p-6">
+      <div className="fixed inset-0 z-dialogue flex flex-col items-center justify-center gap-8 bg-surface p-6">
         <button
           type="button"
           onClick={() => setPleinEcran(false)}
           aria-label="Quitter le plein écran"
-          className="absolute right-4 top-4 inline-flex size-cible items-center justify-center rounded-sm hover:bg-bg"
+          className="absolute right-4 top-4 inline-flex size-cible items-center justify-center rounded-sm text-ink-2 hover:bg-surface-3 hover:text-ink"
         >
           <X {...ICONE} aria-hidden />
         </button>
         <div className="flex flex-col items-center gap-10 sm:flex-row sm:items-end">
           <div className="origin-bottom sm:scale-150">
-            <Jauge niveauCm={niveau ?? 0} hauteurCm={balise.hauteur_capteur_cm} seuilCm={balise.seuil_alerte_cm} />
+            <Jauge
+              niveauCm={niveau ?? 0}
+              hauteurCm={balise.hauteur_capteur_cm}
+              seuilCm={balise.seuil_alerte_cm}
+              sansMesure={niveau === null}
+            />
           </div>
-          <p className="text-[120px] font-semibold leading-none tabular-nums sm:text-[200px]">
+          <p className="text-[120px] font-semibold leading-none tracking-tight tabular-nums text-ink sm:text-[200px]">
             {niveau === null ? "–" : formatNombre(Math.round(niveau))}
-            <span className="text-titre1"> cm</span>
+            <span className="text-titre1 tracking-normal text-ink-2"> cm</span>
           </p>
         </div>
-        {depasse && <p className="text-titre1 text-prio-high">Seuil dépassé</p>}
-        <p className="text-ink-2">
-          {balise.nom} ·{" "}
-          {ecartS === null
-            ? "aucune mesure reçue"
-            : `${enLigne ? "mis à jour" : "dernière mesure"} ${formatDepuis(ecartS)}`}
-        </p>
+        {depasse && (
+          <p className="flex items-center gap-2 text-titre1 text-danger">
+            <AlertTriangle size={28} strokeWidth={1.75} aria-hidden />
+            Seuil dépassé
+          </p>
+        )}
+        <PastilleEtat enLigne={enLigne}>
+          <span className="text-texte text-ink-2">
+            {balise.nom} · {etatTexte}
+          </span>
+        </PastilleEtat>
       </div>
     );
   }
 
   return (
-    <section className="mx-auto max-w-lg rounded-md bg-surface p-4">
-      <h1 className="text-titre1">{balise.nom}</h1>
-      <p className="flex items-center gap-2 text-petit text-ink-2">
-        <span className={`size-2.5 rounded-pill ${enLigne ? "bg-ok" : "bg-off"}`} aria-hidden />
-        {ecartS === null
-          ? "Aucune mesure reçue"
-          : `${enLigne ? "En ligne · mis à jour" : "Dernière mesure"} ${formatDepuis(ecartS)}`}
-      </p>
-
-      <div className="mt-6 flex items-end justify-center gap-6">
-        <Jauge niveauCm={niveau ?? 0} hauteurCm={balise.hauteur_capteur_cm} seuilCm={balise.seuil_alerte_cm} />
-        <div>
-          <p className="text-[56px] font-semibold leading-none tabular-nums">
-            {niveau === null ? "–" : formatNombre(Math.round(niveau))}
-            <span className="text-titre2"> cm</span>
-          </p>
-          <p className="text-petit text-ink-2">d&apos;eau dans le bac</p>
-          {depasse && <p className="mt-2 font-semibold text-prio-high">Seuil dépassé</p>}
+    <div className="space-y-6">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-surtitre uppercase text-ink-3">Balise · mesure au sol</p>
+          <h1 className="mt-1 text-titre1 text-ink">{balise.nom}</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+            <PastilleEtat enLigne={enLigne}>
+              <span className="text-ink">{etatTexte}</span>
+            </PastilleEtat>
+            <span className="text-petit text-ink-3">
+              {USE_MOCKS ? "Données de démonstration [FICTIF]" : "Mesures reçues en direct par le serveur"}
+            </span>
+          </div>
         </div>
+        <Bouton taille="compacte" onClick={() => setPleinEcran(true)}>
+          <Maximize2 {...ICONE_PETITE} aria-hidden />
+          Plein écran
+        </Bouton>
+      </header>
+
+      {ecartS !== null && !enLigne && (
+        <Bandeau ancien>
+          La balise n&apos;a rien envoyé depuis {formatDepuis(ecartS).replace("il y a ", "")} : le niveau affiché est
+          celui de la dernière mesure, pas celui d&apos;aujourd&apos;hui. Vérifiez l&apos;alimentation et le Wi-Fi de la
+          balise.
+        </Bandeau>
+      )}
+
+      <div className="grid gap-4 lg:grid-cols-12">
+        <Carte titre="Niveau d'eau" className="lg:col-span-5">
+          <div className="flex items-end justify-center gap-8">
+            <Jauge
+              niveauCm={niveau ?? 0}
+              hauteurCm={balise.hauteur_capteur_cm}
+              seuilCm={balise.seuil_alerte_cm}
+              sansMesure={niveau === null}
+            />
+            <div className="pb-1">
+              <p className="text-[64px] font-semibold leading-none tracking-tight tabular-nums text-ink">
+                {niveau === null ? "–" : formatNombre(Math.round(niveau))}
+                <span className="text-titre2 tracking-normal text-ink-2"> cm</span>
+              </p>
+              <p className="mt-1 text-petit text-ink-2">d&apos;eau dans le bac</p>
+              {balise.seuil_alerte_cm !== null && niveau !== null && (
+                <p
+                  className={cn(
+                    "mt-3 inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 text-petit font-medium",
+                    depasse ? "bg-danger-soft text-danger" : "bg-surface-3 text-ink-2",
+                  )}
+                >
+                  {depasse && <AlertTriangle {...ICONE_PETITE} aria-hidden />}
+                  {depasse ? "Seuil dépassé" : `Sous le seuil de ${formatNombre(balise.seuil_alerte_cm)} cm`}
+                </p>
+              )}
+            </div>
+          </div>
+          {brut !== null && brut < 0 && (
+            <Bandeau className="mt-4" icone={AlertTriangle}>
+              Mesure anormale : la balise est à réétalonner (niveau affiché à 0).
+            </Bandeau>
+          )}
+        </Carte>
+
+        <Carte className="lg:col-span-7">
+          <CourbeNiveau mesures={mesures} seuilCm={balise.seuil_alerte_cm} maintenant={maintenant} />
+        </Carte>
+
+        <Carte titre="État de la balise" className="lg:col-span-7">
+          <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-petit sm:grid-cols-2">
+            {[
+              ["Dernière mesure", derniere ? dateHeure.format(Date.parse(derniere.ts)) : "aucune"],
+              ["Mesures chargées", formatNombre(mesures.length)],
+              ["Batterie", derniere?.batterie_v != null ? `${formatNombre(derniere.batterie_v)} V` : "non mesurée"],
+              ["Signal Wi-Fi", derniere?.rssi != null ? `${derniere.rssi} dBm` : "non mesuré"],
+              ["Hauteur du capteur", `${formatNombre(balise.hauteur_capteur_cm)} cm au-dessus du fond`],
+              [
+                "Seuil d'alerte",
+                balise.seuil_alerte_cm !== null ? `${formatNombre(balise.seuil_alerte_cm)} cm` : "non défini",
+              ],
+            ].map(([cle, valeur]) => (
+              <div
+                key={cle}
+                className="flex justify-between gap-3 border-b border-line pb-2 sm:block sm:border-0 sm:pb-0"
+              >
+                <dt className="text-ink-3">{cle}</dt>
+                <dd className="text-right font-medium tabular-nums text-ink sm:text-left">{valeur}</dd>
+              </div>
+            ))}
+            <div className="flex justify-between gap-3 sm:block">
+              <dt className="text-ink-3">Position</dt>
+              <dd className="sm:mt-0.5">
+                <a
+                  href={`https://www.openstreetmap.org/?mlat=${balise.lat}&mlon=${balise.lon}#map=17/${balise.lat}/${balise.lon}`}
+                  className="inline-flex items-center gap-1 font-medium text-primary-ink underline-offset-4 hover:underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Voir sur la carte
+                  <ArrowUpRight {...ICONE_PETITE} aria-hidden />
+                </a>
+              </dd>
+            </div>
+          </dl>
+        </Carte>
+
+        <Carte titre="D'où viennent ces mesures" className="lg:col-span-5">
+          <div className="flex gap-3">
+            <Cpu {...ICONE} className="mt-0.5 shrink-0 text-ink-3" aria-hidden />
+            <div className="space-y-2 text-petit text-ink-2">
+              <p>
+                La balise est conçue autour d&apos;un capteur à ultrasons sur ESP32 : il mesure la distance jusqu&apos;à
+                l&apos;eau, et le niveau est la hauteur du capteur moins cette distance (médiane de cinq lectures).
+              </p>
+              <p>
+                {USE_MOCKS
+                  ? "Ici, les mesures sont inventées pour la maquette : aucune mesure n'arrive en direct."
+                  : "Seules les mesures reçues par le serveur sont affichées : rien n'est estimé ni complété entre deux mesures."}
+              </p>
+              <p>« Le satellite voit toute la banlieue ; la balise voit un bassin en continu. »</p>
+            </div>
+          </div>
+        </Carte>
       </div>
-
-      <CourbeNiveau mesures={mesures} seuilCm={balise.seuil_alerte_cm} maintenant={maintenant} />
-
-      <dl className="mt-6 grid grid-cols-2 gap-x-3 gap-y-1 text-petit">
-        <dt className="text-ink-2">Batterie</dt>
-        <dd>{derniere?.batterie_v != null ? `${formatNombre(derniere.batterie_v)} V` : "non mesurée"}</dd>
-        <dt className="text-ink-2">Signal Wi-Fi</dt>
-        <dd>{derniere?.rssi != null ? `${derniere.rssi} dBm` : "non mesuré"}</dd>
-        <dt className="text-ink-2">Position</dt>
-        <dd>
-          <a
-            href={`https://www.openstreetmap.org/?mlat=${balise.lat}&mlon=${balise.lon}#map=17/${balise.lat}/${balise.lon}`}
-            className="text-primary underline"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Voir sur la carte
-          </a>
-        </dd>
-      </dl>
-
-      <button
-        type="button"
-        onClick={() => setPleinEcran(true)}
-        className="mt-6 inline-flex min-h-cible items-center gap-2 rounded-sm bg-primary px-4 text-surface hover:bg-primary-strong"
-      >
-        <Maximize2 {...ICONE} aria-hidden />
-        Plein écran
-      </button>
-
-      {brut !== null && brut < 0 && (
-        <p className="mt-4 text-petit text-ink-2">Mesure anormale : balise à réétalonner (niveau affiché à 0).</p>
-      )}
-      {USE_MOCKS && (
-        <p className="mt-4 text-mention text-ink-2">Données factices [FICTIF] : pas de mesure en direct.</p>
-      )}
-    </section>
+    </div>
   );
 }
