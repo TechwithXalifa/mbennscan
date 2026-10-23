@@ -28,6 +28,7 @@ test("E5 : la balise affiche son niveau", async ({ page }) => {
   await page.goto("/balise/bal-01");
   await expect(page.getByRole("meter")).toBeVisible();
   await expect(page.getByText("d'eau dans le bac")).toBeVisible();
+  await expect(page.getByText(/^Repère : /)).toBeVisible();
 });
 
 test("E6 : la méthode affiche les paramètres du calcul", async ({ page }) => {
